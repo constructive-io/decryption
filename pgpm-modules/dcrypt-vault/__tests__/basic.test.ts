@@ -2,7 +2,6 @@ import { getConnections, PgTestClient } from 'pglite-test';
 
 // contrib extensions are exports-map-only, which node10 module resolution
 // cannot type — resolve the CJS build at runtime instead
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { pgcrypto } = require('@electric-sql/pglite/contrib/pgcrypto');
 
 let db: PgTestClient;
@@ -235,7 +234,7 @@ describe('housekeeping', () => {
       'SELECT updated_at FROM dcrypt_vault.items WHERE id = $1',
       [itemId]
     );
-    await pg.query("SELECT pg_sleep(0.01)");
+    await pg.query('SELECT pg_sleep(0.01)');
     await pg.query("UPDATE dcrypt_vault.items SET title = 'Renamed' WHERE id = $1", [itemId]);
     const after = await pg.query<{ updated_at: string }>(
       'SELECT updated_at FROM dcrypt_vault.items WHERE id = $1',
