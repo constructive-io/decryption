@@ -1,0 +1,7 @@
+# dcrypt-vault extension
+comment = 'dcrypt-vault extension'
+default_version = '0.0.1'
+module_pathname = '$libdir/dcrypt-vault'
+requires = 'pgcrypto,plpgsql,pgpm-base32,pgpm-totp,pgpm-verify'
+relocatable = false
+superuser = false

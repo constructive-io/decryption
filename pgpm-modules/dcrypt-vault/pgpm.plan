@@ -1,0 +1,21 @@
+%syntax-version=1.0.0
+%project=dcrypt-vault
+%uri=dcrypt-vault
+
+schemas/dcrypt_vault/schema 2026-07-26T00:00:00Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/schema
+schemas/dcrypt_vault/types [schemas/dcrypt_vault/schema] 2026-07-26T00:00:01Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/types
+schemas/dcrypt_vault/tables/meta [schemas/dcrypt_vault/schema] 2026-07-26T00:00:01Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/meta
+schemas/dcrypt_vault/tables/folders [schemas/dcrypt_vault/schema] 2026-07-26T00:00:02Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/folders
+schemas/dcrypt_vault/tables/items [schemas/dcrypt_vault/types schemas/dcrypt_vault/tables/folders] 2026-07-26T00:00:03Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/items
+schemas/dcrypt_vault/tables/fields [schemas/dcrypt_vault/tables/items] 2026-07-26T00:00:04Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/fields
+schemas/dcrypt_vault/tables/tags [schemas/dcrypt_vault/schema] 2026-07-26T00:00:05Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/tags
+schemas/dcrypt_vault/tables/item_tags [schemas/dcrypt_vault/tables/items schemas/dcrypt_vault/tables/tags] 2026-07-26T00:00:06Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/item_tags
+schemas/dcrypt_vault/tables/urls [schemas/dcrypt_vault/tables/items] 2026-07-26T00:00:07Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/urls
+schemas/dcrypt_vault/tables/password_history [schemas/dcrypt_vault/tables/fields] 2026-07-26T00:00:08Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/password_history
+schemas/dcrypt_vault/tables/audit_log [schemas/dcrypt_vault/tables/items] 2026-07-26T00:00:09Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/tables/audit_log
+schemas/dcrypt_vault/procedures/touch_updated_at [schemas/dcrypt_vault/tables/items schemas/dcrypt_vault/tables/fields] 2026-07-26T00:00:10Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/touch_updated_at
+schemas/dcrypt_vault/procedures/capture_password_history [schemas/dcrypt_vault/tables/fields schemas/dcrypt_vault/tables/password_history] 2026-07-26T00:00:11Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/capture_password_history
+schemas/dcrypt_vault/procedures/set_field [schemas/dcrypt_vault/tables/fields schemas/dcrypt_vault/tables/audit_log] 2026-07-26T00:00:12Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/set_field
+schemas/dcrypt_vault/procedures/reveal_field [schemas/dcrypt_vault/procedures/set_field] 2026-07-26T00:00:13Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/reveal_field
+schemas/dcrypt_vault/procedures/totp_code [schemas/dcrypt_vault/procedures/reveal_field pgpm-totp:schemas/totp/procedures/generate_totp] 2026-07-26T00:00:14Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/totp_code
+schemas/dcrypt_vault/procedures/search_items [schemas/dcrypt_vault/tables/urls schemas/dcrypt_vault/tables/item_tags] 2026-07-26T00:00:15Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/search_items

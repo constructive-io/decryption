@@ -1,0 +1,39 @@
+{
+  "name": "@pgpm/totp",
+  "version": "0.33.0",
+  "description": "Time-based One-Time Password (TOTP) authentication",
+  "author": "Dan Lynch <pyramation@gmail.com>",
+  "contributors": [
+    "Constructive <developers@constructive.io>"
+  ],
+  "keywords": [
+    "postgresql",
+    "pgpm",
+    "totp",
+    "2fa"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "bundle": "pgpm package",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@pgpm/base32": "0.33.0",
+    "@pgpm/verify": "0.33.0"
+  },
+  "devDependencies": {
+    "pgpm": "^4.28.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/pgpm-modules"
+  },
+  "homepage": "https://github.com/constructive-io/pgpm-modules",
+  "bugs": {
+    "url": "https://github.com/constructive-io/pgpm-modules/issues"
+  },
+  "gitHead": "744a6836e7c7e61ddc00a3dcee36db7ebc9647f6"
+}

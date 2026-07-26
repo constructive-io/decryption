@@ -1,0 +1,62 @@
+{
+  "name": "dcrypt-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-only encrypted vault desktop app: passwords, secrets, one-time codes and offline crypto tools",
+  "author": "Constructive <developers@constructive.io>",
+  "license": "MIT",
+  "main": "out/main/index.js",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "lint": "eslint . --fix",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@decryption/core": "workspace:*",
+    "@decryption/hashes": "workspace:*",
+    "@decryption/keys": "workspace:*",
+    "@decryption/legacy": "workspace:*",
+    "@decryption/shamir": "workspace:*",
+    "@decryption/vault": "workspace:*",
+    "@decryption/wallet": "workspace:*",
+    "appstash": "^0.7.0"
+  },
+  "devDependencies": {
+    "@base-ui/react": "^1.6.0",
+    "@constructive-io/ui": "^0.4.1",
+    "@internationalized/date": "^3.12.2",
+    "@remixicon/react": "^4.9.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
+    "@use-gesture/react": "^10.3.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "@xyflow/react": "^12.11.2",
+    "cmdk": "^1.1.1",
+    "electron": "^38.4.0",
+    "electron-vite": "^5.0.0",
+    "lucide-react": "^0.545.0",
+    "match-sorter": "^8.3.0",
+    "motion": "^12.42.2",
+    "react": "^19.2.0",
+    "react-aria-components": "^1.19.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.83.0",
+    "react-resizable-panels": "^3.0.6",
+    "sonner": "^2.0.7",
+    "tailwindcss": "^4.3.3",
+    "vaul": "^1.1.2",
+    "vitest": "^4.1.10",
+    "@types/node": "^20.11.0",
+    "vite": "^7.3.4",
+    "tw-animate-css": "^1.3.8"
+  }
+}
