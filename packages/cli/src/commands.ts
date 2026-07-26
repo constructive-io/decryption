@@ -8,6 +8,7 @@ import { legacyCommand } from './commands/legacy';
 import { saltCommand } from './commands/salt';
 import { secretsCommand } from './commands/secrets';
 import { shamirCommand } from './commands/shamir';
+import { vaultCommand } from './commands/vault';
 import { walletCommand } from './commands/wallet';
 import { Handler, takeFirst } from './utils/dispatch';
 import { exitCodeFor, messageFor } from './utils/errors';
@@ -24,6 +25,7 @@ Commands:
   wallet                  Create BIP39 wallets and derive addresses (offline)
   keys                    Manage your X25519 identity
   secrets                 Team secrets files (.env generation, recipients, rekeying)
+  vault                   The local encrypted vault, shared with the desktop app
   keychain                Store named secrets locally, always encrypted
   shamir                  Split and recombine a secret into authenticated shares
   salt                    Two-layer encryption: data under a salt, salt under your passphrase
@@ -49,6 +51,7 @@ export const createCommandMap = (): Record<string, Handler> => ({
   wallet: walletCommand,
   keys: keysCommand,
   secrets: secretsCommand,
+  vault: vaultCommand,
   keychain: keychainCommand,
   shamir: shamirCommand,
   salt: saltCommand,

@@ -1,0 +1,98 @@
+import { Vault } from '@decryption/vault';
+import { appstash, resolve } from 'appstash';
+import { existsSync } from 'fs';
+import * as path from 'path';
+
+import type { TotpEntry, VaultStatus } from '../shared/api';
+
+const APP_NAME = 'dcrypt';
+
+export const vaultFilePath = (): string =>
+  resolve(appstash(APP_NAME, { ensure: true }), 'data', 'db') + path.sep + 'vault.dcrypt';
+
+/** Locate the dcrypt-vault pgpm module in dev (workspace) and packaged builds. */
+export const vaultModulePath = (): string => {
+  const candidates = [
+    // packaged: bundled next to the app's resources
+    path.join(process.resourcesPath ?? '', 'pgpm-modules', 'dcrypt-vault'),
+    // dev: the workspace checkout
+    path.resolve(__dirname, '../../../../pgpm-modules/dcrypt-vault'),
+    path.resolve(__dirname, '../../../pgpm-modules/dcrypt-vault'),
+  ];
+  for (const candidate of candidates) {
+    if (candidate && existsSync(path.join(candidate, 'pgpm.plan'))) {
+      return candidate;
+    }
+  }
+  throw new Error('cannot locate the dcrypt-vault pgpm module');
+};
+
+/**
+ * Owns the single vault instance for the app. All key material lives here in
+ * the main process; the renderer only ever sees call results.
+ */
+export class VaultService {
+  private vault: Vault | null = null;
+  private saveTimer: NodeJS.Timeout | null = null;
+
+  status(): VaultStatus {
+    const file = vaultFilePath();
+    return {
+      exists: existsSync(file),
+      unlocked: this.vault !== null && !this.vault.isLocked,
+      file,
+    };
+  }
+
+  async unlock(passphrase: string): Promise<void> {
+    if (this.vault && !this.vault.isLocked) return;
+    this.vault = await Vault.open({
+      file: vaultFilePath(),
+      passphrase,
+      modulePath: vaultModulePath(),
+      kdf: 'moderate',
+    });
+  }
+
+  async lock(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+    if (this.vault) {
+      await this.vault.lock();
+      this.vault = null;
+    }
+  }
+
+  /** Debounced persistence after mutations. */
+  scheduleSave(): void {
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => {
+      this.saveTimer = null;
+      void this.current().save();
+    }, 2000);
+  }
+
+  current(): Vault {
+    if (!this.vault || this.vault.isLocked) {
+      throw new Error('vault is locked');
+    }
+    return this.vault;
+  }
+
+  async totpEntry(itemId: string, period = 30): Promise<TotpEntry> {
+    const vault = this.current();
+    const item = await vault.getItem(itemId);
+    if (!item) throw new Error('item not found');
+    const code = await vault.totpCode(itemId, { period });
+    const now = Math.floor(Date.now() / 1000);
+    return { item, code, period, remaining: period - (now % period) };
+  }
+
+  async totpList(): Promise<TotpEntry[]> {
+    const vault = this.current();
+    const items = await vault.listItems({ kind: 'totp' });
+    return Promise.all(items.map((item) => this.totpEntry(item.id)));
+  }
+}
