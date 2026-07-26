@@ -1,8 +1,8 @@
 import { bech32 } from '@decryption/base';
 import { secp256k1 } from '@decryption/curves/secp256k1';
 import { ripemd160 } from '@decryption/hashes/legacy';
-import { keccak_256 } from '@decryption/hashes/sha3';
 import { sha256 } from '@decryption/hashes/sha2';
+import { keccak_256 } from '@decryption/hashes/sha3';
 import { bytesToHex } from '@decryption/hashes/utils';
 
 import { Network, resolveNetwork } from './networks';

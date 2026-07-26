@@ -1,7 +1,7 @@
 {
-  "name": "@decryption/bip39",
+  "name": "@decryption/cli",
   "version": "0.1.0",
-  "description": "Audited & minimal implementation of BIP39 mnemonic phrases. Dual CJS+ESM fork of @scure/bip39.",
+  "description": "dcrypt \u2014 local-first CLI for encryption, BIP39 wallets and team secrets",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
   "module": "esm/index.js",
@@ -23,23 +23,38 @@
     "copy": "makage assets",
     "clean": "makage clean",
     "prepublishOnly": "npm run build",
-    "build": "makage build && cp LICENSE dist/LICENSE",
-    "lint": "echo \"vendored fork \u2014 linted upstream\" && exit 0",
+    "build": "makage build",
+    "lint": "eslint . --fix",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "keywords": [
-    "bip39",
-    "mnemonic",
+    "cli",
+    "dcrypt",
+    "encryption",
+    "secrets",
     "wallet",
-    "seed",
-    "wordlist"
+    "bip39",
+    "age"
   ],
   "dependencies": {
     "@decryption/base": "workspace:*",
-    "@decryption/hashes": "workspace:*"
+    "@decryption/core": "workspace:*",
+    "@decryption/hashes": "workspace:*",
+    "@decryption/keys": "workspace:*",
+    "@decryption/legacy": "workspace:*",
+    "@decryption/secrets": "workspace:*",
+    "@decryption/shamir": "workspace:*",
+    "@decryption/wallet": "workspace:*",
+    "appstash": "^0.7.0",
+    "inquirerer": "^4.9.1",
+    "yanse": "^0.2.1"
   },
   "devDependencies": {
-    "makage": "0.3.0"
+    "makage": "0.3.0",
+    "@types/minimist": "^1.2.5"
+  },
+  "bin": {
+    "dcrypt": "index.js"
   }
 }

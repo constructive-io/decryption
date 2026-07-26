@@ -12,9 +12,9 @@ const REPO = 'https://github.com/constructive-io/decryption';
 
 /** Third-party dependency versions, pinned in one place. */
 const DEP_VERSIONS = {
-  appstash: '^1.4.0',
+  appstash: '^0.7.0',
   inquirerer: '^4.9.1',
-  yanse: '^1.4.0',
+  yanse: '^0.2.1',
 };
 const [, , slug, description, keywords = '', deps = '', extra = '{}'] = process.argv;
 
