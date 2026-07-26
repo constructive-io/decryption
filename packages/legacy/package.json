@@ -1,0 +1,49 @@
+{
+  "name": "@decryption/legacy",
+  "version": "0.1.0",
+  "description": "Read data written by the old CryptoJS/@cosmology/core encryption scheme, and upgrade it",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build",
+    "lint": "eslint . --fix",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "cryptojs",
+    "legacy",
+    "cosmology",
+    "aes",
+    "migration"
+  ],
+  "dependencies": {
+    "@decryption/base": "workspace:*",
+    "@decryption/ciphers": "workspace:*",
+    "@decryption/core": "workspace:*",
+    "@decryption/hashes": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0",
+    "crypto-js": "^4.2.0",
+    "@types/crypto-js": "^4.2.2"
+  }
+}

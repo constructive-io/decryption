@@ -1,0 +1,45 @@
+{
+  "name": "@decryption/bip39",
+  "version": "0.1.0",
+  "description": "Audited & minimal implementation of BIP39 mnemonic phrases. Dual CJS+ESM fork of @scure/bip39.",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build && cp LICENSE dist/LICENSE",
+    "lint": "echo \"vendored fork \u2014 linted upstream\" && exit 0",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "bip39",
+    "mnemonic",
+    "wallet",
+    "seed",
+    "wordlist"
+  ],
+  "dependencies": {
+    "@decryption/base": "workspace:*",
+    "@decryption/hashes": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
+  }
+}
