@@ -1,0 +1,45 @@
+{
+  "name": "@decryption/shamir",
+  "version": "0.1.0",
+  "description": "Shamir secret sharing over GF(256) with authenticated, versioned shares",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build",
+    "lint": "eslint . --fix",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "shamir",
+    "sss",
+    "secret-sharing",
+    "recovery",
+    "backup"
+  ],
+  "dependencies": {
+    "@decryption/base": "workspace:*",
+    "@decryption/hashes": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
+  }
+}
