@@ -1,8 +1,8 @@
 import { bytesToHex, utf8ToBytes } from '@decryption/hashes/utils';
 
 import {
-  ARMOR_PREFIX,
   armor,
+  ARMOR_PREFIX,
   CorruptEnvelopeError,
   dearmor,
   decrypt,
@@ -10,7 +10,6 @@ import {
   deriveKey,
   encrypt,
   encryptToString,
-  HEADER_LENGTH,
   InvalidParametersError,
   KDF_PROFILES,
   openWithKey,

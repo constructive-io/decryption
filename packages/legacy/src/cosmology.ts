@@ -41,8 +41,6 @@ export const encryptWithEncryptedSalt = (
   text: string
 ): string => crypt(decrypt(salt, encryptedSalt), text);
 
-/* eslint-disable no-restricted-syntax */
-
 /** Legacy `utf8ToHex` helper, preserved for byte-compatibility with old Shamir shares. */
 export const utf8ToHex = (str: string): string =>
   Array.from(str)
