@@ -1,6 +1,6 @@
 {
   "name": "@decryption/ciphers",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Audited & minimal 0-dependency JS implementation of AES, ChaCha20-Poly1305 and XChaCha20-Poly1305. Dual CJS+ESM fork of @noble/ciphers.",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
@@ -24,7 +24,7 @@
     "clean": "makage clean",
     "prepublishOnly": "npm run build",
     "build": "makage build && cp LICENSE dist/LICENSE",
-    "lint": "echo \"vendored fork \u2014 linted upstream\" && exit 0",
+    "lint": "echo \"vendored fork — linted upstream\" && exit 0",
     "test": "jest",
     "test:watch": "jest --watch"
   },

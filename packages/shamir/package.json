@@ -1,6 +1,6 @@
 {
   "name": "@decryption/shamir",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shamir secret sharing over GF(256) with authenticated, versioned shares",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
