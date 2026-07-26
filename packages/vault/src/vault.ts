@@ -6,9 +6,9 @@ import { PGlite } from '@electric-sql/pglite';
 import { PgpmPackage } from '@pgpmjs/core';
 import { getEnvOptions } from '@pgpmjs/env';
 import { registerPglite } from '@pgpmjs/pglite-adapter';
-import { teardownPgPools } from 'pg-cache';
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { teardownPgPools } from 'pg-cache';
 
 import {
   AuditEntry,
@@ -23,7 +23,7 @@ import {
 
 // contrib extensions are exports-map-only, which node10 module resolution
 // cannot type — resolve the CJS build at runtime instead
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const { pgcrypto } = require('@electric-sql/pglite/contrib/pgcrypto');
 
 const DB_KEY_INFO = 'dcrypt/db-values';

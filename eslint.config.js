@@ -12,6 +12,7 @@ module.exports = [
       '**/dist/**',
       '**/node_modules/**',
       '**/esm/**',
+      '**/out/**',
       // vendored forks — upstream code, linted (and formatted) by its own project
       'packages/{hashes,ciphers,curves,base,bip39,bip32}/**',
     ],
