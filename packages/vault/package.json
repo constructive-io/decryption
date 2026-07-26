@@ -1,0 +1,52 @@
+{
+  "name": "@decryption/vault",
+  "version": "0.1.0",
+  "description": "Passphrase-locked local vault: an in-memory PGlite database deployed from pgpm modules, persisted as one encrypted snapshot",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build",
+    "lint": "eslint . --fix",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
+  },
+  "keywords": [
+    "vault",
+    "pglite",
+    "pgpm",
+    "postgres",
+    "secrets",
+    "totp",
+    "local-first"
+  ],
+  "dependencies": {
+    "@decryption/core": "workspace:*",
+    "@decryption/hashes": "workspace:*",
+    "@electric-sql/pglite": "^0.5.4",
+    "@pgpmjs/pglite-adapter": "^0.1.5",
+    "@pgpmjs/core": "^6.34.0",
+    "@pgpmjs/env": "^2.30.2",
+    "pg-cache": "^3.16.2"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
+  }
+}

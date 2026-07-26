@@ -1,0 +1,40 @@
+{
+  "name": "dcrypt-vault",
+  "version": "0.0.1",
+  "author": "Dan Lynch <pyramation@gmail.com>",
+  "description": "dcrypt encrypted vault schema: items, fields, folders, tags, TOTP and audit log",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "lint": "eslint . --fix",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@pgpm/base32": "0.33.0",
+    "@pgpm/totp": "0.33.0",
+    "@pgpm/verify": "0.33.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.4",
+    "@pgpmjs/pglite-adapter": "^0.1.1",
+    "makage": "^0.3.0",
+    "pglite-test": "^0.2.2",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3",
+    "jest": "^30.2.0",
+    "@types/jest": "^30.0.0"
+  }
+}
