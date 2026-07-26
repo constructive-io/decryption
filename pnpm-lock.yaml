@@ -143,6 +143,26 @@ importers:
         version: 0.3.0
     publishDirectory: dist
 
+  packages/keys:
+    dependencies:
+      '@decryption/base':
+        specifier: workspace:*
+        version: link:../base/dist
+      '@decryption/core':
+        specifier: workspace:*
+        version: link:../core/dist
+      '@decryption/curves':
+        specifier: workspace:*
+        version: link:../curves/dist
+      '@decryption/hashes':
+        specifier: workspace:*
+        version: link:../hashes/dist
+    devDependencies:
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
+
   packages/legacy:
     dependencies:
       '@decryption/base':
@@ -169,11 +189,54 @@ importers:
         version: 0.3.0
     publishDirectory: dist
 
+  packages/secrets:
+    dependencies:
+      '@decryption/base':
+        specifier: workspace:*
+        version: link:../base/dist
+      '@decryption/core':
+        specifier: workspace:*
+        version: link:../core/dist
+      '@decryption/keys':
+        specifier: workspace:*
+        version: link:../keys/dist
+      '@decryption/shamir':
+        specifier: workspace:*
+        version: link:../shamir/dist
+    devDependencies:
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
+
   packages/shamir:
     dependencies:
       '@decryption/base':
         specifier: workspace:*
         version: link:../base/dist
+      '@decryption/hashes':
+        specifier: workspace:*
+        version: link:../hashes/dist
+    devDependencies:
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
+
+  packages/wallet:
+    dependencies:
+      '@decryption/base':
+        specifier: workspace:*
+        version: link:../base/dist
+      '@decryption/bip32':
+        specifier: workspace:*
+        version: link:../bip32/dist
+      '@decryption/bip39':
+        specifier: workspace:*
+        version: link:../bip39/dist
+      '@decryption/curves':
+        specifier: workspace:*
+        version: link:../curves/dist
       '@decryption/hashes':
         specifier: workspace:*
         version: link:../hashes/dist

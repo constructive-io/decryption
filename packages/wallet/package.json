@@ -1,0 +1,51 @@
+{
+  "name": "@decryption/wallet",
+  "version": "0.1.0",
+  "description": "Offline BIP39/BIP32 wallets and address derivation for cosmos-family, EVM and Bitcoin",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build",
+    "lint": "eslint . --fix",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "bip39",
+    "bip32",
+    "wallet",
+    "mnemonic",
+    "bech32",
+    "cosmos",
+    "ethereum",
+    "offline"
+  ],
+  "dependencies": {
+    "@decryption/base": "workspace:*",
+    "@decryption/bip32": "workspace:*",
+    "@decryption/bip39": "workspace:*",
+    "@decryption/curves": "workspace:*",
+    "@decryption/hashes": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
+  }
+}
