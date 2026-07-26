@@ -1,6 +1,7 @@
 {
   "packages": [
-    "pgpm-modules/*"
+    "pgpm-modules/*",
+    "extensions/*"
   ],
   "boilerplates": {
     "repo": "https://github.com/constructive-io/pglite-boilerplates.git"
