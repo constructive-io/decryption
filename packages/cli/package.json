@@ -25,8 +25,8 @@
     "prepublishOnly": "npm run build",
     "build": "makage build",
     "lint": "eslint . --fix",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "keywords": [
     "cli",
@@ -48,7 +48,8 @@
     "@decryption/wallet": "workspace:*",
     "appstash": "^0.7.0",
     "inquirerer": "^4.9.1",
-    "yanse": "^0.2.1"
+    "yanse": "^0.2.1",
+    "@decryption/vault": "workspace:*"
   },
   "devDependencies": {
     "makage": "0.3.0",
