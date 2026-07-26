@@ -5,6 +5,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
   DialogTitle,
 } from '@constructive-io/ui/dialog';
 import { Input } from '@constructive-io/ui/input';
@@ -94,7 +95,7 @@ export const NewItemDialog = ({
           <DialogTitle>New item</DialogTitle>
           <DialogDescription>Everything is encrypted before it is stored.</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
+        <DialogPanel className="flex flex-col gap-4">
           <div className="flex gap-3">
             <div className="flex w-44 flex-col gap-1.5">
               <Label>Type</Label>
@@ -164,7 +165,7 @@ export const NewItemDialog = ({
               <Input id="new-note" value={note} onChange={(e) => setNote(e.target.value)} />
             </div>
           )}
-        </div>
+        </DialogPanel>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>
             Cancel

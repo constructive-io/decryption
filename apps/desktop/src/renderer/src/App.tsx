@@ -26,6 +26,10 @@ export const App = () => {
 
   useEffect(() => dcrypt.onLocked(() => setUnlocked(false)), []);
 
+  useEffect(() => {
+    void dcrypt.vault.status().then((s) => setUnlocked(s.unlocked));
+  }, []);
+
   const lock = useCallback(async () => {
     await dcrypt.vault.lock();
     setUnlocked(false);
