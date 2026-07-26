@@ -1,5 +1,8 @@
 @import "@constructive-io/ui/globals.css";
 
+/* Tailwind does not scan node_modules by default — pick up the classes the ui components use. */
+@source "../../../node_modules/@constructive-io/ui/dist";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
