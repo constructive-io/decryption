@@ -1,6 +1,6 @@
 {
   "name": "@decryption/base",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Audited & minimal 0-dependency implementation of bech32, base64, base58, base32 & base16. Dual CJS+ESM fork of @scure/base.",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
@@ -24,7 +24,7 @@
     "clean": "makage clean",
     "prepublishOnly": "npm run build",
     "build": "makage build && cp LICENSE dist/LICENSE",
-    "lint": "echo \"vendored fork \u2014 linted upstream\" && exit 0",
+    "lint": "echo \"vendored fork — linted upstream\" && exit 0",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -37,7 +37,7 @@
     "encoding"
   ],
   "devDependencies": {
-    "makage": "0.3.0",
-    "@decryption/hashes": "workspace:*"
+    "@decryption/hashes": "workspace:*",
+    "makage": "0.3.0"
   }
 }

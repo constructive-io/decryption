@@ -1,6 +1,6 @@
 {
   "name": "@decryption/legacy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read data written by the old CryptoJS/@cosmology/core encryption scheme, and upgrade it",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
@@ -42,8 +42,8 @@
     "@decryption/hashes": "workspace:*"
   },
   "devDependencies": {
-    "makage": "0.3.0",
+    "@types/crypto-js": "^4.2.2",
     "crypto-js": "^4.2.0",
-    "@types/crypto-js": "^4.2.2"
+    "makage": "0.3.0"
   }
 }
