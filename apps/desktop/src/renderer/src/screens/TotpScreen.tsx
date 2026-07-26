@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
   DialogTitle,
 } from '@constructive-io/ui/dialog';
 import { Input } from '@constructive-io/ui/input';
@@ -118,7 +119,7 @@ export const TotpScreen = () => {
               Paste an otpauth:// URI from another authenticator's export.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-1.5">
+          <DialogPanel className="flex flex-col gap-1.5">
             <Label htmlFor="otpauth-uri">otpauth URI</Label>
             <Input
               id="otpauth-uri"
@@ -127,7 +128,7 @@ export const TotpScreen = () => {
               placeholder="otpauth://totp/Example:me?secret=..."
               className="font-mono"
             />
-          </div>
+          </DialogPanel>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowImport(false)} disabled={busy}>
               Cancel
