@@ -252,6 +252,9 @@ importers:
       '@decryption/shamir':
         specifier: workspace:*
         version: link:../shamir/dist
+      '@decryption/vault':
+        specifier: workspace:*
+        version: link:../vault/dist
       '@decryption/wallet':
         specifier: workspace:*
         version: link:../wallet/dist
