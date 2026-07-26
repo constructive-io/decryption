@@ -1,7 +1,7 @@
 {
   "name": "@decryption/cli",
-  "version": "0.1.0",
-  "description": "dcrypt \u2014 local-first CLI for encryption, BIP39 wallets and team secrets",
+  "version": "0.2.0",
+  "description": "dcrypt — local-first CLI for encryption, BIP39 wallets and team secrets",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
   "module": "esm/index.js",
@@ -52,8 +52,8 @@
     "@decryption/vault": "workspace:*"
   },
   "devDependencies": {
-    "makage": "0.3.0",
-    "@types/minimist": "^1.2.5"
+    "@types/minimist": "^1.2.5",
+    "makage": "0.3.0"
   },
   "bin": {
     "dcrypt": "index.js"

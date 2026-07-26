@@ -1,0 +1,11 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.2.0 (2026-07-26)
+
+### Features
+
+- dcrypt CLI on inquirerer + appstash, flat eslint config ([7d213f2](https://github.com/constructive-io/decryption/commit/7d213f213f5df0a44d4d44b4ff78bdec2eba0a42))
+- wallet, keys and team secrets packages ([6fb8c71](https://github.com/constructive-io/decryption/commit/6fb8c7154f7b720022288e6a07919fd74ea9a3fd))
