@@ -1,6 +1,6 @@
 {
   "name": "@decryption/keys",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "X25519 identities and age-style recipient encryption for sharing secrets with a team",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",

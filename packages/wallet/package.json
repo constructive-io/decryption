@@ -1,6 +1,6 @@
 {
   "name": "@decryption/wallet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Offline BIP39/BIP32 wallets and address derivation for cosmos-family, EVM and Bitcoin",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
