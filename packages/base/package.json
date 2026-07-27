@@ -1,6 +1,6 @@
 {
   "name": "@decryption/base",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audited & minimal 0-dependency implementation of bech32, base64, base58, base32 & base16. Dual CJS+ESM fork of @scure/base.",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
