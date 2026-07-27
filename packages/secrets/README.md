@@ -1,5 +1,17 @@
 # @decryption/secrets
 
+<p align="center" width="100%">
+  <img height="250" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" />
+</p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
+    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@decryption/secrets"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fsecrets%2Fpackage.json"/></a>
+</p>
+
+
 Team secrets in a file you can commit. Every value is encrypted individually, so a pull request
 shows *which* secret changed without revealing any of them, and membership is managed by adding or
 removing recipients rather than by resharing a passphrase.

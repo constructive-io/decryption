@@ -1,5 +1,17 @@
 # @decryption/shamir
 
+<p align="center" width="100%">
+  <img height="250" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" />
+</p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
+    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@decryption/shamir"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fshamir%2Fpackage.json"/></a>
+</p>
+
+
 Split a secret into `n` shares, any `t` of which reconstruct it. Fewer than `t` shares reveal
 nothing but the secret's length.
 
