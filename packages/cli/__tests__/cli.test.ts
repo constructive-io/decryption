@@ -265,7 +265,7 @@ describe('salt', () => {
   });
 });
 
-describe('legacy', () => {
+describe('cosmology', () => {
   // Produced by @cosmology/core: crypt('my-salt', 'legacy plaintext').
   const legacyBlob =
     'U2FsdGVkX1+e1rSKneHnXFk1ufVWBgAjucz2FBFi5Qxzkuhk6KCkZF+naLOt+APM';
@@ -273,7 +273,7 @@ describe('legacy', () => {
   it('decrypts an old cryptojs blob and upgrades it', async () => {
     const blob = file('old.txt', legacyBlob);
     const salt = file('salt.txt', 'my-salt');
-    expect(await run(`legacy decrypt --in ${blob} --salt-file ${salt}`)).toBe(0);
+    expect(await run(`cosmology decrypt --in ${blob} --salt-file ${salt}`)).toBe(0);
     expect(stdout()).toBe('legacy plaintext');
 
     out = [];
@@ -287,6 +287,78 @@ describe('legacy', () => {
     expect(decryptFromString(readFileSync(upgraded, 'utf8').trim(), 'modern')).toBe(
       'legacy plaintext'
     );
+  });
+
+  it('still answers to the cosmology CLI name for it, "legacy"', async () => {
+    const blob = file('old.txt', legacyBlob);
+    const salt = file('salt.txt', 'my-salt');
+    expect(await run(`legacy decrypt --in ${blob} --salt-file ${salt}`)).toBe(0);
+    expect(stdout()).toBe('legacy plaintext');
+  });
+
+  it('reads the salt from SALT, like the cosmology CLI', async () => {
+    const blob = file('old.txt', legacyBlob);
+    process.env.SALT = 'my-salt';
+    try {
+      expect(await run(`cosmology decrypt --in ${blob}`)).toBe(0);
+      expect(stdout()).toBe('legacy plaintext');
+    } finally {
+      delete process.env.SALT;
+    }
+  });
+});
+
+describe('environment variables', () => {
+  it('reads the passphrase from DCRYPT_PASSPHRASE', async () => {
+    const plain = file('plain.txt', 'env secret');
+    const encrypted = join(work, 'secret.dcrypt');
+    process.env.DCRYPT_PASSPHRASE = 'from-the-environment';
+    try {
+      expect(await run(`encrypt --in ${plain} --out ${encrypted} --kdf ${FAST_KDF}`)).toBe(0);
+      expect(await run(`decrypt --in ${encrypted}`)).toBe(0);
+      expect(stdout()).toBe('env secret');
+    } finally {
+      delete process.env.DCRYPT_PASSPHRASE;
+    }
+  });
+
+  it('reads the mnemonic from MNEMONIC, like the cosmology CLI', async () => {
+    process.env.MNEMONIC =
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    try {
+      expect(await run('wallet validate --json')).toBe(0);
+      expect(JSON.parse(stdout()).valid).toBe(true);
+    } finally {
+      delete process.env.MNEMONIC;
+    }
+  });
+
+  it('namespaces the keychain with KEYCHAIN_ACCOUNT, like the cosmology CLI', async () => {
+    const pass = file('pass.txt', 'kc-pass');
+    const value = file('value.txt', 'namespaced');
+    process.env.KEYCHAIN_ACCOUNT = 'work';
+    try {
+      expect(
+        await run(`keychain set token --in ${value} --kdf ${FAST_KDF} --passphrase-file ${pass}`)
+      ).toBe(0);
+      expect(existsSync(join(home, '.dcrypt', 'data', 'keychain-work.json'))).toBe(true);
+    } finally {
+      delete process.env.KEYCHAIN_ACCOUNT;
+    }
+    out = [];
+    // Without the namespace, the entry is invisible.
+    expect(await run('keychain list')).toBe(0);
+    expect(stdout()).toBe('');
+  });
+});
+
+describe('wallet defaults', () => {
+  it('derives bitcoin when no network is named', async () => {
+    expect(await run('wallet create --words 12 --json')).toBe(0);
+    const { accounts } = JSON.parse(stdout());
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0].network).toBe('bitcoin');
+    expect(accounts[0].address.startsWith('bc1')).toBe(true);
   });
 });
 

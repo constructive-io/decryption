@@ -1,5 +1,5 @@
 import { decryptFromString, encryptToString } from '@decryption/core';
-import { decrypt as legacyDecrypt } from '@decryption/legacy';
+import { decrypt as legacyDecrypt } from '@decryption/cosmology-compat';
 import { combineToString, splitToStrings } from '@decryption/shamir';
 import { createWallet, deriveAccounts, WordCount } from '@decryption/wallet';
 import { ipcMain } from 'electron';

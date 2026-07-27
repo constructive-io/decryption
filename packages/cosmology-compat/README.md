@@ -1,7 +1,6 @@
-# @decryption/legacy
+# @decryption/cosmology-compat
 
-> **Deprecated by design.** This package exists so data written by the old
-> [encryption-demo](https://github.com/constructive-io/encryption-demo) and `@cosmology/core`
+> **Deprecated by design.** This package exists so data written by the cosmology CLI
 > stays readable. Do not use it to encrypt anything new — use
 > [`@decryption/core`](../core) instead.
 
@@ -19,7 +18,7 @@ dependency), and turns the silent-failure case into a thrown `WrongPassphraseErr
 ## Usage
 
 ```typescript
-import { decrypt, decryptWithEncryptedSalt, upgradeEnvelopeToString } from '@decryption/legacy';
+import { decrypt, decryptWithEncryptedSalt, upgradeEnvelopeToString } from '@decryption/cosmology-compat';
 
 // Single-layer blobs
 const plaintext = decrypt(salt, oldCiphertext);
@@ -34,7 +33,7 @@ const modern = upgradeEnvelopeToString(oldCiphertext, salt, newPassphrase);
 Raw CryptoJS compatibility, if you have blobs that never went through `@cosmology/core`:
 
 ```typescript
-import { cryptoJsEncrypt, cryptoJsDecrypt } from '@decryption/legacy';
+import { cryptoJsEncrypt, cryptoJsDecrypt } from '@decryption/cosmology-compat';
 
 cryptoJsDecrypt(base64Ciphertext, passphrase); // throws instead of returning ''
 ```

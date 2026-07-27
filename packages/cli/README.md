@@ -21,7 +21,7 @@ dcrypt --help
 | `dcrypt keychain set\|get\|del\|list` | Named local secrets, always encrypted |
 | `dcrypt shamir split\|combine` | Authenticated Shamir shares |
 | `dcrypt salt generate\|encrypt\|decrypt` | Two-layer encryption (data under a salt, salt under your passphrase) |
-| `dcrypt legacy decrypt\|upgrade` | Read and migrate old CryptoJS blobs |
+| `dcrypt cosmology decrypt\|upgrade` | Read and migrate data from the cosmology CLI (`legacy` still works as an alias) |
 
 Every command supports `--help`.
 
@@ -61,6 +61,27 @@ Every prompt has a flag, so the CLI works in CI:
 
 ```bash
 dcrypt decrypt --in secret.dcrypt --passphrase-file /run/secrets/passphrase --out plain.txt
+```
+
+### Environment variables
+
+Every variable the cosmology CLI read still works, plus `DCRYPT_`-prefixed aliases
+(`DCRYPT_MNEMONIC`, `DCRYPT_SALT`, ...) for environments where the bare names would collide:
+
+| Variable | Used by |
+|----------|---------|
+| `MNEMONIC` | `wallet address` / `wallet validate` |
+| `SALT` | `cosmology decrypt` / `cosmology upgrade` |
+| `ENCRYPTED_SALT` | the two-layer cosmology scheme |
+| `KEYCHAIN_ACCOUNT` | keychain namespace (default `dcrypt`) |
+| `DCRYPT_PASSPHRASE` | any command that asks for a passphrase |
+
+Resolution order everywhere: explicit flag, then environment, then stdin, then the
+interactive prompt.
+
+```bash
+SALT=my-salt dcrypt cosmology decrypt --in old.txt
+MNEMONIC="..." dcrypt wallet address --network ethereum
 ```
 
 Add `--json` for machine-readable output, and check exit codes:
