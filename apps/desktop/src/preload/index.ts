@@ -5,7 +5,10 @@ import { CHANNELS, DcryptApi } from '../shared/api';
 const invoke = <T>(channel: string, ...args: unknown[]): Promise<T> =>
   ipcRenderer.invoke(channel, ...args) as Promise<T>;
 
-const api: DcryptApi & { onLocked(listener: () => void): () => void } = {
+const api: DcryptApi & {
+  onLocked(listener: () => void): () => void;
+  onSystemThemeChange(listener: (dark: boolean) => void): () => void;
+} = {
   vault: {
     status: () => invoke(CHANNELS.vaultStatus),
     unlock: (passphrase) => invoke(CHANNELS.vaultUnlock, passphrase),
@@ -59,6 +62,14 @@ const api: DcryptApi & { onLocked(listener: () => void): () => void } = {
     shamirSplit: (secret, shares, threshold) =>
       invoke(CHANNELS.wbShamirSplit, secret, shares, threshold),
     shamirCombine: (shares) => invoke(CHANNELS.wbShamirCombine, shares),
+  },
+  theme: {
+    getSystemDark: () => invoke(CHANNELS.themeGetSystemDark),
+  },
+  onSystemThemeChange: (listener) => {
+    const wrapped = (_event: unknown, dark: boolean) => listener(dark);
+    ipcRenderer.on(CHANNELS.themeSystemChanged, wrapped);
+    return () => ipcRenderer.removeListener(CHANNELS.themeSystemChanged, wrapped);
   },
   onLocked: (listener) => {
     const wrapped = () => listener();
