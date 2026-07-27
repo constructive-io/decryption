@@ -74,15 +74,15 @@ importers:
       '@decryption/core':
         specifier: workspace:*
         version: link:../../packages/core/dist
+      '@decryption/cosmology-compat':
+        specifier: workspace:*
+        version: link:../../packages/cosmology-compat/dist
       '@decryption/hashes':
         specifier: workspace:*
         version: link:../../packages/hashes/dist
       '@decryption/keys':
         specifier: workspace:*
         version: link:../../packages/keys/dist
-      '@decryption/legacy':
-        specifier: workspace:*
-        version: link:../../packages/legacy/dist
       '@decryption/shamir':
         specifier: workspace:*
         version: link:../../packages/shamir/dist
@@ -237,15 +237,15 @@ importers:
       '@decryption/core':
         specifier: workspace:*
         version: link:../core/dist
+      '@decryption/cosmology-compat':
+        specifier: workspace:*
+        version: link:../cosmology-compat/dist
       '@decryption/hashes':
         specifier: workspace:*
         version: link:../hashes/dist
       '@decryption/keys':
         specifier: workspace:*
         version: link:../keys/dist
-      '@decryption/legacy':
-        specifier: workspace:*
-        version: link:../legacy/dist
       '@decryption/secrets':
         specifier: workspace:*
         version: link:../secrets/dist
@@ -293,6 +293,32 @@ importers:
         version: 0.3.0
     publishDirectory: dist
 
+  packages/cosmology-compat:
+    dependencies:
+      '@decryption/base':
+        specifier: workspace:*
+        version: link:../base/dist
+      '@decryption/ciphers':
+        specifier: workspace:*
+        version: link:../ciphers/dist
+      '@decryption/core':
+        specifier: workspace:*
+        version: link:../core/dist
+      '@decryption/hashes':
+        specifier: workspace:*
+        version: link:../hashes/dist
+    devDependencies:
+      '@types/crypto-js':
+        specifier: ^4.2.2
+        version: 4.2.2
+      crypto-js:
+        specifier: ^4.2.0
+        version: 4.2.0
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
+
   packages/curves:
     dependencies:
       '@decryption/hashes':
@@ -326,32 +352,6 @@ importers:
         specifier: workspace:*
         version: link:../hashes/dist
     devDependencies:
-      makage:
-        specifier: 0.3.0
-        version: 0.3.0
-    publishDirectory: dist
-
-  packages/legacy:
-    dependencies:
-      '@decryption/base':
-        specifier: workspace:*
-        version: link:../base/dist
-      '@decryption/ciphers':
-        specifier: workspace:*
-        version: link:../ciphers/dist
-      '@decryption/core':
-        specifier: workspace:*
-        version: link:../core/dist
-      '@decryption/hashes':
-        specifier: workspace:*
-        version: link:../hashes/dist
-    devDependencies:
-      '@types/crypto-js':
-        specifier: ^4.2.2
-        version: 4.2.2
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
       makage:
         specifier: 0.3.0
         version: 0.3.0

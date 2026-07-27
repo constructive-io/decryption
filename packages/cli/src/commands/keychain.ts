@@ -32,6 +32,10 @@ Options:
   --passphrase-stdin      Read the passphrase from stdin
   --help, -h              Show this help message
 
+Environment:
+  KEYCHAIN_ACCOUNT        Keychain namespace              (default: dcrypt)
+  DCRYPT_PASSPHRASE       The passphrase, for unattended runs
+
 Examples:
   dcrypt keychain set github-token --in token.txt
   dcrypt keychain get github-token --out token.txt

@@ -4,6 +4,7 @@ import { appstash, resolve } from 'appstash';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 
+import { keychainAccount } from './env';
 import { CliError, EXIT } from './errors';
 
 /**
@@ -13,6 +14,7 @@ import { CliError, EXIT } from './errors';
  * ~/.dcrypt/
  *   config/identity.json   the user's X25519 identity, encrypted under a passphrase
  *   data/keychain.json     named secrets, each encrypted under a passphrase
+ *                          (KEYCHAIN_ACCOUNT selects keychain-<account>.json instead)
  *   data/vaults/<name>.json team secrets files
  * ```
  *
@@ -23,7 +25,11 @@ export const APP_NAME = 'dcrypt';
 export const dirs = () => appstash(APP_NAME, { ensure: true });
 
 export const identityPath = (): string => resolve(dirs(), 'config', 'identity.json');
-export const keychainPath = (): string => resolve(dirs(), 'data', 'keychain.json');
+export const keychainPath = (): string => {
+  const account = keychainAccount();
+  const file = account === 'dcrypt' ? 'keychain.json' : `keychain-${account}.json`;
+  return resolve(dirs(), 'data', file);
+};
 export const vaultPath = (name: string): string =>
   join(resolve(dirs(), 'data', 'vaults'), `${name}.json`);
 

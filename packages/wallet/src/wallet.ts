@@ -3,7 +3,7 @@ import { bytesToHex } from '@decryption/hashes/utils';
 
 import { publicKeyToAddress } from './address';
 import { createMnemonic, mnemonicToSeed, WordCount } from './mnemonic';
-import { derivationPath, Network, resolveNetwork } from './networks';
+import { DEFAULT_NETWORK, derivationPath, Network, resolveNetwork } from './networks';
 
 export interface AccountOptions {
   /** BIP44 account index (`m/44'/coin'/<account>'/…`). */
@@ -77,7 +77,7 @@ export interface CreateWalletResult {
 
 /** Generates a new mnemonic and derives its first account on each requested network. */
 export const createWallet = (
-  networks: (string | Network)[] = ['cosmoshub'],
+  networks: (string | Network)[] = [DEFAULT_NETWORK],
   words: WordCount = 24,
   options: AccountOptions = {}
 ): CreateWalletResult => {
