@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, powerMonitor, session, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage, nativeTheme, powerMonitor, session, shell } from 'electron';
 import * as path from 'path';
 
 import { CHANNELS } from '../shared/api';
@@ -98,6 +98,13 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin' && !APP_ICON.isEmpty()) {
     app.dock?.setIcon(APP_ICON);
   }
+
+  ipcMain.handle(CHANNELS.themeGetSystemDark, (): boolean => nativeTheme.shouldUseDarkColors);
+  nativeTheme.on('updated', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send(CHANNELS.themeSystemChanged, nativeTheme.shouldUseDarkColors);
+    }
+  });
 
   registerIpc(service);
   mainWindow = createWindow();
