@@ -1,6 +1,6 @@
 {
   "name": "@decryption/bip39",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audited & minimal implementation of BIP39 mnemonic phrases. Dual CJS+ESM fork of @scure/bip39.",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",

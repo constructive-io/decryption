@@ -1,6 +1,6 @@
 {
   "name": "@decryption/core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Versioned authenticated envelope encryption: Argon2id + XChaCha20-Poly1305",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",

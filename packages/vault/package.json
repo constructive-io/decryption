@@ -1,6 +1,6 @@
 {
   "name": "@decryption/vault",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Passphrase-locked local vault: an in-memory PGlite database deployed from pgpm modules, persisted as one encrypted snapshot",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",

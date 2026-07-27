@@ -1,6 +1,6 @@
 {
   "name": "@decryption/curves",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audited & minimal 0-dependency JS implementation of elliptic curves: secp256k1, ed25519, x25519. Dual CJS+ESM fork of @noble/curves.",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
