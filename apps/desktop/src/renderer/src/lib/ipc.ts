@@ -1,6 +1,9 @@
 import type { DcryptApi } from '../../../shared/api';
 
-export type RendererApi = DcryptApi & { onLocked(listener: () => void): () => void };
+export type RendererApi = DcryptApi & {
+  onLocked(listener: () => void): () => void;
+  onSystemThemeChange(listener: (dark: boolean) => void): () => void;
+};
 
 declare global {
   interface Window {

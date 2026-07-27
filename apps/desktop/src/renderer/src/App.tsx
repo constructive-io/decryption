@@ -5,6 +5,7 @@ import { KeyRound, Lock, Settings, ShieldCheck, Timer, Wrench } from 'lucide-rea
 import { useCallback, useEffect, useState } from 'react';
 
 import { dcrypt } from './lib/ipc';
+import { ThemeProvider, useThemeMode } from './lib/theme-context';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ToolsScreen } from './screens/ToolsScreen';
 import { TotpScreen } from './screens/TotpScreen';
@@ -20,7 +21,8 @@ const NAV: { id: Tab; label: string; icon: typeof KeyRound }[] = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export const App = () => {
+const AppContent = () => {
+  const { dark } = useThemeMode();
   const [unlocked, setUnlocked] = useState(false);
   const [tab, setTab] = useState<Tab>('vault');
 
@@ -39,7 +41,7 @@ export const App = () => {
     return (
       <>
         <UnlockScreen onUnlocked={() => setUnlocked(true)} />
-        <Toaster position="bottom-right" />
+        <Toaster theme={dark ? 'dark' : 'light'} position="bottom-right" />
       </>
     );
   }
@@ -78,7 +80,13 @@ export const App = () => {
         {tab === 'tools' && <ToolsScreen />}
         {tab === 'settings' && <SettingsScreen onLocked={() => setUnlocked(false)} />}
       </main>
-      <Toaster position="bottom-right" />
+      <Toaster theme={dark ? 'dark' : 'light'} position="bottom-right" />
     </div>
   );
 };
+
+export const App = () => (
+  <ThemeProvider>
+    <AppContent />
+  </ThemeProvider>
+);
