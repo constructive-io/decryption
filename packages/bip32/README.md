@@ -1,5 +1,17 @@
 # @decryption/bip32
 
+<p align="center" width="100%">
+  <img height="250" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" />
+</p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
+    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@decryption/bip32"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fbip32%2Fpackage.json"/></a>
+</p>
+
+
 > **NOTE:** This is a fork of [`@scure/bip32`](https://www.npmjs.com/package/@scure/bip32) (v2.2.0).
 > We dual-publish as both **CJS and ESM** because upstream is ESM-only (`"type": "module"`), which breaks
 > `require()` in Jest, older bundlers and CJS-based Node.js tooling. The source is unchanged from upstream —
