@@ -1,5 +1,17 @@
 # @decryption/cosmology-compat
 
+<p align="center" width="100%">
+  <img height="250" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" />
+</p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
+    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@decryption/cosmology-compat"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fcosmology-compat%2Fpackage.json"/></a>
+</p>
+
+
 > **Deprecated by design.** This package exists so data written by the cosmology CLI
 > stays readable. Do not use it to encrypt anything new — use
 > [`@decryption/core`](../core) instead.
