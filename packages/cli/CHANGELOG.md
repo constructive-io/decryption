@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/constructive-io/decryption/compare/@decryption/cli@0.2.0...@decryption/cli@0.3.0) (2026-07-27)
+
+### Features
+
+- cosmology CLI env vars, cosmology-compat rename, bitcoin-first networks ([2b6de58](https://github.com/constructive-io/decryption/commit/2b6de58dae636fc36f438f83abb772d2efc1daa2))
+- dcrypt vault CLI — item, totp, export/import subcommands over @decryption/vault ([6a934ee](https://github.com/constructive-io/decryption/commit/6a934ee2fb67d841eec8ee99ea9f0e702f3d013e))
+
 # 0.2.0 (2026-07-26)
 
 ### Features
