@@ -38,7 +38,7 @@ export const keychainAccount = (env: NodeJS.ProcessEnv = process.env): string =>
 export const envUsage = `
 Environment:
   MNEMONIC                A BIP39 mnemonic, for wallet commands
-  SALT                    The salt, for salt and legacy commands
+  SALT                    The salt, for salt and cosmology commands
   ENCRYPTED_SALT          The encrypted salt, for the two-layer scheme
   KEYCHAIN_ACCOUNT        Keychain namespace                  (default: dcrypt)
   DCRYPT_PASSPHRASE       The passphrase, for unattended runs

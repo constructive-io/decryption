@@ -281,7 +281,7 @@ describe('cosmology', () => {
     const upgraded = join(work, 'new.dcrypt');
     expect(
       await run(
-        `legacy upgrade --in ${blob} --salt-file ${salt} --out ${upgraded} --kdf ${FAST_KDF} --passphrase-file ${pass}`
+        `cosmology upgrade --in ${blob} --salt-file ${salt} --out ${upgraded} --kdf ${FAST_KDF} --passphrase-file ${pass}`
       )
     ).toBe(0);
     expect(decryptFromString(readFileSync(upgraded, 'utf8').trim(), 'modern')).toBe(
@@ -289,10 +289,14 @@ describe('cosmology', () => {
     );
   });
 
-  it('still answers to the cosmology CLI name for it, "legacy"', async () => {
-    const blob = file('old.txt', legacyBlob);
+  it('encrypts in the old format and reads it back', async () => {
+    const plain = file('plain.txt', 'legacy plaintext');
     const salt = file('salt.txt', 'my-salt');
-    expect(await run(`legacy decrypt --in ${blob} --salt-file ${salt}`)).toBe(0);
+    const blob = join(work, 'old.txt');
+    expect(await run(`cosmology encrypt --in ${plain} --salt-file ${salt} --out ${blob}`)).toBe(0);
+
+    out = [];
+    expect(await run(`cosmology decrypt --in ${blob} --salt-file ${salt}`)).toBe(0);
     expect(stdout()).toBe('legacy plaintext');
   });
 
