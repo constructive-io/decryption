@@ -1,5 +1,17 @@
 # @decryption/wallet
 
+<p align="center" width="100%">
+  <img height="250" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" />
+</p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
+    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@decryption/wallet"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fwallet%2Fpackage.json"/></a>
+</p>
+
+
 BIP39 mnemonics, BIP32 derivation and address encoding — entirely offline. This package has no
 chain registry, no RPC client and no transaction signing: it turns a mnemonic into addresses and
 stops there.
