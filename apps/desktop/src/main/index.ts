@@ -1,4 +1,4 @@
-import { app, BrowserWindow, powerMonitor, session, shell } from 'electron';
+import { app, BrowserWindow, nativeImage, powerMonitor, session, shell } from 'electron';
 import * as path from 'path';
 
 import { CHANNELS } from '../shared/api';
@@ -6,6 +6,10 @@ import { registerIpc } from './ipc';
 import { VaultService } from './vault-service';
 
 const DEV_SERVER_URL = process.env.ELECTRON_RENDERER_URL;
+
+const APP_ICON = nativeImage.createFromPath(
+  path.join(__dirname, '../../resources/icon.png')
+);
 
 const service = new VaultService();
 
@@ -27,6 +31,7 @@ const createWindow = (): BrowserWindow => {
     minHeight: 600,
     show: false,
     autoHideMenuBar: true,
+    icon: APP_ICON,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -89,6 +94,10 @@ app.whenReady().then(() => {
       (DEV_SERVER_URL !== undefined && url.startsWith('ws://localhost'));
     callback({ cancel: !allowed });
   });
+
+  if (process.platform === 'darwin' && !APP_ICON.isEmpty()) {
+    app.dock?.setIcon(APP_ICON);
+  }
 
   registerIpc(service);
   mainWindow = createWindow();
