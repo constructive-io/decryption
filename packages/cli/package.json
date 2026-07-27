@@ -1,6 +1,6 @@
 {
   "name": "@decryption/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "dcrypt — local-first CLI for encryption, BIP39 wallets and team secrets",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
@@ -40,16 +40,16 @@
   "dependencies": {
     "@decryption/base": "workspace:*",
     "@decryption/core": "workspace:*",
+    "@decryption/cosmology-compat": "workspace:*",
     "@decryption/hashes": "workspace:*",
     "@decryption/keys": "workspace:*",
-    "@decryption/cosmology-compat": "workspace:*",
     "@decryption/secrets": "workspace:*",
     "@decryption/shamir": "workspace:*",
+    "@decryption/vault": "workspace:*",
     "@decryption/wallet": "workspace:*",
     "appstash": "^0.7.0",
     "inquirerer": "^4.9.1",
-    "yanse": "^0.2.1",
-    "@decryption/vault": "workspace:*"
+    "yanse": "^0.2.1"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",
