@@ -1,5 +1,10 @@
 import { armor, encrypt } from '@decryption/core';
-import { decrypt as compatDecrypt, decryptWithEncryptedSalt } from '@decryption/cosmology-compat';
+import {
+  crypt as compatEncrypt,
+  decrypt as compatDecrypt,
+  decryptWithEncryptedSalt,
+  encryptWithEncryptedSalt,
+} from '@decryption/cosmology-compat';
 import { Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
@@ -15,14 +20,13 @@ Cosmology Command:
 
   dcrypt cosmology <subcommand> [OPTIONS]
 
-  Read data written by the cosmology CLI (CryptoJS AES). That format is
-  unauthenticated and derives its key with a single round of MD5 — use "upgrade"
-  to move it onto the modern format as soon as you can.
-
-  "dcrypt legacy" is an alias, for scripts that already use that name.
+  Read and write data in the cosmology CLI's format (CryptoJS AES). That format
+  is unauthenticated and derives its key with a single round of MD5 — prefer
+  "dcrypt encrypt" for anything new, and use "upgrade" to migrate old data.
 
 Subcommands:
   decrypt                 Decrypt an old blob and print the plaintext
+  encrypt                 Encrypt in the old format, for tools that still read it
   upgrade                 Decrypt an old blob and re-encrypt it with a new passphrase
 
 Options:
@@ -40,6 +44,7 @@ Environment:
 Examples:
   dcrypt cosmology decrypt --in old.txt --salt-file salt.txt
   SALT=... dcrypt cosmology decrypt --in old.txt
+  dcrypt cosmology encrypt --in plain.txt --salt-file salt.txt --out old.txt
   dcrypt cosmology upgrade --in old.txt --salt-file salt.txt --out new.dcrypt
 `;
 
@@ -76,6 +81,19 @@ const decryptCmd = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void>
   writeOutput(argv, await readLegacyPlaintext(argv, prompter));
 };
 
+const encryptCmd = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  const plaintext = readInput(newArgv, first);
+  const salt = await readSalt(newArgv, prompter);
+  const encryptedSalt =
+    newArgv['encrypted-salt'] ?? newArgv.encryptedSalt ?? fromEnv('encryptedSalt');
+  const ciphertext =
+    typeof encryptedSalt === 'string' && encryptedSalt.length
+      ? encryptWithEncryptedSalt(salt, encryptedSalt, plaintext)
+      : compatEncrypt(salt, plaintext);
+  writeOutput(newArgv, ciphertext);
+};
+
 const upgrade = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
   const plaintext = await readLegacyPlaintext(argv, prompter);
   const passphrase = await resolvePassphrase(argv, prompter, {
@@ -89,6 +107,6 @@ export const cosmologyCommand = async (argv: ParsedArgs, prompter: Inquirerer): 
   await runSubcommand(argv, prompter, {
     name: 'cosmology',
     usage: cosmologyUsage,
-    handlers: { decrypt: decryptCmd, upgrade },
+    handlers: { decrypt: decryptCmd, encrypt: encryptCmd, upgrade },
   });
 };
