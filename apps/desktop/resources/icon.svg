@@ -1,4 +1,14 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- macOS-style tile: full-bleed art clipped to the standard rounded rect
+       (824x824, r=185) on a transparent 1024 canvas. Regenerate
+       icon.{png,icns,ico} with `pnpm icons`. -->
+  <defs>
+    <clipPath id="tile">
+      <rect x="100" y="100" width="824" height="824" rx="185"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <svg x="100" y="100" width="824" height="824" viewBox="0 0 1024 1024" fill="none">
 <rect width="1024" height="1024" fill="black"/>
 <path d="M494.508 607.875L609.809 674.467V807.65L494.508 741.058V607.875Z" stroke="black" stroke-width="13.6135" stroke-linejoin="round"/>
 <path d="M725.113 607.875L609.812 674.467V807.65L725.113 741.058V607.875Z" fill="white" stroke="white" stroke-width="13.6135" stroke-linejoin="round"/>
@@ -15,4 +25,6 @@
 <path d="M263.914 474.699L379.215 541.291V674.474L263.914 607.882V474.699Z" stroke="white" stroke-width="13.6135" stroke-linejoin="round"/>
 <path d="M494.504 474.699L379.203 541.291V674.474L494.504 607.882V474.699Z" fill="white" stroke="white" stroke-width="13.6135" stroke-linejoin="round"/>
 <path d="M379.215 408.105L494.515 474.697L379.215 541.289L263.914 474.697L379.215 408.105Z" stroke="white" stroke-width="13.6135" stroke-linejoin="round"/>
+    </svg>
+  </g>
 </svg>
