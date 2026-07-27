@@ -108,6 +108,9 @@ export interface DcryptApi {
     shamirSplit(secret: string, shares: number, threshold: number): Promise<string[]>;
     shamirCombine(shares: string[]): Promise<string>;
   };
+  theme: {
+    getSystemDark(): Promise<boolean>;
+  };
 }
 
 export const CHANNELS = {
@@ -150,4 +153,6 @@ export const CHANNELS = {
   wbShamirSplit: 'workbench:shamir-split',
   wbShamirCombine: 'workbench:shamir-combine',
   lockedEvent: 'vault:locked-event',
+  themeGetSystemDark: 'theme:get-system-dark',
+  themeSystemChanged: 'theme:system-changed',
 } as const;

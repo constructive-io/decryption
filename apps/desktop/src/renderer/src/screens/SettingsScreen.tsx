@@ -8,12 +8,22 @@ import {
 } from '@constructive-io/ui/card';
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@constructive-io/ui/tabs';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { dcrypt } from '../lib/ipc';
+import { ThemeMode } from '../lib/theme';
+import { useThemeMode } from '../lib/theme-context';
+
+const THEME_MODES: { value: ThemeMode; label: string }[] = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+];
 
 export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
+  const { themeMode, setThemeMode } = useThemeMode();
   const [file, setFile] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -50,6 +60,24 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <h2 className="text-xl font-semibold">Settings</h2>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Match your system appearance or pick one.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={themeMode} onValueChange={(value) => setThemeMode(value as ThemeMode)}>
+            <TabsList>
+              {THEME_MODES.map(({ value, label }) => (
+                <TabsTrigger key={value} value={value}>
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
