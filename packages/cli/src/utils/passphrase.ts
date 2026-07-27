@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
+import { fromEnv } from './env';
 import { CliError, EXIT } from './errors';
 import { readStdin } from './io';
 
@@ -14,8 +15,9 @@ export interface PassphraseOptions {
 /**
  * Resolves a passphrase without ever accepting one on the command line.
  *
- * Order: `--passphrase-file <path>`, `--passphrase-stdin`, then an interactive masked prompt.
- * Passing `--passphrase` is rejected outright: argv is visible to every process on the machine.
+ * Order: `--passphrase-file <path>`, `DCRYPT_PASSPHRASE`, `--passphrase-stdin`, then an
+ * interactive masked prompt. Passing `--passphrase` is rejected outright: argv is visible
+ * to every process on the machine.
  */
 export const resolvePassphrase = async (
   argv: ParsedArgs,
@@ -35,6 +37,11 @@ export const resolvePassphrase = async (
     } catch {
       throw new CliError(`cannot read passphrase file ${file}`, EXIT.notFound);
     }
+  }
+
+  const fromEnvironment = fromEnv('passphrase');
+  if (fromEnvironment !== undefined) {
+    return fromEnvironment.replace(/\r?\n$/, '');
   }
 
   if (argv['passphrase-stdin'] || argv.passphraseStdin) {

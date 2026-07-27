@@ -23,7 +23,7 @@
     "@decryption/core": "workspace:*",
     "@decryption/hashes": "workspace:*",
     "@decryption/keys": "workspace:*",
-    "@decryption/legacy": "workspace:*",
+    "@decryption/cosmology-compat": "workspace:*",
     "@decryption/shamir": "workspace:*",
     "@decryption/vault": "workspace:*",
     "@decryption/wallet": "workspace:*",

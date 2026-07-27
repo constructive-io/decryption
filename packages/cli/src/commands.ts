@@ -1,16 +1,17 @@
 import { CommandHandler, getPackageJson, Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
+import { cosmologyCommand } from './commands/cosmology';
 import { decryptCommand, encryptCommand } from './commands/encrypt';
 import { keychainCommand } from './commands/keychain';
 import { keysCommand } from './commands/keys';
-import { legacyCommand } from './commands/legacy';
 import { saltCommand } from './commands/salt';
 import { secretsCommand } from './commands/secrets';
 import { shamirCommand } from './commands/shamir';
 import { vaultCommand } from './commands/vault';
 import { walletCommand } from './commands/wallet';
 import { Handler, takeFirst } from './utils/dispatch';
+import { envUsage } from './utils/env';
 import { exitCodeFor, messageFor } from './utils/errors';
 
 export const usageText = `
@@ -29,7 +30,7 @@ Commands:
   keychain                Store named secrets locally, always encrypted
   shamir                  Split and recombine a secret into authenticated shares
   salt                    Two-layer encryption: data under a salt, salt under your passphrase
-  legacy                  Read and upgrade data from the old CryptoJS scheme
+  cosmology               Read and upgrade data written by the cosmology CLI
 
 Global options:
   --json                  Machine-readable output where supported
@@ -40,7 +41,7 @@ Global options:
   --help, -h              Show this help; "dcrypt <command> --help" for a command
 
 Nothing in dcrypt makes a network request, and passphrases are never accepted in argv.
-
+${envUsage}
 Exit codes:
   1 usage    2 wrong passphrase    3 corrupt input    4 not found    5 not a recipient
 `;
@@ -55,7 +56,9 @@ export const createCommandMap = (): Record<string, Handler> => ({
   keychain: keychainCommand,
   shamir: shamirCommand,
   salt: saltCommand,
-  legacy: legacyCommand,
+  cosmology: cosmologyCommand,
+  // The cosmology CLI's own name for it; kept so existing scripts keep working.
+  legacy: cosmologyCommand,
 });
 
 /** Runs one command and maps thrown errors onto exit codes; used by the bin and by tests. */
