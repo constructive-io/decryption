@@ -12,6 +12,7 @@ import { Label } from '@constructive-io/ui/label';
 import { ShieldCheck } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 
+import { Loader } from '../components/Loader';
 import { dcrypt } from '../lib/ipc';
 
 export const UnlockScreen = ({ onUnlocked }: { onUnlocked: () => void }) => {
@@ -57,6 +58,24 @@ export const UnlockScreen = ({ onUnlocked }: { onUnlocked: () => void }) => {
   };
 
   const creating = exists === false;
+
+  if (busy) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-6 bg-muted/30">
+        <Loader className="h-48" />
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="font-medium">
+            {creating ? 'Setting up your encrypted database…' : 'Unlocking your vault…'}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {creating
+              ? 'Deploying the local database and sealing it under your master password. This first run takes a little longer.'
+              : 'Deriving your key and loading the encrypted database.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen items-center justify-center bg-muted/30">
