@@ -57,8 +57,6 @@ export const createCommandMap = (): Record<string, Handler> => ({
   shamir: shamirCommand,
   salt: saltCommand,
   cosmology: cosmologyCommand,
-  // The cosmology CLI's own name for it; kept so existing scripts keep working.
-  legacy: cosmologyCommand,
 });
 
 /** Runs one command and maps thrown errors onto exit codes; used by the bin and by tests. */

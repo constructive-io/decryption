@@ -33,7 +33,7 @@ dcrypt --help
 | `dcrypt keychain set\|get\|del\|list` | Named local secrets, always encrypted |
 | `dcrypt shamir split\|combine` | Authenticated Shamir shares |
 | `dcrypt salt generate\|encrypt\|decrypt` | Two-layer encryption (data under a salt, salt under your passphrase) |
-| `dcrypt cosmology decrypt\|upgrade` | Read and migrate data from the cosmology CLI (`legacy` still works as an alias) |
+| `dcrypt cosmology decrypt\|encrypt\|upgrade` | Read, write and migrate data in the cosmology CLI format |
 
 Every command supports `--help`.
 
