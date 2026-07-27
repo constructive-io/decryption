@@ -24,12 +24,12 @@ import { toast } from 'sonner';
 import type { WalletAccountInfo } from '../../../shared/api';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
-const NETWORKS = ['cosmoshub', 'osmosis', 'ethereum', 'bitcoin'];
+const NETWORKS = ['bitcoin', 'ethereum', 'cosmoshub', 'osmosis', 'juno', 'stargaze', 'akash', 'celestia', 'secret', 'terra'];
 
 const errorText = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
 const WalletTool = () => {
-  const [network, setNetwork] = useState('cosmoshub');
+  const [network, setNetwork] = useState('bitcoin');
   const [words, setWords] = useState('24');
   const [mnemonic, setMnemonic] = useState('');
   const [accounts, setAccounts] = useState<WalletAccountInfo[]>([]);

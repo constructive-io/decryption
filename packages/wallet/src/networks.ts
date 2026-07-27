@@ -23,8 +23,24 @@ const cosmos = (id: string, name: string, prefix: string, coinType = 118): Netwo
   prefix,
 });
 
-/** Built-in networks. Anything missing can be supplied with {@link defineNetwork}. */
+/**
+ * Built-in networks, in presentation order: Bitcoin, then Ethereum, then the rest.
+ * Anything missing can be supplied with {@link defineNetwork}.
+ */
 export const NETWORKS: Record<string, Network> = {
+  bitcoin: {
+    id: 'bitcoin',
+    name: 'Bitcoin',
+    coinType: 0,
+    addressEncoding: 'p2wpkh',
+    prefix: 'bc',
+  },
+  ethereum: {
+    id: 'ethereum',
+    name: 'Ethereum',
+    coinType: 60,
+    addressEncoding: 'evm',
+  },
   cosmoshub: cosmos('cosmoshub', 'Cosmos Hub', 'cosmos'),
   osmosis: cosmos('osmosis', 'Osmosis', 'osmo'),
   juno: cosmos('juno', 'Juno', 'juno'),
@@ -33,20 +49,13 @@ export const NETWORKS: Record<string, Network> = {
   celestia: cosmos('celestia', 'Celestia', 'celestia'),
   secret: cosmos('secret', 'Secret Network', 'secret', 529),
   terra: cosmos('terra', 'Terra', 'terra', 330),
-  ethereum: {
-    id: 'ethereum',
-    name: 'Ethereum',
-    coinType: 60,
-    addressEncoding: 'evm',
-  },
-  bitcoin: {
-    id: 'bitcoin',
-    name: 'Bitcoin',
-    coinType: 0,
-    addressEncoding: 'p2wpkh',
-    prefix: 'bc',
-  },
 };
+
+/** The network used when the caller does not name one. */
+export const DEFAULT_NETWORK = 'bitcoin';
+
+/** Network ids in presentation order. */
+export const NETWORK_IDS = Object.keys(NETWORKS);
 
 /**
  * Builds a network definition for a chain that is not built in — the common case for

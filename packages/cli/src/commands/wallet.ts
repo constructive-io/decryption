@@ -2,6 +2,7 @@ import { armor, encrypt } from '@decryption/core';
 import {
   assertValidMnemonic,
   createMnemonic,
+  DEFAULT_NETWORK,
   deriveAccount,
   isValidMnemonic,
   NETWORKS,
@@ -12,6 +13,7 @@ import { Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
 import { runSubcommand, takeFirst, wantsHelp } from '../utils/dispatch';
+import { fromEnv } from '../utils/env';
 import { CliError } from '../utils/errors';
 import { emit, readInput, writeOutput } from '../utils/io';
 import { resolvePassphrase } from '../utils/passphrase';
@@ -32,7 +34,7 @@ Subcommands:
 
 Options:
   --words <n>             12, 15, 18, 21 or 24            (default: 24)
-  --network <id>          Network id, repeatable          (default: cosmoshub)
+  --network <id>          Network id, repeatable          (default: bitcoin)
   --account <n>           BIP44 account index             (default: 0)
   --index <n>             BIP44 address index             (default: 0)
   --path <path>           Explicit derivation path, overrides --account/--index
@@ -43,18 +45,22 @@ Options:
   --json                  Machine-readable output
   --help, -h              Show this help message
 
+Environment:
+  MNEMONIC                The mnemonic, for "address" and "validate"
+
 Networks:
   ${Object.keys(NETWORKS).join(', ')}
 
 Examples:
-  dcrypt wallet create --words 12 --network osmosis --network ethereum
+  dcrypt wallet create --words 12 --network bitcoin --network ethereum
   dcrypt wallet create --encrypt --out wallet.dcrypt
-  dcrypt wallet address --in mnemonic.txt --network cosmoshub --index 3
+  dcrypt wallet address --in mnemonic.txt --network bitcoin --index 3
+  MNEMONIC="..." dcrypt wallet address --network ethereum
   echo "$MNEMONIC" | dcrypt wallet validate --in -
 `;
 
 const networksOf = (argv: ParsedArgs): string[] => {
-  const value = argv.network ?? argv.networks ?? 'cosmoshub';
+  const value = argv.network ?? argv.networks ?? DEFAULT_NETWORK;
   return (Array.isArray(value) ? value : [value]).map(String);
 };
 
@@ -124,7 +130,10 @@ const validate = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> =
 
 const readMnemonic = async (argv: ParsedArgs, prompter: Inquirerer): Promise<string> => {
   const { first, newArgv } = takeFirst(argv);
-  if (first || newArgv.in || !process.stdin.isTTY) return readInput(newArgv, first).trim();
+  if (first || newArgv.in) return readInput(newArgv, first).trim();
+  const envMnemonic = fromEnv('mnemonic');
+  if (envMnemonic !== undefined) return envMnemonic.trim();
+  if (!process.stdin.isTTY) return readInput(newArgv, first).trim();
   const { mnemonic } = await prompter.prompt<{ mnemonic: string }>({} as { mnemonic: string }, [
     { type: 'password', name: 'mnemonic', message: 'Mnemonic', required: true },
   ]);

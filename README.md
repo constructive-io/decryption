@@ -22,7 +22,7 @@ network request.
 | Package | npm | Source | Description |
 |---------|-----|--------|-------------|
 | **@decryption/core** | [![npm](https://img.shields.io/npm/v/@decryption/core.svg)](https://www.npmjs.com/package/@decryption/core) | [GitHub](./packages/core) | Versioned envelope format — Argon2id + XChaCha20-Poly1305 |
-| **@decryption/legacy** | [![npm](https://img.shields.io/npm/v/@decryption/legacy.svg)](https://www.npmjs.com/package/@decryption/legacy) | [GitHub](./packages/legacy) | Byte-compatible reader for the old CryptoJS/`@cosmology/core` scheme |
+| **@decryption/cosmology-compat** | [![npm](https://img.shields.io/npm/v/@decryption/cosmology-compat.svg)](https://www.npmjs.com/package/@decryption/cosmology-compat) | [GitHub](./packages/cosmology-compat) | Byte-compatible reader for the cosmology CLI encryption scheme |
 | **@decryption/shamir** | [![npm](https://img.shields.io/npm/v/@decryption/shamir.svg)](https://www.npmjs.com/package/@decryption/shamir) | [GitHub](./packages/shamir) | Shamir secret sharing with authenticated, versioned shares |
 | **@decryption/wallet** | [![npm](https://img.shields.io/npm/v/@decryption/wallet.svg)](https://www.npmjs.com/package/@decryption/wallet) | [GitHub](./packages/wallet) | BIP39/BIP32 wallets and offline address derivation |
 | **@decryption/keys** | [![npm](https://img.shields.io/npm/v/@decryption/keys.svg)](https://www.npmjs.com/package/@decryption/keys) | [GitHub](./packages/keys) | X25519 identities, recipient strings, on-disk keyring |

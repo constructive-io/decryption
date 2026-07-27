@@ -1,7 +1,7 @@
 {
-  "name": "@decryption/legacy",
+  "name": "@decryption/cosmology-compat",
   "version": "0.2.0",
-  "description": "Read data written by the old CryptoJS/@cosmology/core encryption scheme, and upgrade it",
+  "description": "Read data written by the cosmology CLI encryption scheme, and upgrade it",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
   "module": "esm/index.js",
@@ -30,8 +30,8 @@
   },
   "keywords": [
     "cryptojs",
-    "legacy",
     "cosmology",
+    "compat",
     "aes",
     "migration"
   ],

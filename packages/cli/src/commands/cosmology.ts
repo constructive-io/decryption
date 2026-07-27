@@ -1,22 +1,25 @@
 import { armor, encrypt } from '@decryption/core';
-import { decrypt as legacyDecrypt, decryptWithEncryptedSalt } from '@decryption/legacy';
+import { decrypt as compatDecrypt, decryptWithEncryptedSalt } from '@decryption/cosmology-compat';
 import { Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
 import { runSubcommand, takeFirst } from '../utils/dispatch';
+import { fromEnv } from '../utils/env';
 import { CliError } from '../utils/errors';
 import { readInput, writeOutput } from '../utils/io';
 import { resolvePassphrase } from '../utils/passphrase';
 import { resolveKdf } from './encrypt';
 
-export const legacyUsage = `
-Legacy Command:
+export const cosmologyUsage = `
+Cosmology Command:
 
-  dcrypt legacy <subcommand> [OPTIONS]
+  dcrypt cosmology <subcommand> [OPTIONS]
 
-  Read data written by the old encryption demo and @cosmology/core (CryptoJS AES).
-  That format is unauthenticated and derives its key with a single round of MD5 —
-  use "upgrade" to move it onto the modern format as soon as you can.
+  Read data written by the cosmology CLI (CryptoJS AES). That format is
+  unauthenticated and derives its key with a single round of MD5 — use "upgrade"
+  to move it onto the modern format as soon as you can.
+
+  "dcrypt legacy" is an alias, for scripts that already use that name.
 
 Subcommands:
   decrypt                 Decrypt an old blob and print the plaintext
@@ -31,9 +34,13 @@ Options:
   --passphrase-stdin      Read the new passphrase from stdin
   --help, -h              Show this help message
 
+Environment:
+  SALT, ENCRYPTED_SALT    The cosmology CLI's own variables, still honoured
+
 Examples:
-  dcrypt legacy decrypt --in old.txt --salt-file salt.txt
-  dcrypt legacy upgrade --in old.txt --salt-file salt.txt --out new.dcrypt
+  dcrypt cosmology decrypt --in old.txt --salt-file salt.txt
+  SALT=... dcrypt cosmology decrypt --in old.txt
+  dcrypt cosmology upgrade --in old.txt --salt-file salt.txt --out new.dcrypt
 `;
 
 const readSalt = async (argv: ParsedArgs, prompter: Inquirerer): Promise<string> => {
@@ -43,9 +50,11 @@ const readSalt = async (argv: ParsedArgs, prompter: Inquirerer): Promise<string>
   }
   if (argv.salt !== undefined) {
     throw new CliError(
-      'refusing to read the old salt from argv (it is visible in `ps`); use --salt-file <path>'
+      'refusing to read the old salt from argv (it is visible in `ps`); use --salt-file <path> or SALT'
     );
   }
+  const envSalt = fromEnv('salt');
+  if (envSalt !== undefined) return envSalt.trim();
   const { salt } = await prompter.prompt<{ salt: string }>({} as { salt: string }, [
     { type: 'password', name: 'salt', message: 'Legacy salt', required: true },
   ]);
@@ -56,10 +65,11 @@ const readLegacyPlaintext = async (argv: ParsedArgs, prompter: Inquirerer): Prom
   const { first, newArgv } = takeFirst(argv);
   const ciphertext = readInput(newArgv, first).trim();
   const salt = await readSalt(newArgv, prompter);
-  const encryptedSalt = newArgv['encrypted-salt'] ?? newArgv.encryptedSalt;
+  const encryptedSalt =
+    newArgv['encrypted-salt'] ?? newArgv.encryptedSalt ?? fromEnv('encryptedSalt');
   return typeof encryptedSalt === 'string' && encryptedSalt.length
     ? decryptWithEncryptedSalt(salt, encryptedSalt, ciphertext)
-    : legacyDecrypt(salt, ciphertext);
+    : compatDecrypt(salt, ciphertext);
 };
 
 const decryptCmd = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
@@ -75,10 +85,10 @@ const upgrade = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> =>
   writeOutput(argv, armor(encrypt(plaintext, passphrase, { kdf: resolveKdf(argv.kdf) })));
 };
 
-export const legacyCommand = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+export const cosmologyCommand = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
   await runSubcommand(argv, prompter, {
-    name: 'legacy',
-    usage: legacyUsage,
+    name: 'cosmology',
+    usage: cosmologyUsage,
     handlers: { decrypt: decryptCmd, upgrade },
   });
 };
