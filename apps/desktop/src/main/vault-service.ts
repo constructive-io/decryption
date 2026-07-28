@@ -81,11 +81,19 @@ export class VaultService {
     return this.vault;
   }
 
-  async totpEntry(itemId: string, period = 30): Promise<TotpEntry> {
+  async totpEntry(itemId: string): Promise<TotpEntry> {
     const vault = this.current();
     const item = await vault.getItem(itemId);
     if (!item) throw new Error('item not found');
-    const code = await vault.totpCode(itemId, { period });
+    const fields = await vault.listFields(itemId);
+    const numericField = async (name: string, fallback: number): Promise<number> => {
+      if (!fields.some((field) => field.name === name)) return fallback;
+      const value = Number(await vault.revealField(itemId, name));
+      return Number.isInteger(value) && value > 0 ? value : fallback;
+    };
+    const period = await numericField('period', 30);
+    const digits = await numericField('digits', 6);
+    const code = await vault.totpCode(itemId, { period, digits });
     const now = Math.floor(Date.now() / 1000);
     return { item, code, period, remaining: period - (now % period) };
   }
