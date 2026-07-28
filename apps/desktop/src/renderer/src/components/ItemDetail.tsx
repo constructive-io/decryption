@@ -11,12 +11,13 @@ import {
 import { Badge } from '@constructive-io/ui/badge';
 import { Button } from '@constructive-io/ui/button';
 import { Input } from '@constructive-io/ui/input';
+import { Progress } from '@constructive-io/ui/progress';
 import { Separator } from '@constructive-io/ui/separator';
 import { Copy, Eye, EyeOff, Plus, Star, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { VaultFieldMeta, VaultItem, VaultTag } from '../../../shared/api';
+import type { TotpEntry, VaultFieldMeta, VaultItem, VaultTag } from '../../../shared/api';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
 const KIND_LABEL: Record<string, string> = {
@@ -46,6 +47,7 @@ export const ItemDetail = ({
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [totp, setTotp] = useState<TotpEntry | null>(null);
 
   const refresh = useCallback(async () => {
     setRevealed({});
@@ -57,6 +59,30 @@ export const ItemDetail = ({
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  const hasTotpSeed = fields.some((field) => field.purpose === 'totp_seed');
+
+  useEffect(() => {
+    if (!hasTotpSeed) {
+      setTotp(null);
+      return;
+    }
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const entry = await dcrypt.totp.code(item.id);
+        if (!cancelled) setTotp(entry);
+      } catch {
+        // vault locked mid-refresh
+      }
+    };
+    void tick();
+    const timer = setInterval(() => void tick(), 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [hasTotpSeed, item.id]);
 
   const toggleReveal = async (name: string) => {
     if (revealed[name] !== undefined) {
@@ -140,6 +166,30 @@ export const ItemDetail = ({
       </div>
 
       <Separator />
+
+      {totp && (
+        <div className="flex flex-col gap-2 rounded-lg border bg-muted/40 p-4">
+          <span className="text-sm font-medium">One-time code</span>
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-3xl tracking-widest">
+              {totp.code.slice(0, Math.ceil(totp.code.length / 2))}{' '}
+              {totp.code.slice(Math.ceil(totp.code.length / 2))}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                copyWithTimeout(totp.code);
+                toast.success('Code copied — clipboard clears in 30s');
+              }}
+              aria-label="Copy code"
+            >
+              <Copy className="size-4" />
+            </Button>
+          </div>
+          <Progress value={(totp.remaining / totp.period) * 100} />
+        </div>
+      )}
 
       <div className="flex flex-col gap-3">
         {fields.map((field) => (
