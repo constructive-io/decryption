@@ -189,7 +189,16 @@ const totp = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
   const vault = await openVault(newArgv, prompter);
   try {
     const item = await findItem(vault, first);
-    const code = await vault.totpCode(item.id);
+    const fields = await vault.listFields(item.id);
+    const numeric = async (name: string, fallback: number): Promise<number> => {
+      if (!fields.some((field) => field.name === name)) return fallback;
+      const value = Number(await vault.revealField(item.id, name));
+      return Number.isInteger(value) && value > 0 ? value : fallback;
+    };
+    const code = await vault.totpCode(item.id, {
+      period: await numeric('period', 30),
+      digits: await numeric('digits', 6),
+    });
     emit(newArgv, { code }, () => code);
   } finally {
     await vault.lock();
