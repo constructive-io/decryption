@@ -18,11 +18,12 @@ import {
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
 import { Progress } from '@constructive-io/ui/progress';
-import { Copy, Import, Plus } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Copy, FileUp, Import, Plus } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { TotpEntry } from '../../../shared/api';
+import { parseTotpJsonExport } from '../../../shared/totp-import';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
 export const TotpScreen = () => {
@@ -30,6 +31,7 @@ export const TotpScreen = () => {
   const [showImport, setShowImport] = useState(false);
   const [uri, setUri] = useState('');
   const [busy, setBusy] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -60,6 +62,31 @@ export const TotpScreen = () => {
     }
   };
 
+  const importJsonFile = async (file: File) => {
+    setBusy(true);
+    try {
+      const parsed = parseTotpJsonExport(await file.text());
+      let imported = 0;
+      const failures: string[] = [];
+      for (const entry of parsed) {
+        try {
+          await dcrypt.totp.importUri(entry.uri);
+          imported += 1;
+        } catch (err) {
+          failures.push(`${entry.name}: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+      if (imported) toast.success(`Imported ${imported} code${imported === 1 ? '' : 's'}`);
+      for (const failure of failures) toast.error(failure);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+      if (fileInput.current) fileInput.current.value = '';
+    }
+  };
+
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <div className="flex items-center justify-between">
@@ -69,9 +96,24 @@ export const TotpScreen = () => {
             Codes are generated locally by the vault database.
           </p>
         </div>
-        <Button variant="outline" onClick={() => setShowImport(true)}>
-          <Import className="size-4" /> Import otpauth URI
-        </Button>
+        <div className="flex gap-2">
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void importJsonFile(file);
+            }}
+          />
+          <Button variant="outline" disabled={busy} onClick={() => fileInput.current?.click()}>
+            <FileUp className="size-4" /> {busy ? 'Importing…' : 'Import JSON file'}
+          </Button>
+          <Button variant="outline" onClick={() => setShowImport(true)}>
+            <Import className="size-4" /> Import otpauth URI
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
