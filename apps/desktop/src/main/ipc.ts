@@ -100,6 +100,9 @@ export const registerIpc = (service: VaultService): void => {
     if (parsed.period !== 30) {
       await vault.setField(item.id, 'period', 'text', String(parsed.period), false);
     }
+    if (parsed.digits !== 6) {
+      await vault.setField(item.id, 'digits', 'text', String(parsed.digits), false);
+    }
     service.scheduleSave();
     return item;
   });
