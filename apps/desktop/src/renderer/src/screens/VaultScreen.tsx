@@ -8,7 +8,7 @@ import {
 } from '@constructive-io/ui/resizable';
 import { ScrollArea } from '@constructive-io/ui/scroll-area';
 import { Plus, Search, Star, Trash2, Undo2 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { VaultItem } from '../../../shared/api';
@@ -24,6 +24,7 @@ export const VaultScreen = () => {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [showNew, setShowNew] = useState(false);
+  const searchInput = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(async () => {
     let list: VaultItem[];
@@ -40,6 +41,18 @@ export const VaultScreen = () => {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        searchInput.current?.focus();
+        searchInput.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const restore = async (item: VaultItem) => {
     await dcrypt.items.restore(item.id);
@@ -61,9 +74,26 @@ export const VaultScreen = () => {
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
+                ref={searchInput}
                 placeholder="Search titles, sites, tags…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && items.length) {
+                    setSelected(items[0]);
+                  } else if (e.key === 'ArrowDown' && items.length) {
+                    e.preventDefault();
+                    const index = items.findIndex((item) => item.id === selected?.id);
+                    setSelected(items[Math.min(index + 1, items.length - 1)]);
+                  } else if (e.key === 'ArrowUp' && items.length) {
+                    e.preventDefault();
+                    const index = items.findIndex((item) => item.id === selected?.id);
+                    setSelected(items[Math.max(index - 1, 0)]);
+                  } else if (e.key === 'Escape') {
+                    setQuery('');
+                    searchInput.current?.blur();
+                  }
+                }}
                 className="pl-8"
               />
             </div>
