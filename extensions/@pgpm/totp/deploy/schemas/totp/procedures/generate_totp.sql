@@ -33,13 +33,55 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE;
 
--- decodes through bytea: a key containing a NUL byte cannot survive as text
+-- Decode a base32 secret straight to its hex representation. We intentionally
+-- do NOT route through base32.decode(), which materialises the decoded bytes as
+-- text via chr(): a decoded 0x00 byte raises "null character not permitted", so
+-- TOTP generation failed for any secret whose bytes contain a null (roughly one
+-- in twenty random secrets). Emitting hex per byte is binary-safe and produces
+-- exactly the bytes base32.decode intends, so existing codes are unchanged.
 CREATE FUNCTION totp.base32_to_hex (
   input text
 ) returns text as $$
-  SELECT base32.decode_hex(input);
+DECLARE
+  i int;
+  len int;
+  num int;
+  clean text;
+  value int = 0;
+  bits int = 0;
+  index int = 0;
+  byte int;
+  output text = '';
+BEGIN
+  IF (character_length(input) = 0) THEN
+    RETURN '';
+  END IF;
+
+  IF (NOT base32.valid(input)) THEN
+    RAISE EXCEPTION 'INVALID_BASE32';
+  END IF;
+
+  clean = upper(replace(input, '=', ''));
+  len = character_length(clean);
+  num = len * 5 / 8;
+
+  FOR i IN 1 .. len LOOP
+    value = (value << 5) | base32.base32_alphabet_to_decimal_int(substring(clean from i for 1));
+    bits = bits + 5;
+    IF (bits >= 8) THEN
+      IF (index < num) THEN
+        byte = base32.zero_fill(value, (bits - 8)) & 255;
+        output = output || lpad(to_hex(byte), 2, '0');
+        index = index + 1;
+      END IF;
+      bits = bits - 8;
+    END IF;
+  END LOOP;
+
+  RETURN output;
+END;
 $$
-LANGUAGE 'sql' IMMUTABLE;
+LANGUAGE 'plpgsql' IMMUTABLE;
 
 CREATE FUNCTION totp.hotp(key BYTEA, c INT, digits INT DEFAULT 6, hash TEXT DEFAULT 'sha1') RETURNS TEXT AS $$
 DECLARE
