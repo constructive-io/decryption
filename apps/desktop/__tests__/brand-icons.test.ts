@@ -10,10 +10,20 @@ describe('lookupBrandIcon', () => {
     expect(lookupBrandIcon('Coinbase')?.slug).toBe('coinbase');
   });
 
-  it('returns brand colour and a drawable path', () => {
+  it('prefers svgl full-colour logos', () => {
     const icon = lookupBrandIcon('GitHub');
-    expect(icon?.hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
-    expect(icon?.path.length).toBeGreaterThan(0);
+    expect(icon?.kind).toBe('logo');
+    if (icon?.kind !== 'logo') throw new Error('expected a logo');
+    expect(icon.light).toMatch(/^<svg/);
+    expect(icon.dark).toMatch(/^<svg/);
+  });
+
+  it('falls back to a simple-icons glyph when svgl has no logo', () => {
+    const icon = lookupBrandIcon('Namecheap');
+    expect(icon?.kind).toBe('glyph');
+    if (icon?.kind !== 'glyph') throw new Error('expected a glyph');
+    expect(icon.hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
+    expect(icon.path.length).toBeGreaterThan(0);
   });
 
   it('returns null for services it does not know', () => {
