@@ -80,6 +80,16 @@ export class VaultService {
     }, 2000);
   }
 
+  /** Writes any debounced edits now, so the file on disk matches the UI. */
+  async flush(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+    await this.locking;
+    if (this.vault && !this.vault.isLocked) await this.vault.save();
+  }
+
   current(): Vault {
     if (!this.vault || this.vault.isLocked) {
       throw new Error('vault is locked');

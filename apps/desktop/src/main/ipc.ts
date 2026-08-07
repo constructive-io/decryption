@@ -2,12 +2,15 @@ import { decryptFromString, encryptToString } from '@decryption/core';
 import { decrypt as legacyDecrypt } from '@decryption/cosmology-compat';
 import { combineToString, splitToStrings } from '@decryption/shamir';
 import { createWallet, deriveAccounts, WordCount } from '@decryption/wallet';
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain, shell } from 'electron';
+import { existsSync } from 'fs';
+import * as path from 'path';
 
 import { CHANNELS, FieldPurpose, ItemKind } from '../shared/api';
 import { parseOtpauthUri } from '../shared/otpauth';
+import { backupVault, restoreVault } from './backup';
 import { lookupBrandIcons } from './brand-icons';
-import { VaultService } from './vault-service';
+import { vaultFilePath,VaultService } from './vault-service';
 
 const WORD_COUNTS: WordCount[] = [12, 15, 18, 21, 24];
 
@@ -132,6 +135,20 @@ export const registerIpc = (service: VaultService): void => {
   handle(CHANNELS.urlsAdd, async (itemId: string, url: string) => {
     await service.current().addUrl(assertString(itemId), assertString(url));
     service.scheduleSave();
+  });
+
+  // ─── backup ───
+  handle(CHANNELS.backupCreate, (): unknown =>
+    backupVault(service, BrowserWindow.getFocusedWindow())
+  );
+  handle(CHANNELS.backupRestore, (): unknown =>
+    restoreVault(service, BrowserWindow.getFocusedWindow())
+  );
+  handle(CHANNELS.backupRevealVault, async (): Promise<void> => {
+    const file = vaultFilePath();
+    // an absent vault has no item to select, so fall back to its folder
+    if (existsSync(file)) shell.showItemInFolder(file);
+    else await shell.openPath(path.dirname(file));
   });
 
   // ─── brand icons (bundled, offline) ───

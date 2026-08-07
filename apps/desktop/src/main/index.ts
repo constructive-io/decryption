@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import { CHANNELS } from '../shared/api';
 import { registerIpc } from './ipc';
+import { buildMenu } from './menu';
 import { VaultService } from './vault-service';
 
 const DEV_SERVER_URL = process.env.ELECTRON_RENDERER_URL;
@@ -30,7 +31,8 @@ const createWindow = (): BrowserWindow => {
     minWidth: 960,
     minHeight: 600,
     show: false,
-    autoHideMenuBar: true,
+    // the menu carries Back Up Vault, so it stays visible on Windows and Linux
+    autoHideMenuBar: false,
     icon: APP_ICON,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
@@ -107,6 +109,11 @@ app.whenReady().then(() => {
   });
 
   registerIpc(service);
+  buildMenu(service, () => mainWindow, () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send(CHANNELS.lockedEvent);
+    }
+  });
   mainWindow = createWindow();
   watchIdle();
 
