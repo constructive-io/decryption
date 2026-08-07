@@ -63,6 +63,11 @@ const api: DcryptApi & {
       invoke(CHANNELS.wbShamirSplit, secret, shares, threshold),
     shamirCombine: (shares) => invoke(CHANNELS.wbShamirCombine, shares),
   },
+  backup: {
+    create: () => invoke(CHANNELS.backupCreate),
+    restore: () => invoke(CHANNELS.backupRestore),
+    revealVault: () => invoke(CHANNELS.backupRevealVault),
+  },
   icons: {
     lookup: (names) => invoke(CHANNELS.iconsLookup, names),
   },

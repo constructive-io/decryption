@@ -33,6 +33,38 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
     void dcrypt.vault.status().then((status) => setFile(status.file));
   }, []);
 
+  const folderWord = navigator.userAgent.includes('Mac')
+    ? 'Finder'
+    : navigator.userAgent.includes('Windows')
+      ? 'Explorer'
+      : 'file manager';
+
+  const backUp = async () => {
+    setBusy(true);
+    try {
+      const { path } = await dcrypt.backup.create();
+      if (path) toast.success(`Encrypted backup saved to ${path}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restore = async () => {
+    setBusy(true);
+    try {
+      const { path } = await dcrypt.backup.restore();
+      if (!path) return;
+      toast.success('Vault restored. Unlock with that backup’s master password.');
+      onLocked();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const changePassphrase = async () => {
     if (next.length < 8) {
       toast.error('Choose a master password of at least 8 characters.');
@@ -84,11 +116,40 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
           <CardTitle>Storage</CardTitle>
           <CardDescription>
             The vault lives entirely on this device as one encrypted file. There is no account and no
-            cloud copy — keep your own backups of this file.
+            cloud copy.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <code className="text-sm">{file}</code>
+        <CardContent className="flex flex-col items-start gap-3">
+          <code className="text-sm break-all">{file}</code>
+          <Button variant="outline" onClick={() => void dcrypt.backup.revealVault()}>
+            Show in {folderWord}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Backup</CardTitle>
+          <CardDescription>
+            A backup is a copy of that same encrypted file. It stays sealed with your master password
+            — nobody who holds the copy can read it without that password, so it is safe to keep in
+            iCloud Drive, OneDrive, Dropbox, or on a USB stick.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={backUp} disabled={busy}>
+              Back up vault…
+            </Button>
+            <Button variant="outline" onClick={restore} disabled={busy}>
+              Restore from backup…
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            Restoring locks the vault and replaces it with the backup you choose; the file it replaces
+            is kept alongside it. Unlock with the master password that backup was made with — changing
+            your password later does not change older backups.
+          </p>
         </CardContent>
       </Card>
 

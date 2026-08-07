@@ -44,6 +44,13 @@ export interface TotpEntry {
   remaining: number;
 }
 
+/** Where a backup was written, or which file was restored; null if cancelled. */
+export interface BackupResult {
+  path: string | null;
+  /** For a restore, the copy kept of the vault that was replaced. */
+  replaced?: string | null;
+}
+
 /**
  * A brand mark for an item, resolved from bundled sets: svgl's full-colour
  * logo markup where available, otherwise simple-icons' monochrome 24x24 path.
@@ -117,6 +124,14 @@ export interface DcryptApi {
     shamirSplit(secret: string, shares: number, threshold: number): Promise<string[]>;
     shamirCombine(shares: string[]): Promise<string>;
   };
+  backup: {
+    /** Copies the encrypted vault file to a location the user chooses. */
+    create(): Promise<BackupResult>;
+    /** Locks the vault and replaces it with a chosen backup. */
+    restore(): Promise<BackupResult>;
+    /** Opens the vault's folder in the system file manager. */
+    revealVault(): Promise<void>;
+  };
   icons: {
     lookup(names: string[]): Promise<Record<string, BrandIcon | null>>;
   };
@@ -164,6 +179,9 @@ export const CHANNELS = {
   wbLegacyDecrypt: 'workbench:legacy-decrypt',
   wbShamirSplit: 'workbench:shamir-split',
   wbShamirCombine: 'workbench:shamir-combine',
+  backupCreate: 'backup:create',
+  backupRestore: 'backup:restore',
+  backupRevealVault: 'backup:reveal-vault',
   iconsLookup: 'icons:lookup',
   lockedEvent: 'vault:locked-event',
   themeGetSystemDark: 'theme:get-system-dark',
