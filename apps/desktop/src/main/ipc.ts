@@ -36,6 +36,8 @@ export const registerIpc = (service: VaultService): void => {
   handle(CHANNELS.vaultChangePassphrase, (next: string) =>
     service.current().changePassphrase(assertString(next))
   );
+  handle(CHANNELS.vaultRebuild, () => service.rebuild());
+  handle(CHANNELS.vaultEraseAll, () => service.eraseAll());
 
   // ─── items ───
   handle(CHANNELS.itemsList, (options?: { kind?: ItemKind; folderId?: string; trashed?: boolean }) =>

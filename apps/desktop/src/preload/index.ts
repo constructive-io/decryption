@@ -15,6 +15,8 @@ const api: DcryptApi & {
     lock: () => invoke(CHANNELS.vaultLock),
     save: () => invoke(CHANNELS.vaultSave),
     changePassphrase: (next) => invoke(CHANNELS.vaultChangePassphrase, next),
+    rebuild: () => invoke(CHANNELS.vaultRebuild),
+    eraseAll: () => invoke(CHANNELS.vaultEraseAll),
   },
   items: {
     list: (options) => invoke(CHANNELS.itemsList, options),

@@ -6,6 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@constructive-io/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from '@constructive-io/ui/dialog';
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@constructive-io/ui/tabs';
@@ -15,6 +24,9 @@ import { toast } from 'sonner';
 import { dcrypt } from '../lib/ipc';
 import { ThemeMode } from '../lib/theme';
 import { useThemeMode } from '../lib/theme-context';
+
+/** Typed verbatim before anything is deleted. */
+const ERASE_PHRASE = 'ERASE';
 
 const THEME_MODES: { value: ThemeMode; label: string }[] = [
   { value: 'system', label: 'System' },
@@ -28,6 +40,8 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
+  const [eraseOpen, setEraseOpen] = useState(false);
+  const [erasePhrase, setErasePhrase] = useState('');
 
   useEffect(() => {
     void dcrypt.vault.status().then((status) => setFile(status.file));
@@ -57,6 +71,32 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
       const { path } = await dcrypt.backup.restore();
       if (!path) return;
       toast.success('Vault restored. Unlock with that backup’s master password.');
+      onLocked();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const rebuild = async () => {
+    setBusy(true);
+    try {
+      await dcrypt.vault.rebuild();
+      toast.success('Database rebuilt. Every item was carried over.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const eraseAll = async () => {
+    setBusy(true);
+    try {
+      await dcrypt.vault.eraseAll();
+      setEraseOpen(false);
+      setErasePhrase('');
       onLocked();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
@@ -184,6 +224,82 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
           </Button>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Database</CardTitle>
+          <CardDescription>
+            Your items live in a local Postgres database that is deployed the first time you create a
+            vault. Rebuilding deploys it again from scratch and moves every item, folder, tag and code
+            across — useful after an app update changes the schema. Values move without being
+            decrypted, and your master password still opens the result.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={rebuild} disabled={busy}>
+            {busy ? 'Working…' : 'Rebuild database'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="text-destructive">Erase all data</CardTitle>
+          <CardDescription>
+            Deletes the vault, every stored password and code, the keychain and your identity file —
+            everything dcrypt keeps on this device. There is no undo and no cloud copy to recover
+            from; only a backup you made yourself can bring it back. dcrypt then starts fresh, as if
+            newly installed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="destructive" onClick={() => setEraseOpen(true)} disabled={busy}>
+            Erase all data…
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Dialog
+        open={eraseOpen}
+        onOpenChange={(open) => {
+          setEraseOpen(open);
+          if (!open) setErasePhrase('');
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Erase all data?</DialogTitle>
+            <DialogDescription>
+              This permanently deletes {file} and every other dcrypt file on this device. It cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-2">
+            <Label htmlFor="erase-phrase">
+              Type {ERASE_PHRASE} to confirm
+            </Label>
+            <Input
+              id="erase-phrase"
+              value={erasePhrase}
+              onChange={(e) => setErasePhrase(e.target.value)}
+              autoFocus
+              autoComplete="off"
+            />
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEraseOpen(false)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={eraseAll}
+              disabled={busy || erasePhrase !== ERASE_PHRASE}
+            >
+              {busy ? 'Erasing…' : 'Erase everything'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
