@@ -6,6 +6,7 @@ import { ipcMain } from 'electron';
 
 import { CHANNELS, FieldPurpose, ItemKind } from '../shared/api';
 import { parseOtpauthUri } from '../shared/otpauth';
+import { lookupBrandIcons } from './brand-icons';
 import { VaultService } from './vault-service';
 
 const WORD_COUNTS: WordCount[] = [12, 15, 18, 21, 24];
@@ -132,6 +133,9 @@ export const registerIpc = (service: VaultService): void => {
     await service.current().addUrl(assertString(itemId), assertString(url));
     service.scheduleSave();
   });
+
+  // ─── brand icons (bundled, offline) ───
+  handle(CHANNELS.iconsLookup, (names: string[]) => lookupBrandIcons(assertStringArray(names)));
 
   // ─── audit ───
   handle(CHANNELS.auditLog, (itemId?: string) => service.current().auditLog(itemId));

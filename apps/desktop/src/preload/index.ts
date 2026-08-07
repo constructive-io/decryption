@@ -63,6 +63,9 @@ const api: DcryptApi & {
       invoke(CHANNELS.wbShamirSplit, secret, shares, threshold),
     shamirCombine: (shares) => invoke(CHANNELS.wbShamirCombine, shares),
   },
+  icons: {
+    lookup: (names) => invoke(CHANNELS.iconsLookup, names),
+  },
   theme: {
     getSystemDark: () => invoke(CHANNELS.themeGetSystemDark),
   },
