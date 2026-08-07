@@ -90,7 +90,8 @@ export interface DcryptApi {
     remove(itemId: string, name: string): Promise<void>;
   };
   totp: {
-    code(itemId: string): Promise<TotpEntry>;
+    /** Null when the item carries no one-time-code seed. */
+    code(itemId: string): Promise<TotpEntry | null>;
     list(): Promise<TotpEntry[]>;
     importUri(uri: string): Promise<VaultItem>;
   };

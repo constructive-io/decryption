@@ -87,11 +87,13 @@ export class VaultService {
     return this.vault;
   }
 
-  async totpEntry(itemId: string): Promise<TotpEntry> {
+  /** Null for items that carry no one-time-code seed, e.g. a plain login. */
+  async totpEntry(itemId: string): Promise<TotpEntry | null> {
     const vault = this.current();
     const item = await vault.getItem(itemId);
     if (!item) throw new Error('item not found');
     const fields = await vault.listFields(itemId);
+    if (!fields.some((field) => field.purpose === 'totp_seed')) return null;
     const numericField = async (name: string, fallback: number): Promise<number> => {
       if (!fields.some((field) => field.name === name)) return fallback;
       const value = Number(await vault.revealField(itemId, name));
@@ -107,6 +109,7 @@ export class VaultService {
   async totpList(): Promise<TotpEntry[]> {
     const vault = this.current();
     const items = await vault.listItems({ kind: 'totp' });
-    return Promise.all(items.map((item) => this.totpEntry(item.id)));
+    const entries = await Promise.all(items.map((item) => this.totpEntry(item.id)));
+    return entries.filter((entry): entry is TotpEntry => entry !== null);
   }
 }
