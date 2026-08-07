@@ -1,14 +1,18 @@
 import { Vault } from '@decryption/vault';
 import { appstash, resolve } from 'appstash';
 import { existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 
 import type { TotpEntry, VaultStatus } from '../shared/api';
 
 const APP_NAME = 'dcrypt';
 
+/** Root of everything dcrypt keeps on this machine: vault, keychain, identity. */
+export const appDataPath = (): string => appstash(APP_NAME, { ensure: true });
+
 export const vaultFilePath = (): string =>
-  resolve(appstash(APP_NAME, { ensure: true }), 'data', 'db') + path.sep + 'vault.dcrypt';
+  resolve(appDataPath(), 'data', 'db') + path.sep + 'vault.dcrypt';
 
 /** Locate the dcrypt-vault pgpm module in dev (workspace) and packaged builds. */
 export const vaultModulePath = (): string => {
@@ -78,6 +82,32 @@ export class VaultService {
       this.saveTimer = null;
       void this.current().save();
     }, 2000);
+  }
+
+  /**
+   * Re-runs the pgpm deploy into a fresh database and moves every row across,
+   * so a vault created by an earlier module version picks up schema changes.
+   */
+  async rebuild(): Promise<void> {
+    await this.flush();
+    await this.current().rebuild(vaultModulePath());
+  }
+
+  /**
+   * Locks, then deletes every file dcrypt owns. The next launch starts at the
+   * create-vault screen, which deploys the pgpm module again from scratch.
+   */
+  async eraseAll(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+    // drop the database without persisting it: the file is about to go
+    const vault = this.vault;
+    this.vault = null;
+    await this.locking;
+    if (vault) await vault.discard();
+    await fs.rm(appDataPath(), { recursive: true, force: true });
   }
 
   /** Writes any debounced edits now, so the file on disk matches the UI. */
