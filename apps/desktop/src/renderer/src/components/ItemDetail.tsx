@@ -40,7 +40,11 @@ export const ItemDetail = ({
   onChanged: () => void;
   onDeleted: () => void;
 }) => {
-  const [fields, setFields] = useState<VaultFieldMeta[]>([]);
+  // Keyed by item so a pending load never renders the previous item's fields.
+  const [loaded, setLoaded] = useState<{ itemId: string; fields: VaultFieldMeta[] }>({
+    itemId: item.id,
+    fields: [],
+  });
   const [urls, setUrls] = useState<string[]>([]);
   const [tags, setTags] = useState<VaultTag[]>([]);
   const [revealed, setRevealed] = useState<Record<string, string>>({});
@@ -53,7 +57,7 @@ export const ItemDetail = ({
 
   const refresh = useCallback(async () => {
     setRevealed({});
-    setFields(await dcrypt.fields.list(item.id));
+    setLoaded({ itemId: item.id, fields: await dcrypt.fields.list(item.id) });
     setUrls(await dcrypt.organize.urls(item.id));
     setTags(await dcrypt.organize.tags(item.id));
   }, [item.id]);
@@ -62,6 +66,7 @@ export const ItemDetail = ({
     void refresh();
   }, [refresh]);
 
+  const fields = loaded.itemId === item.id ? loaded.fields : [];
   const hasTotpSeed = fields.some((field) => field.purpose === 'totp_seed');
 
   useEffect(() => {
@@ -70,16 +75,19 @@ export const ItemDetail = ({
       return;
     }
     let cancelled = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
     const tick = async () => {
       try {
         const entry = await dcrypt.totp.code(item.id);
-        if (!cancelled) setTotp(entry);
+        if (cancelled) return;
+        setTotp(entry);
+        if (!entry) clearInterval(timer);
       } catch {
         // vault locked mid-refresh
       }
     };
     void tick();
-    const timer = setInterval(() => void tick(), 1000);
+    timer = setInterval(() => void tick(), 1000);
     return () => {
       cancelled = true;
       clearInterval(timer);
