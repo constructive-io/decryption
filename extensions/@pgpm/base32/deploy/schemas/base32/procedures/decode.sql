@@ -124,52 +124,6 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE;
 
--- text cannot hold a NUL byte, so binary secrets must decode to bytea:
--- base32.decode('AAAAAAAA') would otherwise raise "null character not permitted"
-CREATE FUNCTION base32.decode_bytea(
-  input text
-) returns bytea as $$
-DECLARE
-  i int;
-  len int;
-  value int = 0;
-  bits int = 0;
-  output bytea = ''::bytea;
-BEGIN
-  IF (character_length(input) = 0) THEN
-    RETURN ''::bytea;
-  END IF;
-
-  IF (NOT base32.valid(input)) THEN
-    RAISE EXCEPTION 'INVALID_BASE32';
-  END IF;
-
-  input = upper(replace(input, '=', ''));
-  len = character_length(input);
-
-  FOR i IN 1 .. len LOOP
-    value = (value << 5) | base32.base32_alphabet_to_decimal_int(substring(input from i for 1));
-    bits = bits + 5;
-    IF (bits >= 8) THEN
-      bits = bits - 8;
-      output = output || set_byte('\x00'::bytea, 0, (value >> bits) & 255);
-      -- keep only the bits still owed to the next byte, so value never overflows
-      value = value & ((1 << bits) - 1);
-    END IF;
-  END LOOP;
-
-  RETURN output;
-END;
-$$
-LANGUAGE 'plpgsql' IMMUTABLE;
-
-CREATE FUNCTION base32.decode_hex(
-  input text
-) returns text as $$
-  SELECT encode(base32.decode_bytea(input), 'hex');
-$$
-LANGUAGE 'sql' IMMUTABLE;
-
 CREATE FUNCTION base32.decode(
   input text
 ) returns text as $$
