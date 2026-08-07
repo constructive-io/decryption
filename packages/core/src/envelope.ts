@@ -147,6 +147,50 @@ export const encrypt = (
 };
 
 /**
+ * A passphrase key derivation kept for reuse. Argon2id is deliberately expensive, so a caller
+ * that re-encrypts the same data repeatedly (a vault flushing its snapshot) can derive once and
+ * pay only the AEAD cost per write. The salt is part of the derivation and is reused with it;
+ * confidentiality still rests on the fresh random nonce chosen for every envelope.
+ */
+export interface DerivedEnvelopeKey {
+  key: Uint8Array;
+  salt: Uint8Array;
+  kdf: KdfParams;
+}
+
+/** Runs the KDF once, yielding a handle usable with {@link encryptWithDerivedKey}. */
+export const deriveEnvelopeKey = (
+  passphrase: string | Uint8Array,
+  kdf: KdfProfile | KdfParams = DEFAULT_KDF_PROFILE
+): DerivedEnvelopeKey => {
+  const params = resolveKdfParams(kdf);
+  const salt = generateSalt();
+  return { key: deriveKey(passphrase, salt, params), salt, kdf: params };
+};
+
+/**
+ * {@link encrypt} with the KDF already done. Produces an identical envelope — the header still
+ * records the salt and cost parameters, so {@link decrypt} opens it with the passphrase alone.
+ */
+export const encryptWithDerivedKey = (
+  plaintext: Uint8Array | string,
+  derived: DerivedEnvelopeKey,
+  options: Pick<EncryptOptions, 'aad'> = {}
+): Uint8Array => {
+  assertKey(derived.key);
+  const nonce = randomBytes(NONCE_LENGTH);
+  const header = encodeHeader({
+    version: VERSION,
+    suite: Suite.Argon2idXChaCha20Poly1305,
+    kdf: derived.kdf,
+    salt: derived.salt,
+    nonce,
+  });
+  const aad = concatBytes(header, toBytes(options.aad));
+  return concatBytes(header, xchacha20poly1305(derived.key, nonce, aad).encrypt(toBytes(plaintext)));
+};
+
+/**
  * Decrypts an envelope produced by {@link encrypt}. A wrong passphrase raises
  * {@link WrongPassphraseError} — this format never returns an empty string on failure.
  */

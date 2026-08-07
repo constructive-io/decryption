@@ -60,6 +60,16 @@ describe('Vault', () => {
     await reopened.lock();
   });
 
+  it('generates codes for keys containing NUL bytes', async () => {
+    const file = path.join(dir, 'nul-seed.dcrypt');
+    const vault = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
+    const item = await vault.createItem('totp', 'Zero Bytes');
+    // decodes to sixteen 0x00 bytes, which cannot survive a text round-trip
+    await vault.setField(item.id, 'seed', 'totp_seed', 'AAAAAAAAAAAAAAAAAAAAAAAAAA');
+    expect(await vault.totpCode(item.id)).toMatch(/^\d{6}$/);
+    await vault.lock();
+  });
+
   it('rejects the wrong passphrase', async () => {
     const file = path.join(dir, 'wrong-pass.dcrypt');
     const vault = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });

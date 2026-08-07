@@ -23,7 +23,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { TotpEntry } from '../../../shared/api';
+import { formatOtpauthUri } from '../../../shared/otpauth';
 import { parseTotpJsonExport } from '../../../shared/totp-import';
+import { BrandGlyph, useBrandIcons } from '../components/BrandGlyph';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
 export const TotpScreen = () => {
@@ -32,6 +34,12 @@ export const TotpScreen = () => {
   const [uri, setUri] = useState('');
   const [busy, setBusy] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [name, setName] = useState('');
+  const [secret, setSecret] = useState('');
+  const [digits, setDigits] = useState('6');
+  const [period, setPeriod] = useState('30');
+  const icons = useBrandIcons(entries.map((entry) => entry.item.title));
 
   const refresh = useCallback(async () => {
     try {
@@ -54,6 +62,32 @@ export const TotpScreen = () => {
       toast.success(`Imported "${item.title}"`);
       setUri('');
       setShowImport(false);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addCode = async () => {
+    setBusy(true);
+    try {
+      await dcrypt.totp.importUri(
+        formatOtpauthUri({
+          label: name.trim(),
+          secret: secret.toUpperCase().replace(/\s+/g, ''),
+          digits: Number(digits),
+          period: Number(period),
+          algorithm: 'SHA1',
+        })
+      );
+      toast.success(`Added "${name.trim()}"`);
+      setName('');
+      setSecret('');
+      setDigits('6');
+      setPeriod('30');
+      setShowAdd(false);
       await refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
@@ -113,6 +147,9 @@ export const TotpScreen = () => {
           <Button variant="outline" onClick={() => setShowImport(true)}>
             <Import className="size-4" /> Import otpauth URI
           </Button>
+          <Button onClick={() => setShowAdd(true)}>
+            <Plus className="size-4" /> Add code
+          </Button>
         </div>
       </div>
 
@@ -120,7 +157,10 @@ export const TotpScreen = () => {
         {entries.map((entry) => (
           <Card key={entry.item.id}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">{entry.item.title}</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <BrandGlyph name={entry.item.title} icon={icons[entry.item.title]} />
+                {entry.item.title}
+              </CardTitle>
               <CardDescription>refreshes every {entry.period}s</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
@@ -147,11 +187,74 @@ export const TotpScreen = () => {
         {!entries.length && (
           <Card className="border-dashed">
             <CardContent className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-              <Plus className="mr-1 size-4" /> Add a "One-time code" item or import an otpauth URI
+              <Plus className="mr-1 size-4" /> Add a code, or import an otpauth URI or JSON export
             </CardContent>
           </Card>
         )}
       </div>
+
+      <Dialog open={showAdd} onOpenChange={setShowAdd}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a one-time code</DialogTitle>
+            <DialogDescription>
+              Enter the base32 secret a site shows next to its QR code.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="totp-name">Name</Label>
+              <Input
+                id="totp-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="GitHub"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="totp-secret">Secret</Label>
+              <Input
+                id="totp-secret"
+                value={secret}
+                onChange={(e) => setSecret(e.target.value)}
+                placeholder="JBSWY3DPEHPK3PXP"
+                className="font-mono"
+              />
+            </div>
+            <div className="flex gap-3">
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Label htmlFor="totp-digits">Digits</Label>
+                <Input
+                  id="totp-digits"
+                  type="number"
+                  min={6}
+                  max={8}
+                  value={digits}
+                  onChange={(e) => setDigits(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Label htmlFor="totp-period">Period (seconds)</Label>
+                <Input
+                  id="totp-period"
+                  type="number"
+                  min={1}
+                  value={period}
+                  onChange={(e) => setPeriod(e.target.value)}
+                />
+              </div>
+            </div>
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAdd(false)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button onClick={addCode} disabled={busy || !name.trim() || !secret.trim()}>
+              {busy ? 'Adding…' : 'Add'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showImport} onOpenChange={setShowImport}>
         <DialogContent>

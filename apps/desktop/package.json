@@ -28,7 +28,8 @@
     "@decryption/shamir": "workspace:*",
     "@decryption/vault": "workspace:*",
     "@decryption/wallet": "workspace:*",
-    "appstash": "^0.7.0"
+    "appstash": "^0.7.0",
+    "simple-icons": "16.26.0"
   },
   "devDependencies": {
     "@base-ui/react": "^1.6.0",
