@@ -44,13 +44,13 @@ export interface TotpEntry {
   remaining: number;
 }
 
-/** A brand glyph from the bundled simple-icons set: a single 24x24 path plus its brand colour. */
-export interface BrandIcon {
-  title: string;
-  slug: string;
-  path: string;
-  hex: string;
-}
+/**
+ * A brand mark for an item, resolved from bundled sets: svgl's full-colour
+ * logo markup where available, otherwise simple-icons' monochrome 24x24 path.
+ */
+export type BrandIcon =
+  | { kind: 'logo'; title: string; slug: string; light: string; dark: string }
+  | { kind: 'glyph'; title: string; slug: string; path: string; hex: string };
 
 /**
  * The complete surface the renderer can reach. Everything crosses the context

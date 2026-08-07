@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { BrandIcon } from '../../../shared/api';
 import { dcrypt } from '../lib/ipc';
+import { useThemeMode } from '../lib/theme-context';
 
 const cache = new Map<string, BrandIcon | null>();
 const pending = new Map<string, Promise<void>>();
@@ -47,6 +48,8 @@ export const BrandGlyph = ({
   icon: BrandIcon | null;
   className?: string;
 }) => {
+  const { dark } = useThemeMode();
+
   if (!icon) {
     return (
       <span
@@ -55,6 +58,17 @@ export const BrandGlyph = ({
       >
         {name.trim().charAt(0) || '?'}
       </span>
+    );
+  }
+  if (icon.kind === 'logo') {
+    return (
+      <span
+        role="img"
+        aria-label={icon.title}
+        className={`${className} shrink-0 [&>svg]:size-full`}
+        // vendored, sanitized at build time and never fetched at runtime
+        dangerouslySetInnerHTML={{ __html: dark ? icon.dark : icon.light }}
+      />
     );
   }
   return (
