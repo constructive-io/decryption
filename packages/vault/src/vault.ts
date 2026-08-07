@@ -1,4 +1,11 @@
-import { decrypt, encrypt, KdfParams, KdfProfile } from '@decryption/core';
+import {
+  decrypt,
+  deriveEnvelopeKey,
+  DerivedEnvelopeKey,
+  encryptWithDerivedKey,
+  KdfParams,
+  KdfProfile,
+} from '@decryption/core';
 import { hkdf } from '@decryption/hashes/hkdf';
 import { sha256 } from '@decryption/hashes/sha2';
 import { bytesToHex, randomBytes, utf8ToBytes } from '@decryption/hashes/utils';
@@ -70,10 +77,9 @@ const toItem = (row: ItemRow): VaultItem => ({
 export class Vault {
   private constructor(
     private db: PGlite | null,
-    private passphrase: string,
+    private snapshotKey: DerivedEnvelopeKey | null,
     private dbKey: string,
-    private readonly file: string,
-    private readonly kdf: KdfProfile | KdfParams
+    private readonly file: string
   ) {}
 
   /** Open an existing vault file, or initialize a new one via pgpm deploy. */
@@ -130,7 +136,9 @@ export class Vault {
 
     const salt = await Vault.readDbKeySalt(db);
     const dbKey = deriveDbKey(passphrase, salt);
-    const vault = new Vault(db, passphrase, dbKey, file, kdf);
+    // derive the snapshot key once: every later save costs only the AEAD pass,
+    // so locking and autosave never block on Argon2id
+    const vault = new Vault(db, deriveEnvelopeKey(passphrase, kdf), dbKey, file);
     if (!exists) {
       await vault.save();
     }
@@ -161,9 +169,10 @@ export class Vault {
 
   /** Encrypt the current database state to the vault file (atomic rename). */
   async save(): Promise<void> {
+    if (!this.snapshotKey) throw new Error('vault is locked');
     const dump = await this.database.dumpDataDir('gzip');
     const tarball = new Uint8Array(await dump.arrayBuffer());
-    const envelope = encrypt(tarball, this.passphrase, { kdf: this.kdf });
+    const envelope = encryptWithDerivedKey(tarball, this.snapshotKey);
     const tmp = `${this.file}.${process.pid}.tmp`;
     await fs.mkdir(path.dirname(this.file), { recursive: true });
     await fs.writeFile(tmp, envelope, { mode: 0o600 });
@@ -176,7 +185,8 @@ export class Vault {
     await this.save();
     await this.db.close();
     this.db = null;
-    this.passphrase = '';
+    this.snapshotKey?.key.fill(0);
+    this.snapshotKey = null;
     this.dbKey = '';
   }
 
@@ -450,7 +460,8 @@ export class Vault {
       await db.exec('ROLLBACK');
       throw error;
     }
-    this.passphrase = next;
+    this.snapshotKey?.key.fill(0);
+    this.snapshotKey = deriveEnvelopeKey(next, this.snapshotKey?.kdf ?? 'moderate');
     this.dbKey = nextKey;
     await this.save();
   }

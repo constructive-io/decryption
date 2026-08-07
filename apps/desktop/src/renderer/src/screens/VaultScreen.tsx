@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { VaultItem } from '../../../shared/api';
+import { BrandGlyph, useBrandIcons } from '../components/BrandGlyph';
 import { ItemDetail } from '../components/ItemDetail';
 import { NewItemDialog } from '../components/NewItemDialog';
 import { dcrypt } from '../lib/ipc';
@@ -25,6 +26,7 @@ export const VaultScreen = () => {
   const [filter, setFilter] = useState<Filter>('all');
   const [showNew, setShowNew] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
+  const icons = useBrandIcons(items.map((item) => item.title));
 
   const refresh = useCallback(async () => {
     let list: VaultItem[];
@@ -124,6 +126,7 @@ export const VaultScreen = () => {
                     selected?.id === item.id ? 'bg-accent' : ''
                   }`}
                 >
+                  <BrandGlyph name={item.title} icon={icons[item.title]} />
                   <span className="flex-1 truncate">{item.title}</span>
                   {item.favorite && <Star className="size-3.5 fill-yellow-400 text-yellow-400" />}
                   <Badge variant="outline" className="text-xs capitalize">

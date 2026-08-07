@@ -45,6 +45,14 @@ export interface TotpEntry {
 }
 
 /**
+ * A brand mark for an item, resolved from bundled sets: svgl's full-colour
+ * logo markup where available, otherwise simple-icons' monochrome 24x24 path.
+ */
+export type BrandIcon =
+  | { kind: 'logo'; title: string; slug: string; light: string; dark: string }
+  | { kind: 'glyph'; title: string; slug: string; path: string; hex: string };
+
+/**
  * The complete surface the renderer can reach. Everything crosses the context
  * bridge as plain JSON; secrets flow through only as explicit call results,
  * never as broadcast events.
@@ -108,6 +116,9 @@ export interface DcryptApi {
     shamirSplit(secret: string, shares: number, threshold: number): Promise<string[]>;
     shamirCombine(shares: string[]): Promise<string>;
   };
+  icons: {
+    lookup(names: string[]): Promise<Record<string, BrandIcon | null>>;
+  };
   theme: {
     getSystemDark(): Promise<boolean>;
   };
@@ -152,6 +163,7 @@ export const CHANNELS = {
   wbLegacyDecrypt: 'workbench:legacy-decrypt',
   wbShamirSplit: 'workbench:shamir-split',
   wbShamirCombine: 'workbench:shamir-combine',
+  iconsLookup: 'icons:lookup',
   lockedEvent: 'vault:locked-event',
   themeGetSystemDark: 'theme:get-system-dark',
   themeSystemChanged: 'theme:system-changed',

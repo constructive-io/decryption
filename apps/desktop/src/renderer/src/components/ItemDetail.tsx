@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 
 import type { TotpEntry, VaultFieldMeta, VaultItem, VaultTag } from '../../../shared/api';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
+import { BrandGlyph, useBrandIcons } from './BrandGlyph';
 
 const KIND_LABEL: Record<string, string> = {
   login: 'Login',
@@ -48,6 +49,7 @@ export const ItemDetail = ({
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newTag, setNewTag] = useState('');
   const [totp, setTotp] = useState<TotpEntry | null>(null);
+  const icons = useBrandIcons([item.title]);
 
   const refresh = useCallback(async () => {
     setRevealed({});
@@ -134,7 +136,10 @@ export const ItemDetail = ({
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-xl font-semibold">{item.title}</h2>
+          <h2 className="flex items-center gap-2 text-xl font-semibold">
+            <BrandGlyph name={item.title} icon={icons[item.title]} className="size-6" />
+            {item.title}
+          </h2>
           <div className="mt-1 flex items-center gap-2">
             <Badge variant="secondary">{KIND_LABEL[item.kind] ?? item.kind}</Badge>
             {tags.map((tag) => (

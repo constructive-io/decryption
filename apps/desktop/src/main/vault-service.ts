@@ -34,6 +34,8 @@ export const vaultModulePath = (): string => {
 export class VaultService {
   private vault: Vault | null = null;
   private saveTimer: NodeJS.Timeout | null = null;
+  /** In-flight lock, so an unlock racing a pending flush waits for it. */
+  private locking: Promise<void> | null = null;
 
   status(): VaultStatus {
     const file = vaultFilePath();
@@ -45,6 +47,7 @@ export class VaultService {
   }
 
   async unlock(passphrase: string): Promise<void> {
+    await this.locking;
     if (this.vault && !this.vault.isLocked) return;
     this.vault = await Vault.open({
       file: vaultFilePath(),
@@ -59,10 +62,13 @@ export class VaultService {
       clearTimeout(this.saveTimer);
       this.saveTimer = null;
     }
-    if (this.vault) {
-      await this.vault.lock();
-      this.vault = null;
-    }
+    if (!this.vault) return;
+    const vault = this.vault;
+    this.vault = null;
+    this.locking = vault.lock().finally(() => {
+      this.locking = null;
+    });
+    await this.locking;
   }
 
   /** Debounced persistence after mutations. */
