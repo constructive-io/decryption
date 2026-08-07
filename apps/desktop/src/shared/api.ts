@@ -44,6 +44,14 @@ export interface TotpEntry {
   remaining: number;
 }
 
+/** A brand glyph from the bundled simple-icons set: a single 24x24 path plus its brand colour. */
+export interface BrandIcon {
+  title: string;
+  slug: string;
+  path: string;
+  hex: string;
+}
+
 /**
  * The complete surface the renderer can reach. Everything crosses the context
  * bridge as plain JSON; secrets flow through only as explicit call results,
@@ -108,6 +116,9 @@ export interface DcryptApi {
     shamirSplit(secret: string, shares: number, threshold: number): Promise<string[]>;
     shamirCombine(shares: string[]): Promise<string>;
   };
+  icons: {
+    lookup(names: string[]): Promise<Record<string, BrandIcon | null>>;
+  };
   theme: {
     getSystemDark(): Promise<boolean>;
   };
@@ -152,6 +163,7 @@ export const CHANNELS = {
   wbLegacyDecrypt: 'workbench:legacy-decrypt',
   wbShamirSplit: 'workbench:shamir-split',
   wbShamirCombine: 'workbench:shamir-combine',
+  iconsLookup: 'icons:lookup',
   lockedEvent: 'vault:locked-event',
   themeGetSystemDark: 'theme:get-system-dark',
   themeSystemChanged: 'theme:system-changed',

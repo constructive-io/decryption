@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import type { TotpEntry } from '../../../shared/api';
 import { formatOtpauthUri } from '../../../shared/otpauth';
 import { parseTotpJsonExport } from '../../../shared/totp-import';
+import { BrandGlyph, useBrandIcons } from '../components/BrandGlyph';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
 export const TotpScreen = () => {
@@ -38,6 +39,7 @@ export const TotpScreen = () => {
   const [secret, setSecret] = useState('');
   const [digits, setDigits] = useState('6');
   const [period, setPeriod] = useState('30');
+  const icons = useBrandIcons(entries.map((entry) => entry.item.title));
 
   const refresh = useCallback(async () => {
     try {
@@ -155,7 +157,10 @@ export const TotpScreen = () => {
         {entries.map((entry) => (
           <Card key={entry.item.id}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">{entry.item.title}</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <BrandGlyph name={entry.item.title} icon={icons[entry.item.title]} />
+                {entry.item.title}
+              </CardTitle>
               <CardDescription>refreshes every {entry.period}s</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">

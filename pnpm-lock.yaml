@@ -101,6 +101,9 @@ importers:
       appstash:
         specifier: ^0.7.0
         version: 0.7.0
+      simple-icons:
+        specifier: 16.26.0
+        version: 16.26.0
     devDependencies:
       '@base-ui/react':
         specifier: ^1.6.0
@@ -5564,6 +5567,10 @@ packages:
   sigstore@2.3.1:
     resolution: {integrity: sha512-8G+/XDU8wNsJOQS5ysDVO0Etg9/2uA5gR9l4ZwijjlwxBcrU6RPfwi2+jJmbP+Ap1Hlp/nVAaEO4Fj22/SL2gQ==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  simple-icons@16.26.0:
+    resolution: {integrity: sha512-T9rNJtyOshULM8heLlvrZY346g9zOgZILQ3vxP+FWcX13RhaOLez7YM/hNCEx3b5gJckSCNDoNsjZuDncSMYSQ==}
+    engines: {node: '>=0.12.18'}
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -11792,6 +11799,8 @@ snapshots:
       '@sigstore/verify': 1.2.1
     transitivePeerDependencies:
       - supports-color
+
+  simple-icons@16.26.0: {}
 
   slash@3.0.0: {}
 
