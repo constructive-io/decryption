@@ -3,6 +3,8 @@
 BEGIN;
 
 DROP FUNCTION base32.decode;
+DROP FUNCTION base32.decode_hex;
+DROP FUNCTION base32.decode_bytea;
 DROP FUNCTION base32.valid;
 DROP FUNCTION base32.zero_fill;
 DROP FUNCTION base32.base32_alphabet_to_decimal_int;

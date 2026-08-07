@@ -33,29 +33,13 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE;
 
+-- decodes through bytea: a key containing a NUL byte cannot survive as text
 CREATE FUNCTION totp.base32_to_hex (
   input text
 ) returns text as $$
-DECLARE 
-  output text[];
-  decoded text = base32.decode(input);
-  len int = character_length(decoded);
-  hx text;
-BEGIN
-
-  FOR i IN 1 .. len LOOP
-    hx = to_hex(ascii(substring(decoded from i for 1)))::text;
-    IF (character_length(hx) = 1) THEN 
-        -- if it is odd number of digits, pad a 0 so it can later 
-    		hx = '0' || hx;	
-    END IF;
-    output = array_append(output, hx);
-  END LOOP;
-
-  RETURN array_to_string(output, '');
-END;
+  SELECT base32.decode_hex(input);
 $$
-LANGUAGE 'plpgsql' IMMUTABLE;
+LANGUAGE 'sql' IMMUTABLE;
 
 CREATE FUNCTION totp.hotp(key BYTEA, c INT, digits INT DEFAULT 6, hash TEXT DEFAULT 'sha1') RETURNS TEXT AS $$
 DECLARE

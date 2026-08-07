@@ -316,6 +316,47 @@ BEGIN
 END;
 $EOFCODE$ LANGUAGE plpgsql IMMUTABLE;
 
+CREATE FUNCTION base32.decode_bytea(
+  input text
+) RETURNS bytea AS $EOFCODE$
+DECLARE
+  i int;
+  len int;
+  value int = 0;
+  bits int = 0;
+  output bytea = ''::bytea;
+BEGIN
+  IF (character_length(input) = 0) THEN
+    RETURN ''::bytea;
+  END IF;
+
+  IF (NOT base32.valid(input)) THEN
+    RAISE EXCEPTION 'INVALID_BASE32';
+  END IF;
+
+  input = upper(replace(input, '=', ''));
+  len = character_length(input);
+
+  FOR i IN 1 .. len LOOP
+    value = (value << 5) | base32.base32_alphabet_to_decimal_int(substring(input from i for 1));
+    bits = bits + 5;
+    IF (bits >= 8) THEN
+      bits = bits - 8;
+      output = output || set_byte('\x00'::bytea, 0, (value >> bits) & 255);
+      value = value & ((1 << bits) - 1);
+    END IF;
+  END LOOP;
+
+  RETURN output;
+END;
+$EOFCODE$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE FUNCTION base32.decode_hex(
+  input text
+) RETURNS text AS $EOFCODE$
+  SELECT encode(base32.decode_bytea(input), 'hex');
+$EOFCODE$ LANGUAGE sql IMMUTABLE;
+
 CREATE FUNCTION base32.decode(
   input text
 ) RETURNS text AS $EOFCODE$
