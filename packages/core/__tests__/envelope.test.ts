@@ -7,9 +7,11 @@ import {
   dearmor,
   decrypt,
   decryptFromString,
+  deriveEnvelopeKey,
   deriveKey,
   encrypt,
   encryptToString,
+  encryptWithDerivedKey,
   InvalidParametersError,
   KDF_PROFILES,
   openWithKey,
@@ -145,5 +147,22 @@ describe('raw key api', () => {
   it('validates key length and payload length', () => {
     expect(() => sealWithKey(new Uint8Array(16), 'x')).toThrow(InvalidParametersError);
     expect(() => openWithKey(key, new Uint8Array(4))).toThrow(CorruptEnvelopeError);
+  });
+});
+
+describe('deriveEnvelopeKey', () => {
+  it('produces envelopes the passphrase alone can open', () => {
+    const derived = deriveEnvelopeKey(PASSPHRASE, FAST.kdf);
+    const envelope = encryptWithDerivedKey('reused key', derived);
+    expect(new TextDecoder().decode(decrypt(envelope, PASSPHRASE))).toBe('reused key');
+    expect(parseHeader(envelope).kdf).toEqual(FAST.kdf);
+  });
+
+  it('uses a fresh nonce per call and rejects the wrong passphrase', () => {
+    const derived = deriveEnvelopeKey(PASSPHRASE, FAST.kdf);
+    const a = encryptWithDerivedKey('same', derived);
+    const b = encryptWithDerivedKey('same', derived);
+    expect(bytesToHex(a)).not.toBe(bytesToHex(b));
+    expect(() => decrypt(a, 'wrong')).toThrow(WrongPassphraseError);
   });
 });
