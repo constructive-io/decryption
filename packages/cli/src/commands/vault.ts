@@ -190,6 +190,9 @@ const totp = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
   try {
     const item = await findItem(vault, first);
     const fields = await vault.listFields(item.id);
+    if (!fields.some((field) => field.purpose === 'totp_seed')) {
+      throw new CliError(`"${item.title}" has no one-time-code secret`);
+    }
     const numeric = async (name: string, fallback: number): Promise<number> => {
       if (!fields.some((field) => field.name === name)) return fallback;
       const value = Number(await vault.revealField(item.id, name));
