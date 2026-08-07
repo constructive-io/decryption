@@ -1,7 +1,6 @@
 import { Vault } from '@decryption/vault';
 import { appstash, resolve } from 'appstash';
-import { existsSync } from 'fs';
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 import * as path from 'path';
 
 import type { TotpEntry, VaultStatus } from '../shared/api';
