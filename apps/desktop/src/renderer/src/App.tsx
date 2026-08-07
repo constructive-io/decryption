@@ -32,9 +32,11 @@ const AppContent = () => {
     void dcrypt.vault.status().then((s) => setUnlocked(s.unlocked));
   }, []);
 
-  const lock = useCallback(async () => {
-    await dcrypt.vault.lock();
+  // switch to the unlock screen first: the flush behind `vault.lock()` is fast
+  // but not instant, and waiting on it makes the click feel stuck
+  const lock = useCallback(() => {
     setUnlocked(false);
+    void dcrypt.vault.lock();
   }, []);
 
   if (!unlocked) {
