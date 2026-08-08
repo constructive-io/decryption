@@ -27,12 +27,24 @@ const prefersReducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
- * A pair of vault doors over the app. Locked, the app is one sealed surface with
- * the dcrypt mark across the seam; unlocking parts it down the middle to reveal
- * the vault already rendered underneath, and locking slides it shut again.
+ * The door face: the mark, centred on the viewport regardless of which panel
+ * clips it, so one panel and two panels look identical.
+ */
+const Face = ({ working }: { working: boolean }) => (
+  <div className="absolute inset-y-0 flex w-screen items-center justify-center">
+    <Loader className="h-[22vh] max-h-48 opacity-90" animate={working} />
+  </div>
+);
+
+/**
+ * A pair of vault doors over the app. Locked, the app is a single unbroken
+ * surface carrying the dcrypt mark; unlocking splits it down the middle and
+ * slides the halves away to reveal the vault already rendered underneath, and
+ * locking slides them shut again.
  *
- * Each panel clips a viewport-wide copy of the mark, so the halves line up as
- * one image while closed and tear apart as the panels travel.
+ * While moving, each panel clips a viewport-wide copy of the same face, so the
+ * halves compose one mark that tears apart as they travel. At rest the surface
+ * is one element, so there is no seam to see.
  */
 export const VaultDoors = ({
   state,
@@ -73,51 +85,51 @@ export const VaultDoors = ({
 
   return (
     <div className="absolute inset-0 z-40" aria-hidden={!sealed}>
-      {(['left', 'right'] as const).map((side) => (
+      {sealed ? (
         <div
-          key={side}
-          data-testid={`vault-door-${side}`}
-          className={`absolute inset-y-0 w-1/2 overflow-hidden bg-background ${
-            side === 'left' ? 'left-0' : 'right-0'
-          }`}
-          style={{
-            transition: reduced
-              ? 'opacity 120ms linear'
-              : `transform ${motion.ms}ms ${motion.ease}`,
-            transform: parted
-              ? `translateX(${side === 'left' ? '-100%' : '100%'})`
-              : 'translateX(0)',
-            // while moving, the inner edges cast onto the vault, so the panels
-            // read as sitting above it; sealed, the surface is unbroken
-            boxShadow: sealed
-              ? undefined
-              : side === 'left'
-                ? '10px 0 28px -6px rgb(0 0 0 / 0.4)'
-                : '-10px 0 28px -6px rgb(0 0 0 / 0.4)',
-            opacity: reduced && parted ? 0 : 1,
-          }}
+          data-testid="vault-door-sealed"
+          className="absolute inset-0 overflow-hidden bg-background"
         >
-          {/* a viewport-wide face, offset so the two halves compose one mark */}
-          <div
-            className="absolute inset-y-0 flex w-screen items-center justify-center"
-            style={{ left: side === 'left' ? 0 : '-50vw' }}
-          >
-            <Loader
-              className="h-[44vh] max-h-96 opacity-90"
-              animate={working}
-            />
-          </div>
+          <Face working={working} />
         </div>
-      ))}
-
-      <div
-        className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-primary/25"
-        style={{ opacity: sealed ? 1 : 0, transition: 'opacity 200ms linear' }}
-      />
+      ) : (
+        (['left', 'right'] as const).map((side) => (
+          <div
+            key={side}
+            data-testid={`vault-door-${side}`}
+            className={`absolute inset-y-0 w-1/2 overflow-hidden bg-background ${
+              side === 'left' ? 'left-0' : 'right-0'
+            }`}
+            style={{
+              transition: reduced
+                ? 'opacity 120ms linear'
+                : `transform ${motion.ms}ms ${motion.ease}`,
+              transform: parted
+                ? `translateX(${side === 'left' ? '-100%' : '100%'})`
+                : 'translateX(0)',
+              // the inner edges cast onto the vault, so the panels read as
+              // sitting above it while they travel
+              boxShadow:
+                side === 'left'
+                  ? '10px 0 28px -6px rgb(0 0 0 / 0.4)'
+                  : '-10px 0 28px -6px rgb(0 0 0 / 0.4)',
+              opacity: reduced && parted ? 0 : 1,
+            }}
+          >
+            {/* offset so the two clipped copies compose one mark */}
+            <div
+              className="absolute inset-y-0 w-screen"
+              style={{ left: side === 'left' ? 0 : '-50vw' }}
+            >
+              <Face working={working} />
+            </div>
+          </div>
+        ))
+      )}
 
       {/* the controls ride on the doors: they shrink away as the panels part */}
       <div
-        className={`absolute inset-x-0 bottom-[8vh] flex justify-center ${sealed ? '' : 'pointer-events-none'}`}
+        className={`absolute inset-x-0 bottom-[12vh] flex justify-center ${sealed ? '' : 'pointer-events-none'}`}
         style={{
           opacity: sealed ? 1 : 0,
           transform: sealed ? 'scale(1)' : 'scale(0.94)',
