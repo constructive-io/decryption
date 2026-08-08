@@ -3,7 +3,7 @@ import { appstash, resolve } from 'appstash';
 import { existsSync, promises as fs } from 'fs';
 import * as path from 'path';
 
-import type { TotpEntry, VaultStatus } from '../shared/api';
+import type { RebuildReport, TotpEntry, VaultStatus } from '../shared/api';
 
 const APP_NAME = 'dcrypt';
 
@@ -87,9 +87,9 @@ export class VaultService {
    * Re-runs the pgpm deploy into a fresh database and moves every row across,
    * so a vault created by an earlier module version picks up schema changes.
    */
-  async rebuild(): Promise<void> {
+  async rebuild(): Promise<RebuildReport> {
     await this.flush();
-    await this.current().rebuild(vaultModulePath());
+    return this.current().rebuild(vaultModulePath());
   }
 
   /**

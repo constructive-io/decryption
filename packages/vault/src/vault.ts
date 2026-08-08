@@ -33,6 +33,16 @@ import {
  
 const { pgcrypto } = require('@electric-sql/pglite/contrib/pgcrypto');
 
+const VAULT_SCHEMA = 'dcrypt_vault';
+
+/** What a rebuild moved, so the UI can show that it was not a no-op. */
+export interface RebuildReport {
+  /** Tables in the freshly deployed schema that were copied through. */
+  tables: number;
+  /** Rows carried across, per table. */
+  copied: Record<string, number>;
+}
+
 const DB_KEY_INFO = 'dcrypt/db-values';
 const DB_KEY_SALT_META = 'db_key_salt';
 
@@ -145,9 +155,29 @@ export class Vault {
     // evict the cached pool so the next open never reaches this instance
     await teardownPgPools();
     handle.unregister();
+    await Vault.assertDeployed(handle.db as unknown as PGlite);
     // the adapter's PGlite type is resolved through the ESM declarations while
     // this CJS build resolves the CTS ones — identical runtime class
     return handle.db as unknown as PGlite;
+  }
+
+  /**
+   * A deploy that decides it has nothing to do would leave an empty database
+   * that then silently swallows a rebuild, so prove the schema is really there.
+   */
+  private static async assertDeployed(db: PGlite): Promise<void> {
+    const wanted = COPY_ORDER.map((spec) => spec.table);
+    const found = await db.query<{ tablename: string }>(
+      'SELECT tablename FROM pg_tables WHERE schemaname = $1',
+      [VAULT_SCHEMA]
+    );
+    const present = new Set(found.rows.map((row) => row.tablename));
+    const missing = wanted.filter((table) => !present.has(table));
+    if (missing.length > 0) {
+      throw new Error(
+        `pgpm deployed nothing usable: ${VAULT_SCHEMA} is missing ${missing.join(', ')}`
+      );
+    }
   }
 
   /**
@@ -156,12 +186,13 @@ export class Vault {
    * Values move as ciphertext and the key salt is preserved, so no plaintext
    * is materialised and the master passphrase still opens the result.
    */
-  async rebuild(modulePath: string): Promise<void> {
+  async rebuild(modulePath: string): Promise<RebuildReport> {
     const old = this.database;
     const next = await Vault.deployFresh(modulePath);
+    const copied: Record<string, number> = {};
     try {
       for (const spec of COPY_ORDER) {
-        await copyTable(old, next, spec);
+        copied[spec.table] = await copyTable(old, next, spec);
       }
       // folders were inserted detached to satisfy their self-reference
       await reattachFolders(old, next);
@@ -172,6 +203,7 @@ export class Vault {
     this.db = next;
     await old.close();
     await this.save();
+    return { tables: COPY_ORDER.length, copied };
   }
 
   private static async readDbKeySalt(db: PGlite): Promise<string> {
@@ -568,7 +600,7 @@ const COPY_ORDER: CopySpec[] = [
   },
 ];
 
-const copyTable = async (from: PGlite, to: PGlite, spec: CopySpec): Promise<void> => {
+const copyTable = async (from: PGlite, to: PGlite, spec: CopySpec): Promise<number> => {
   const binary = new Set(spec.binary ?? []);
   const detached = new Set(spec.detach ?? []);
   const selected = spec.columns
@@ -581,7 +613,7 @@ const copyTable = async (from: PGlite, to: PGlite, spec: CopySpec): Promise<void
   const rows = await from.query<Record<string, unknown>>(
     `SELECT ${selected} FROM dcrypt_vault.${spec.table}`
   );
-  if (!rows.rows.length) return;
+  if (!rows.rows.length) return 0;
 
   const placeholders = spec.columns
     .map((column, index) => {
@@ -599,6 +631,7 @@ const copyTable = async (from: PGlite, to: PGlite, spec: CopySpec): Promise<void
       spec.columns.map((column) => (detached.has(column) ? null : (row[column] ?? null)))
     );
   }
+  return rows.rows.length;
 };
 
 /** Second pass for folders, whose parent may be inserted after the child. */

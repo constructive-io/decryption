@@ -143,6 +143,8 @@ describe('Vault', () => {
     await vault.setField(code.id, 'seed', 'totp_seed', 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
     const before = await vault.totpCode(code.id);
 
+    // the rebuild asserts the fresh database really carries the deployed schema,
+    // so this passing at all rules out a deploy that quietly did nothing
     await vault.rebuild(MODULE_PATH);
 
     // same ids, same ciphertext, same passphrase — nothing was re-keyed

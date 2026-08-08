@@ -59,6 +59,12 @@ export type BrandIcon =
   | { kind: 'logo'; title: string; slug: string; light: string; dark: string }
   | { kind: 'glyph'; title: string; slug: string; path: string; hex: string };
 
+/** What a rebuild carried across, so the UI can show it was not a no-op. */
+export interface RebuildReport {
+  tables: number;
+  copied: Record<string, number>;
+}
+
 /**
  * The complete surface the renderer can reach. Everything crosses the context
  * bridge as plain JSON; secrets flow through only as explicit call results,
@@ -72,7 +78,7 @@ export interface DcryptApi {
     save(): Promise<void>;
     changePassphrase(next: string): Promise<void>;
     /** Re-deploys the pgpm module into a fresh database, keeping every item. */
-    rebuild(): Promise<void>;
+    rebuild(): Promise<RebuildReport>;
     /** Deletes the vault and every other file dcrypt keeps on this machine. */
     eraseAll(): Promise<void>;
   };
