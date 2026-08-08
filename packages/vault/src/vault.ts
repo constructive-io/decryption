@@ -104,30 +104,7 @@ export class Vault {
         extensions: { pgcrypto },
       });
     } else {
-      const handle = await registerPglite({
-        extensions: { pgcrypto },
-        extensionSql: ['CREATE EXTENSION IF NOT EXISTS pgcrypto;'],
-      });
-      try {
-        const proj = new PgpmPackage(modulePath);
-        await proj.deploy(
-          getEnvOptions({
-            pg: { database: 'postgres' },
-            deployment: { fast: true, usePlan: true, cache: false },
-          }),
-          proj.getModuleName()
-        );
-      } catch (error) {
-        await teardownPgPools();
-        await handle.close();
-        throw error;
-      }
-      // evict the cached pool so the next open never reaches this instance
-      await teardownPgPools();
-      handle.unregister();
-      // the adapter's PGlite type is resolved through the ESM declarations while
-      // this CJS build resolves the CTS ones — identical runtime class
-      db = handle.db as unknown as PGlite;
+      db = await Vault.deployFresh(modulePath);
       await db.query(
         'INSERT INTO dcrypt_vault.meta (key, value) VALUES ($1, $2)',
         [DB_KEY_SALT_META, bytesToHex(randomBytes(16))]
@@ -143,6 +120,58 @@ export class Vault {
       await vault.save();
     }
     return vault;
+  }
+
+  /** Runs `pgpm deploy` of the dcrypt-vault module into an empty PGlite. */
+  private static async deployFresh(modulePath: string): Promise<PGlite> {
+    const handle = await registerPglite({
+      extensions: { pgcrypto },
+      extensionSql: ['CREATE EXTENSION IF NOT EXISTS pgcrypto;'],
+    });
+    try {
+      const proj = new PgpmPackage(modulePath);
+      await proj.deploy(
+        getEnvOptions({
+          pg: { database: 'postgres' },
+          deployment: { fast: true, usePlan: true, cache: false },
+        }),
+        proj.getModuleName()
+      );
+    } catch (error) {
+      await teardownPgPools();
+      await handle.close();
+      throw error;
+    }
+    // evict the cached pool so the next open never reaches this instance
+    await teardownPgPools();
+    handle.unregister();
+    // the adapter's PGlite type is resolved through the ESM declarations while
+    // this CJS build resolves the CTS ones — identical runtime class
+    return handle.db as unknown as PGlite;
+  }
+
+  /**
+   * Re-deploys the pgpm module into a fresh database and copies every row
+   * across, so a vault created by an older module picks up schema changes.
+   * Values move as ciphertext and the key salt is preserved, so no plaintext
+   * is materialised and the master passphrase still opens the result.
+   */
+  async rebuild(modulePath: string): Promise<void> {
+    const old = this.database;
+    const next = await Vault.deployFresh(modulePath);
+    try {
+      for (const spec of COPY_ORDER) {
+        await copyTable(old, next, spec);
+      }
+      // folders were inserted detached to satisfy their self-reference
+      await reattachFolders(old, next);
+    } catch (error) {
+      await next.close();
+      throw error;
+    }
+    this.db = next;
+    await old.close();
+    await this.save();
   }
 
   private static async readDbKeySalt(db: PGlite): Promise<string> {
@@ -183,6 +212,15 @@ export class Vault {
   async lock(): Promise<void> {
     if (!this.db) return;
     await this.save();
+    await this.discard();
+  }
+
+  /**
+   * Close and forget the database *without* persisting it — for erasing the
+   * vault, where writing the snapshot back out would be pointless or wrong.
+   */
+  async discard(): Promise<void> {
+    if (!this.db) return;
     await this.db.close();
     this.db = null;
     this.snapshotKey?.key.fill(0);
@@ -466,6 +504,115 @@ export class Vault {
     await this.save();
   }
 }
+
+interface CopySpec {
+  table: string;
+  columns: string[];
+  /** bytea columns, moved as hex so ciphertext survives the round trip. */
+  binary?: string[];
+  /** Enum columns, read as text and cast back on insert. */
+  casts?: Record<string, string>;
+  /** Columns forced to null on insert, set in a second pass. */
+  detach?: string[];
+  onConflict?: string;
+}
+
+/** Every table a vault owns, ordered so foreign keys are satisfied as we go. */
+const COPY_ORDER: CopySpec[] = [
+  { table: 'meta', columns: ['key', 'value'], onConflict: '(key) DO UPDATE SET value = EXCLUDED.value' },
+  {
+    table: 'folders',
+    columns: ['id', 'name', 'parent_id', 'created_at'],
+    detach: ['parent_id'],
+  },
+  {
+    table: 'items',
+    columns: [
+      'id',
+      'kind',
+      'title',
+      'folder_id',
+      'favorite',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+    ],
+    casts: { kind: 'dcrypt_vault.item_kind' },
+  },
+  {
+    table: 'fields',
+    columns: [
+      'id',
+      'item_id',
+      'name',
+      'purpose',
+      'value_enc',
+      'concealed',
+      'created_at',
+      'updated_at',
+    ],
+    binary: ['value_enc'],
+    casts: { purpose: 'dcrypt_vault.field_purpose' },
+  },
+  {
+    table: 'password_history',
+    columns: ['id', 'field_id', 'value_enc', 'replaced_at'],
+    binary: ['value_enc'],
+  },
+  { table: 'tags', columns: ['id', 'name'], onConflict: '(name) DO NOTHING' },
+  { table: 'item_tags', columns: ['item_id', 'tag_id'], onConflict: 'DO NOTHING' },
+  { table: 'urls', columns: ['id', 'item_id', 'url'], onConflict: 'DO NOTHING' },
+  {
+    table: 'audit_log',
+    columns: ['id', 'item_id', 'field_name', 'action', 'occurred_at'],
+  },
+];
+
+const copyTable = async (from: PGlite, to: PGlite, spec: CopySpec): Promise<void> => {
+  const binary = new Set(spec.binary ?? []);
+  const detached = new Set(spec.detach ?? []);
+  const selected = spec.columns
+    .map((column) => {
+      if (binary.has(column)) return `encode(${column}, 'hex') AS ${column}`;
+      if (spec.casts?.[column]) return `${column}::text AS ${column}`;
+      return column;
+    })
+    .join(', ');
+  const rows = await from.query<Record<string, unknown>>(
+    `SELECT ${selected} FROM dcrypt_vault.${spec.table}`
+  );
+  if (!rows.rows.length) return;
+
+  const placeholders = spec.columns
+    .map((column, index) => {
+      const slot = `$${index + 1}`;
+      if (binary.has(column)) return `decode(${slot}, 'hex')`;
+      const cast = spec.casts?.[column];
+      return cast ? `${slot}::${cast}` : slot;
+    })
+    .join(', ');
+  const conflict = spec.onConflict ? ` ON CONFLICT ${spec.onConflict}` : '';
+  const sql = `INSERT INTO dcrypt_vault.${spec.table} (${spec.columns.join(', ')}) VALUES (${placeholders})${conflict}`;
+  for (const row of rows.rows) {
+    await to.query(
+      sql,
+      spec.columns.map((column) => (detached.has(column) ? null : (row[column] ?? null)))
+    );
+  }
+};
+
+/** Second pass for folders, whose parent may be inserted after the child. */
+const reattachFolders = async (from: PGlite, to: PGlite): Promise<void> => {
+  const rows = await from.query<{ id: string; parent_id: string | null }>(
+    'SELECT id, parent_id FROM dcrypt_vault.folders WHERE parent_id IS NOT NULL'
+  );
+  for (const row of rows.rows) {
+    await to.query('UPDATE dcrypt_vault.folders SET parent_id = $2 WHERE id = $1', [
+      row.id,
+      row.parent_id,
+    ]);
+  }
+};
 
 /** Derive the per-value encryption key from the master passphrase. */
 export const deriveDbKey = (passphrase: string, saltHex: string): string =>

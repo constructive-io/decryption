@@ -71,6 +71,10 @@ export interface DcryptApi {
     lock(): Promise<void>;
     save(): Promise<void>;
     changePassphrase(next: string): Promise<void>;
+    /** Re-deploys the pgpm module into a fresh database, keeping every item. */
+    rebuild(): Promise<void>;
+    /** Deletes the vault and every other file dcrypt keeps on this machine. */
+    eraseAll(): Promise<void>;
   };
   items: {
     list(options?: { kind?: ItemKind; folderId?: string; trashed?: boolean }): Promise<VaultItem[]>;
@@ -146,6 +150,8 @@ export const CHANNELS = {
   vaultLock: 'vault:lock',
   vaultSave: 'vault:save',
   vaultChangePassphrase: 'vault:change-passphrase',
+  vaultRebuild: 'vault:rebuild',
+  vaultEraseAll: 'vault:erase-all',
   itemsList: 'items:list',
   itemsGet: 'items:get',
   itemsCreate: 'items:create',
