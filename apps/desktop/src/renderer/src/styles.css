@@ -87,3 +87,26 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* The vault gently settles into place as the doors reveal it. */
+@keyframes dcrypt-vault-settle {
+  from {
+    transform: scale(0.985);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.dcrypt-vault-settle {
+  animation: dcrypt-vault-settle 560ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dcrypt-vault-settle {
+    animation: none;
+  }
+}
