@@ -127,6 +127,56 @@ describe('Vault', () => {
     await reopened.lock();
   });
 
+  it('rebuilds the database and carries every row across', async () => {
+    const file = path.join(dir, 'rebuild.dcrypt');
+    const vault = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
+
+    const parent = await vault.createFolder('Personal');
+    const child = await vault.createFolder('Banking', parent.id);
+    const login = await vault.createItem('login', 'Bank', child.id);
+    await vault.setField(login.id, 'username', 'username', 'dan', false);
+    await vault.setField(login.id, 'password', 'password', 'correct horse battery staple');
+    await vault.addUrl(login.id, 'https://bank.example');
+    await vault.tagItem(login.id, 'money');
+    await vault.setFavorite(login.id, true);
+    const code = await vault.createItem('totp', 'Bank 2FA');
+    await vault.setField(code.id, 'seed', 'totp_seed', 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
+    const before = await vault.totpCode(code.id);
+
+    await vault.rebuild(MODULE_PATH);
+
+    // same ids, same ciphertext, same passphrase — nothing was re-keyed
+    expect((await vault.listItems()).map((item) => item.id).sort()).toEqual(
+      [login.id, code.id].sort()
+    );
+    expect(await vault.revealField(login.id, 'password')).toBe('correct horse battery staple');
+    expect(await vault.revealField(login.id, 'username')).toBe('dan');
+    expect(await vault.listUrls(login.id)).toEqual(['https://bank.example']);
+    expect((await vault.listTags(login.id)).map((tag) => tag.name)).toEqual(['money']);
+    expect((await vault.getItem(login.id))!.favorite).toBe(true);
+    expect((await vault.getItem(login.id))!.folderId).toBe(child.id);
+    expect(await vault.totpCode(code.id)).toBe(before);
+    const folders = await vault.listFolders();
+    expect(folders.find((folder) => folder.id === child.id)!.parentId).toBe(parent.id);
+
+    await vault.lock();
+    const reopened = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
+    expect(await reopened.revealField(login.id, 'password')).toBe('correct horse battery staple');
+    await reopened.lock();
+  });
+
+  it('discards without persisting, for erase-all', async () => {
+    const file = path.join(dir, 'discard.dcrypt');
+    const vault = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
+    await vault.createItem('note', 'Written after the last save');
+    await vault.discard();
+    expect(vault.isLocked).toBe(true);
+
+    const reopened = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
+    expect(await reopened.listItems()).toHaveLength(0);
+    await reopened.lock();
+  });
+
   it('records reveals in the audit log', async () => {
     const file = path.join(dir, 'audit.dcrypt');
     const vault = await Vault.open({ file, passphrase: PASSPHRASE, modulePath: MODULE_PATH, kdf: FAST });
