@@ -51,12 +51,27 @@ const CUBES: [string, string, string][] = [
   ],
 ];
 
-/** The animated dcrypt cube-stack loader. */
-export const Loader = ({ className }: { className?: string }) => (
-  <svg viewBox="-125 -140 460 700" fill="none" className={className} role="status" aria-label="Loading">
+/**
+ * The dcrypt cube-stack mark. It assembles itself while `animate` is set — the
+ * loading state — and rests as the finished stack otherwise.
+ */
+export const Loader = ({
+  className,
+  animate = true,
+}: {
+  className?: string;
+  animate?: boolean;
+}) => (
+  <svg
+    viewBox="-125 -140 460 700"
+    fill="none"
+    className={className}
+    role={animate ? 'status' : 'img'}
+    aria-label={animate ? 'Loading' : 'dcrypt'}
+  >
     <style>{KEYFRAMES}</style>
     {CUBES.map((paths, i) => (
-      <g key={i} className={`dcrypt-cube-${i}`}>
+      <g key={i} className={animate ? `dcrypt-cube-${i}` : undefined}>
         {paths.map((d, j) => (
           <path
             key={j}
