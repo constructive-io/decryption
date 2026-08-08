@@ -82,8 +82,12 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
   const rebuild = async () => {
     setBusy(true);
     try {
-      await dcrypt.vault.rebuild();
-      toast.success('Database rebuilt. Every item was carried over.');
+      const report = await dcrypt.vault.rebuild();
+      const rows = Object.values(report.copied).reduce((sum, n) => sum + n, 0);
+      toast.success(
+        `Database rebuilt: ${report.tables} tables deployed, ${rows} rows carried over ` +
+          `(${report.copied.items ?? 0} items).`
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     } finally {
