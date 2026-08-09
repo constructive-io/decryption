@@ -1,7 +1,13 @@
 import { auth } from '@constructive-io/sdk';
 
 import { normalizeEndpoint } from './endpoint';
-import { AuthSession, CreateApiKeyOptions, CreatedApiKey } from './types';
+import {
+  AuthSession,
+  CreateApiKeyOptions,
+  CreatedApiKey,
+  CreatePrincipalOptions,
+  PrincipalRecord,
+} from './types';
 
 /** Raised when the auth server refuses a call, with the server's own wording. */
 export class AuthError extends Error {
@@ -62,6 +68,11 @@ export interface AuthClient {
   verifyPassword(password: string): Promise<void>;
   /** Re-prove MFA with a one-time code. */
   verifyTotp(code: string): Promise<void>;
+  /** The caller's scoped sub-identities, with their scopes and masks. */
+  listPrincipals(): Promise<PrincipalRecord[]>;
+  /** Create a principal scoped to an organization; returns its id. */
+  createPrincipal(options: CreatePrincipalOptions): Promise<string>;
+  deletePrincipal(principalId: string): Promise<void>;
 }
 
 export interface AuthClientOptions {
@@ -129,6 +140,48 @@ export const stepUpKind = (message: string): StepUpKind | null => {
   return (found[1]?.toLowerCase() as StepUpKind) ?? 'password';
 };
 
+type PrincipalNode = {
+  id: string;
+  name?: string | null;
+  ownerId?: string | null;
+  isReadOnly?: boolean | null;
+  bypassStepUp?: boolean | null;
+  useAdminOwner?: boolean | null;
+  principalEntities?: { nodes: Array<{ entityId?: string | null }> };
+  principalScopeOverrides?: {
+    nodes: Array<{
+      membershipType?: number | null;
+      allowedMask?: string | null;
+      isActive?: boolean | null;
+      isReadOnly?: boolean | null;
+      useAdminOwner?: boolean | null;
+    }>;
+  };
+};
+
+/**
+ * The server's defaults are the permissive ones: a principal inherits its
+ * owner unless a row says otherwise, so a missing flag reads as "inherits".
+ */
+const readPrincipal = (node: PrincipalNode): PrincipalRecord => ({
+  principalId: node.id,
+  name: node.name ?? '',
+  ownerId: node.ownerId ?? null,
+  isReadOnly: node.isReadOnly ?? false,
+  bypassStepUp: node.bypassStepUp ?? false,
+  useAdminOwner: node.useAdminOwner ?? true,
+  entityIds: (node.principalEntities?.nodes ?? [])
+    .map((entity) => entity.entityId)
+    .filter((id): id is string => Boolean(id)),
+  scopes: (node.principalScopeOverrides?.nodes ?? []).map((scope) => ({
+    membershipType: scope.membershipType ?? 0,
+    allowedMask: scope.allowedMask ?? null,
+    isActive: scope.isActive ?? true,
+    isReadOnly: scope.isReadOnly ?? false,
+    useAdminOwner: scope.useAdminOwner ?? true,
+  })),
+});
+
 const rethrow = (operation: string, endpoint: string, error: unknown): never => {
   const message = error instanceof Error ? error.message : String(error);
   const kind = stepUpKind(message);
@@ -193,26 +246,26 @@ export const sdkAuthClient: AuthClientFactory = (options) => {
     },
 
     async createApiKey(options) {
+      const input = {
+        keyName: options.name,
+        expiresIn: options.expiresIn,
+        accessLevel: options.accessLevel,
+        principalId: options.principalId,
+      };
+      const select = {
+        select: {
+          result: { select: { apiKey: true, keyId: true, expiresAt: true } },
+        },
+      } as const;
       try {
-        const data = await client.mutation
-          .createApiKey(
-            {
-              input: {
-                keyName: options.name,
-                expiresIn: options.expiresIn,
-                accessLevel: options.accessLevel,
-              },
-            },
-            {
-              select: {
-                result: {
-                  select: { apiKey: true, keyId: true, expiresAt: true },
-                },
-              },
-            }
-          )
-          .unwrap();
-        const result = data.createApiKey?.result;
+        const result = options.orgId
+          ? (
+            await client.mutation
+              .createOrgApiKey({ input: { ...input, orgId: options.orgId } }, select)
+              .unwrap()
+          ).createOrgApiKey?.result
+          : (await client.mutation.createApiKey({ input }, select).unwrap())
+            .createApiKey?.result;
         if (!result?.apiKey || !result.keyId) {
           throw new AuthError('createApiKey', 'the server returned no key');
         }
@@ -224,6 +277,80 @@ export const sdkAuthClient: AuthClientFactory = (options) => {
       } catch (error) {
         if (error instanceof AuthError) throw error;
         return rethrow('createApiKey', endpoint, error);
+      }
+    },
+
+    async listPrincipals() {
+      try {
+        const data = await client.principal
+          .findMany({
+            first: 200,
+            select: {
+              id: true,
+              name: true,
+              ownerId: true,
+              isReadOnly: true,
+              bypassStepUp: true,
+              useAdminOwner: true,
+              principalEntities: { select: { entityId: true }, first: 100 },
+              principalScopeOverrides: {
+                select: {
+                  membershipType: true,
+                  allowedMask: true,
+                  isActive: true,
+                  isReadOnly: true,
+                  useAdminOwner: true,
+                },
+                first: 100,
+              },
+            },
+          })
+          .unwrap();
+        return data.principals.nodes.map(readPrincipal);
+      } catch (error) {
+        if (error instanceof AuthError) throw error;
+        return rethrow('listPrincipals', endpoint, error);
+      }
+    },
+
+    async createPrincipal(options) {
+      try {
+        const data = await client.mutation
+          .createOrgPrincipal(
+            {
+              input: {
+                name: options.name,
+                orgId: options.orgId,
+                isReadOnly: options.isReadOnly,
+                bypassStepUp: options.bypassStepUp,
+                useAdminOwner: options.useAdminOwner,
+              },
+            },
+            { select: { result: true } }
+          )
+          .unwrap();
+        const principalId = data.createOrgPrincipal?.result;
+        if (!principalId) {
+          throw new AuthError('createPrincipal', 'the server returned no principal');
+        }
+        return principalId;
+      } catch (error) {
+        if (error instanceof AuthError) throw error;
+        return rethrow('createPrincipal', endpoint, error);
+      }
+    },
+
+    async deletePrincipal(principalId) {
+      try {
+        await client.mutation
+          .deletePrincipal(
+            { input: { principalId } },
+            { select: { clientMutationId: true } }
+          )
+          .unwrap();
+      } catch (error) {
+        if (error instanceof AuthError) throw error;
+        rethrow('deletePrincipal', endpoint, error);
       }
     },
 

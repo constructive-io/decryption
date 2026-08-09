@@ -9,7 +9,9 @@ import {
   AuthClientFactory,
   AuthError,
   CreateApiKeyOptions,
+  CreatePrincipalOptions,
   hasExpired,
+  PrincipalRecord,
   StepUpKind,
   stepUpKind,
   StepUpRequiredError,
@@ -26,6 +28,7 @@ const ENDPOINT = 'http://auth.localhost:3000/graphql';
 class FakeServer {
   readonly calls: Array<{ operation: string; token?: string }> = [];
   private nextKey = 0;
+  principals: PrincipalRecord[] = [];
   expiresAt: string | null = null;
   /** Refuse sensitive calls with this factor until it has been re-proved. */
   demandStepUp: StepUpKind | null = null;
@@ -80,6 +83,32 @@ class FakeServer {
     revokeApiKey: async (keyId: string) => {
       this.calls.push({ operation: `revokeApiKey:${keyId}`, token });
       this.refuseWithoutStepUp('revokeApiKey');
+    },
+    listPrincipals: async () => {
+      this.calls.push({ operation: 'listPrincipals', token });
+      return this.principals;
+    },
+    createPrincipal: async (options: CreatePrincipalOptions) => {
+      this.calls.push({ operation: 'createPrincipal', token });
+      this.refuseWithoutStepUp('createPrincipal');
+      const principal: PrincipalRecord = {
+        principalId: `principal-${this.principals.length + 1}`,
+        name: options.name,
+        ownerId: 'user-dev@example.com',
+        isReadOnly: options.isReadOnly ?? false,
+        bypassStepUp: options.bypassStepUp ?? false,
+        useAdminOwner: options.useAdminOwner ?? true,
+        entityIds: [options.orgId],
+        scopes: [],
+      };
+      this.principals.push(principal);
+      return principal.principalId;
+    },
+    deletePrincipal: async (principalId: string) => {
+      this.calls.push({ operation: `deletePrincipal:${principalId}`, token });
+      this.principals = this.principals.filter(
+        (principal) => principal.principalId !== principalId
+      );
     },
   });
 
@@ -466,6 +495,80 @@ describe('linked one-time codes', () => {
 
     expect(await accounts.stepUpCode(account.itemId)).toBeNull();
     expect((await accounts.getAccount(account.itemId)).totpItemId).toBeNull();
+  });
+});
+
+describe('principals', () => {
+  const signIn = () =>
+    accounts.signIn({
+      endpoint: ENDPOINT,
+      email: 'dev@example.com',
+      password: 'hunter22',
+    });
+
+  it('creates a scoped sub-identity and mints a key as it', async () => {
+    const account = await signIn();
+    const principalId = await accounts.createPrincipal(account.itemId, {
+      name: 'ci-deploy',
+      orgId: 'org-1',
+      isReadOnly: true,
+      bypassStepUp: true,
+    });
+
+    const principals = await accounts.listPrincipals(account.itemId);
+    expect(principals).toHaveLength(1);
+    expect(principals[0]).toMatchObject({
+      principalId,
+      name: 'ci-deploy',
+      isReadOnly: true,
+      bypassStepUp: true,
+      entityIds: ['org-1'],
+    });
+
+    const key = await accounts.createApiKey(account.itemId, {
+      name: 'ci',
+      principalId,
+      orgId: 'org-1',
+    });
+    expect(key.principalId).toBe(principalId);
+    expect(key.orgId).toBe('org-1');
+    expect((await accounts.listApiKeys())[0].principalId).toBe(principalId);
+  });
+
+  it('answers a step-up when creating one, like every other sensitive call', async () => {
+    const account = await signIn();
+    server.demandStepUp = 'password';
+
+    await expect(
+      accounts.createPrincipal(account.itemId, { name: 'ci', orgId: 'org-1' })
+    ).rejects.toBeInstanceOf(StepUpRequiredError);
+
+    const principalId = await accounts.createPrincipal(
+      account.itemId,
+      { name: 'ci', orgId: 'org-1' },
+      { password: 'hunter22' }
+    );
+    expect(principalId).toBe('principal-1');
+  });
+
+  it('deletes one server-side', async () => {
+    const account = await signIn();
+    const principalId = await accounts.createPrincipal(account.itemId, {
+      name: 'ci',
+      orgId: 'org-1',
+    });
+
+    await accounts.deletePrincipal(account.itemId, principalId);
+    expect(await accounts.listPrincipals(account.itemId)).toHaveLength(0);
+  });
+
+  it('refuses to reach the server when the account is signed out', async () => {
+    const account = await signIn();
+    await accounts.signOut(account.itemId);
+
+    await expect(accounts.listPrincipals(account.itemId)).rejects.toThrow(
+      'signed out'
+    );
   });
 });
 

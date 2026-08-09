@@ -24,6 +24,12 @@ export interface ApiKeyRecord {
   keyId: string;
   name: string;
   expiresAt: string | null;
+  /** The provisioned database this key is the data-plane token for, if any. */
+  databaseId: string | null;
+  /** The scoped sub-identity this key acts as, if it was minted for one. */
+  principalId: string | null;
+  /** The organization it is scoped to, for an org key. */
+  orgId: string | null;
 }
 
 /** What a sign-in or sign-up returns before it is written to the vault. */
@@ -52,4 +58,51 @@ export interface CreateApiKeyOptions {
   name: string;
   expiresIn?: KeyLifetime;
   accessLevel?: string;
+  /** Tag the key as this database's data-plane token, for a harness host. */
+  databaseId?: string;
+  /** Mint the key *as* this principal, so it carries the principal's scope. */
+  principalId?: string;
+  /** Mint an org key, billed and scoped to this organization. */
+  orgId?: string;
+}
+
+/**
+ * A per-scope narrowing of a principal. No row for a scope means the principal
+ * simply inherits its owner there — an override can only take access away.
+ */
+export interface PrincipalScope {
+  /** The scope level (membership type) this row restricts. */
+  membershipType: number;
+  /** Bitmask AND-ed with the owner's permissions during the SPRT cascade. */
+  allowedMask: string | null;
+  isActive: boolean;
+  isReadOnly: boolean;
+  useAdminOwner: boolean;
+}
+
+/**
+ * A scoped sub-identity — what an API key or an agent actually acts as. It is
+ * owned by a human account and can never exceed that human's permissions.
+ */
+export interface PrincipalRecord {
+  principalId: string;
+  name: string;
+  ownerId: string | null;
+  isReadOnly: boolean;
+  bypassStepUp: boolean;
+  useAdminOwner: boolean;
+  /** Organizations (or other entities) this principal is scoped to. */
+  entityIds: string[];
+  scopes: PrincipalScope[];
+}
+
+export interface CreatePrincipalOptions {
+  name: string;
+  /** The organization to scope it to. */
+  orgId: string;
+  isReadOnly?: boolean;
+  /** Let it skip MFA step-up — the point of a CI identity. */
+  bypassStepUp?: boolean;
+  /** Inherit the owner's admin rights within the scope. */
+  useAdminOwner?: boolean;
 }

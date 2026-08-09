@@ -15,6 +15,8 @@ import {
   ApiKeyRecord,
   AuthSession,
   CreateApiKeyOptions,
+  CreatePrincipalOptions,
+  PrincipalRecord,
 } from './types';
 
 const ACCOUNT_FIELDS = {
@@ -32,6 +34,9 @@ const KEY_FIELDS = {
   keyId: 'key_id',
   apiKey: 'api_key',
   expiresAt: 'expires_at',
+  databaseId: 'database_id',
+  principalId: 'principal_id',
+  orgId: 'org_id',
 } as const;
 
 export interface AccountManagerOptions {
@@ -208,6 +213,27 @@ export class AccountManager {
     );
     await this.vault.setField(item.id, KEY_FIELDS.keyId, 'text', created.keyId, false);
     await this.vault.setField(item.id, KEY_FIELDS.apiKey, 'token', created.apiKey);
+    if (options.principalId) {
+      await this.vault.setField(
+        item.id,
+        KEY_FIELDS.principalId,
+        'text',
+        options.principalId,
+        false
+      );
+    }
+    if (options.orgId) {
+      await this.vault.setField(item.id, KEY_FIELDS.orgId, 'text', options.orgId, false);
+    }
+    if (options.databaseId) {
+      await this.vault.setField(
+        item.id,
+        KEY_FIELDS.databaseId,
+        'text',
+        options.databaseId,
+        false
+      );
+    }
     if (created.expiresAt) {
       await this.vault.setField(
         item.id,
@@ -225,7 +251,25 @@ export class AccountManager {
       keyId: created.keyId,
       name: options.name,
       expiresAt: created.expiresAt,
+      databaseId: options.databaseId ?? null,
+      principalId: options.principalId ?? null,
+      orgId: options.orgId ?? null,
     };
+  }
+
+  /**
+   * Say that a key already in the vault is a database's data-plane token, so a
+   * harness host asking for that database is handed this key and no other.
+   */
+  async assignKeyToDatabase(keyItemId: string, databaseId: string): Promise<void> {
+    await this.requireItem(keyItemId, 'api_key');
+    await this.vault.setField(
+      keyItemId,
+      KEY_FIELDS.databaseId,
+      'text',
+      databaseId,
+      false
+    );
   }
 
   /** Every stored key, or only those minted by one account. */
@@ -250,6 +294,59 @@ export class AccountManager {
       client.revokeApiKey(fields[KEY_FIELDS.keyId])
     );
     await this.vault.deleteItemForever(itemId);
+  }
+
+  // ─── principals ───────────────────────────────────────────────────────────
+
+  /**
+   * The account's scoped sub-identities, straight from the server — nothing
+   * about a principal is secret, and a stale local copy would be worse than
+   * none, so this is not cached in the vault.
+   */
+  async listPrincipals(accountItemId: string): Promise<PrincipalRecord[]> {
+    const fields = await this.readFields(accountItemId);
+    const token = await this.requireToken(accountItemId);
+    return this.createClient({
+      endpoint: fields[ACCOUNT_FIELDS.endpoint],
+      token,
+    }).listPrincipals();
+  }
+
+  /**
+   * Create a principal an API key can then be minted as. A principal is a
+   * narrowing of its owner: it can be read-only, restricted per scope, and
+   * allowed to skip step-up, but it can never reach further than the human.
+   */
+  async createPrincipal(
+    accountItemId: string,
+    options: CreatePrincipalOptions,
+    proof?: StepUpProof
+  ): Promise<string> {
+    const fields = await this.readFields(accountItemId);
+    const token = await this.requireToken(accountItemId);
+    return this.withStepUp(
+      accountItemId,
+      fields[ACCOUNT_FIELDS.endpoint],
+      token,
+      proof,
+      (client) => client.createPrincipal(options)
+    );
+  }
+
+  async deletePrincipal(
+    accountItemId: string,
+    principalId: string,
+    proof?: StepUpProof
+  ): Promise<void> {
+    const fields = await this.readFields(accountItemId);
+    const token = await this.requireToken(accountItemId);
+    await this.withStepUp(
+      accountItemId,
+      fields[ACCOUNT_FIELDS.endpoint],
+      token,
+      proof,
+      (client) => client.deletePrincipal(principalId)
+    );
   }
 
   // ─── internals ────────────────────────────────────────────────────────────
@@ -399,6 +496,9 @@ export class AccountManager {
       keyId: fields[KEY_FIELDS.keyId] ?? '',
       name: item.title,
       expiresAt: fields[KEY_FIELDS.expiresAt] ?? null,
+      databaseId: fields[KEY_FIELDS.databaseId] ?? null,
+      principalId: fields[KEY_FIELDS.principalId] ?? null,
+      orgId: fields[KEY_FIELDS.orgId] ?? null,
     };
   }
 
