@@ -1,7 +1,7 @@
 {
-  "name": "@decryption/cli",
-  "version": "0.4.0",
-  "description": "dcrypt \u2014 local-first CLI for encryption, BIP39 wallets and team secrets",
+  "name": "@decryption/webauthn",
+  "version": "0.1.0",
+  "description": "A software WebAuthn authenticator: passkeys whose private keys live in the dcrypt vault",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
   "module": "esm/index.js",
@@ -29,35 +29,20 @@
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "keywords": [
-    "cli",
-    "dcrypt",
-    "encryption",
-    "secrets",
-    "wallet",
-    "bip39",
-    "age"
+    "webauthn",
+    "passkey",
+    "authenticator",
+    "fido2",
+    "vault",
+    "local-first"
   ],
   "dependencies": {
-    "@decryption/accounts": "workspace:*",
     "@decryption/base": "workspace:*",
-    "@decryption/core": "workspace:*",
-    "@decryption/cosmology-compat": "workspace:*",
+    "@decryption/curves": "workspace:*",
     "@decryption/hashes": "workspace:*",
-    "@decryption/keys": "workspace:*",
-    "@decryption/secrets": "workspace:*",
-    "@decryption/shamir": "workspace:*",
-    "@decryption/vault": "workspace:*",
-    "@decryption/wallet": "workspace:*",
-    "@decryption/webauthn": "workspace:*",
-    "appstash": "^0.7.0",
-    "inquirerer": "^4.9.1",
-    "yanse": "^0.2.1"
+    "@decryption/vault": "workspace:*"
   },
   "devDependencies": {
-    "@types/minimist": "^1.2.5",
     "makage": "0.3.0"
-  },
-  "bin": {
-    "dcrypt": "index.js"
   }
 }
