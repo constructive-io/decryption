@@ -95,6 +95,37 @@ describe('dcrypt account', () => {
     expect(stderr()).toContain('no account in the vault');
   });
 
+  it('documents the harness token and principal surface', async () => {
+    expect(await run('account help')).toBe(0);
+    expect(stdout()).toContain('token [email]');
+    expect(stdout()).toContain('principal create <name>');
+    expect(stdout()).toContain('--database <id>');
+  });
+
+  it('serves no bearer from an empty vault', async () => {
+    const pass = file('pass.txt', 'a strong master password');
+    expect(await run(`account token --passphrase-file ${pass} --kdf ${FAST_KDF}`)).toBe(
+      EXIT.notFound
+    );
+    expect(stderr()).toContain('exactly one account');
+  });
+
+  it('needs an org for a principal', async () => {
+    const pass = file('pass.txt', 'a strong master password');
+    expect(
+      await run(`account principal create ci --passphrase-file ${pass} --kdf ${FAST_KDF}`)
+    ).toBe(EXIT.usage);
+    expect(stderr()).toContain('--org <id> is required');
+  });
+
+  it('says which key it cannot tag', async () => {
+    const pass = file('pass.txt', 'a strong master password');
+    expect(
+      await run(`account key assign ci db-1 --passphrase-file ${pass} --kdf ${FAST_KDF}`)
+    ).toBe(EXIT.notFound);
+    expect(stderr()).toContain('no API key "ci"');
+  });
+
   it('says which account it cannot find', async () => {
     const pass = file('pass.txt', 'a strong master password');
     expect(
