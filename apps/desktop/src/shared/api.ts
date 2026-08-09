@@ -1,4 +1,4 @@
-import type { AccountRecord, ApiKeyRecord } from '@decryption/accounts';
+import type { AccountRecord, ApiKeyRecord, StepUpProof } from '@decryption/accounts';
 import type {
   AuditEntry,
   FieldPurpose,
@@ -15,6 +15,7 @@ export type {
   AuditEntry,
   FieldPurpose,
   ItemKind,
+  StepUpProof,
   VaultFieldMeta,
   VaultFolder,
   VaultItem,
@@ -147,10 +148,15 @@ export interface DcryptApi {
     /** Removes the account and its keys from this vault, server side untouched. */
     forget(itemId: string): Promise<void>;
     keys(accountItemId?: string): Promise<ApiKeyRecord[]>;
-    createKey(accountItemId: string, request: CreateKeyRequest): Promise<ApiKeyRecord>;
+    createKey(
+      accountItemId: string,
+      request: CreateKeyRequest,
+      /** Supplied on a retry, after the server asked for a fresh factor. */
+      stepUp?: StepUpProof
+    ): Promise<ApiKeyRecord>;
     /** Reads the secret back out of the vault, on demand only. */
     revealKey(itemId: string): Promise<string>;
-    revokeKey(itemId: string): Promise<void>;
+    revokeKey(itemId: string, stepUp?: StepUpProof): Promise<void>;
   };
   audit: {
     log(itemId?: string): Promise<AuditEntry[]>;

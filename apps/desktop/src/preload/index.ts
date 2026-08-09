@@ -59,10 +59,10 @@ const api: DcryptApi & {
     signOut: (itemId) => invoke(CHANNELS.accountsSignOut, itemId),
     forget: (itemId) => invoke(CHANNELS.accountsForget, itemId),
     keys: (accountItemId) => invoke(CHANNELS.accountsKeys, accountItemId),
-    createKey: (accountItemId, request) =>
-      invoke(CHANNELS.accountsCreateKey, accountItemId, request),
+    createKey: (accountItemId, request, stepUp) =>
+      invoke(CHANNELS.accountsCreateKey, accountItemId, request, stepUp),
     revealKey: (itemId) => invoke(CHANNELS.accountsRevealKey, itemId),
-    revokeKey: (itemId) => invoke(CHANNELS.accountsRevokeKey, itemId),
+    revokeKey: (itemId, stepUp) => invoke(CHANNELS.accountsRevokeKey, itemId, stepUp),
   },
   audit: {
     log: (itemId) => invoke(CHANNELS.auditLog, itemId),
