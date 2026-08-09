@@ -10,6 +10,7 @@ import * as path from 'path';
 import {
   CHANNELS,
   CreateKeyRequest,
+  CreatePrincipalRequest,
   FieldPurpose,
   ItemKind,
   SignInRequest,
@@ -242,6 +243,11 @@ export const registerIpc = (service: VaultService): void => {
           expiresIn: days === undefined ? undefined : { days: assertInt(days, 1, 3650) },
           accessLevel:
             request?.accessLevel === undefined ? undefined : assertString(request.accessLevel),
+          principalId:
+            request?.principalId === undefined ? undefined : assertString(request.principalId),
+          orgId: request?.orgId === undefined ? undefined : assertString(request.orgId),
+          databaseId:
+            request?.databaseId === undefined ? undefined : assertString(request.databaseId),
         },
         proof(stepUp)
       );
@@ -256,6 +262,40 @@ export const registerIpc = (service: VaultService): void => {
     await accounts().revokeApiKey(assertString(itemId), proof(stepUp));
     service.scheduleSave();
   });
+  handle(
+    CHANNELS.accountsAssignKeyDatabase,
+    async (itemId: string, databaseId: string) => {
+      await accounts().assignKeyToDatabase(assertString(itemId), assertString(databaseId));
+      service.scheduleSave();
+    }
+  );
+  handle(CHANNELS.accountsPrincipals, (accountItemId: string) =>
+    accounts().listPrincipals(assertString(accountItemId))
+  );
+  handle(
+    CHANNELS.accountsCreatePrincipal,
+    (accountItemId: string, request: CreatePrincipalRequest, stepUp?: StepUpProof) =>
+      accounts().createPrincipal(
+        assertString(accountItemId),
+        {
+          name: assertString(request?.name),
+          orgId: assertString(request?.orgId),
+          isReadOnly: Boolean(request?.isReadOnly),
+          bypassStepUp: Boolean(request?.bypassStepUp),
+        },
+        proof(stepUp)
+      )
+  );
+  handle(
+    CHANNELS.accountsDeletePrincipal,
+    async (accountItemId: string, principalId: string, stepUp?: StepUpProof) => {
+      await accounts().deletePrincipal(
+        assertString(accountItemId),
+        assertString(principalId),
+        proof(stepUp)
+      );
+    }
+  );
   handle(CHANNELS.accountsLinkTotp, async (accountItemId: string, totpItemId: string) => {
     await accounts().linkTotp(assertString(accountItemId), assertString(totpItemId));
     service.scheduleSave();
