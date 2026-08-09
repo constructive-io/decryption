@@ -48,6 +48,18 @@ export interface TotpEntry {
   remaining: number;
 }
 
+/** What this machine can offer instead of typing the master password. */
+export interface BiometricStatus {
+  /** Whether the OS credential store can seal a secret at all. */
+  available: boolean;
+  /** Whether unlocking can be gated by a fingerprint (macOS Touch ID). */
+  biometric: boolean;
+  /** Whether a password is already remembered on this machine. */
+  enrolled: boolean;
+  /** What to call the store in the UI: "Keychain", "Credential Manager", … */
+  store: string;
+}
+
 /** Where a backup was written, or which file was restored; null if cancelled. */
 export interface BackupResult {
   path: string | null;
@@ -181,6 +193,18 @@ export interface DcryptApi {
     /** Opens the vault's folder in the system file manager. */
     revealVault(): Promise<void>;
   };
+  unlockKey: {
+    status(): Promise<BiometricStatus>;
+    /** Remember the master password on this machine, sealed by the OS store. */
+    enrol(passphrase: string): Promise<void>;
+    forget(): Promise<void>;
+    /** Unlock using the remembered password; false when none is remembered. */
+    unlock(): Promise<boolean>;
+  };
+  clipboard: {
+    /** Copy a secret, and clear it again after `seconds`. */
+    copy(value: string, seconds?: number): Promise<void>;
+  };
   icons: {
     lookup(names: string[]): Promise<Record<string, BrandIcon | null>>;
   };
@@ -244,6 +268,11 @@ export const CHANNELS = {
   backupCreate: 'backup:create',
   backupRestore: 'backup:restore',
   backupRevealVault: 'backup:reveal-vault',
+  unlockKeyStatus: 'unlock-key:status',
+  unlockKeyEnrol: 'unlock-key:enrol',
+  unlockKeyForget: 'unlock-key:forget',
+  unlockKeyUnlock: 'unlock-key:unlock',
+  clipboardCopy: 'clipboard:copy',
   iconsLookup: 'icons:lookup',
   lockedEvent: 'vault:locked-event',
   themeGetSystemDark: 'theme:get-system-dark',
