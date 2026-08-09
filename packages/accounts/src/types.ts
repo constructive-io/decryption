@@ -6,6 +6,8 @@ export interface AccountRecord {
   endpoint: string;
   email: string;
   userId: string;
+  /** Vault item holding a one-time code that can answer an MFA step-up. */
+  totpItemId: string | null;
   /** When the stored access token stops working, if the server said. */
   accessTokenExpiresAt: string | null;
   /** False once signed out, or once the token has expired. */

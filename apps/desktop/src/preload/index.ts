@@ -63,6 +63,9 @@ const api: DcryptApi & {
       invoke(CHANNELS.accountsCreateKey, accountItemId, request, stepUp),
     revealKey: (itemId) => invoke(CHANNELS.accountsRevealKey, itemId),
     revokeKey: (itemId, stepUp) => invoke(CHANNELS.accountsRevokeKey, itemId, stepUp),
+    linkTotp: (accountItemId, totpItemId) =>
+      invoke(CHANNELS.accountsLinkTotp, accountItemId, totpItemId),
+    unlinkTotp: (accountItemId) => invoke(CHANNELS.accountsUnlinkTotp, accountItemId),
   },
   audit: {
     log: (itemId) => invoke(CHANNELS.auditLog, itemId),
