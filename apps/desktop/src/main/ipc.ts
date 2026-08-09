@@ -279,7 +279,7 @@ export const registerIpc = (service: VaultService): void => {
         assertString(accountItemId),
         {
           name: assertString(request?.name),
-          orgId: assertString(request?.orgId),
+          orgId: request?.orgId === undefined ? undefined : assertString(request.orgId),
           isReadOnly: Boolean(request?.isReadOnly),
           bypassStepUp: Boolean(request?.bypassStepUp),
         },

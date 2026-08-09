@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PrincipalRecord } from '../src/shared/api';
-import { principalReach } from '../src/shared/principal';
+import type { ApiKeyRecord, PrincipalRecord } from '../src/shared/api';
+import { knownOrgIds, principalReach } from '../src/shared/principal';
 
 const principal = (overrides: Partial<PrincipalRecord> = {}): PrincipalRecord => ({
   principalId: 'principal-1',
@@ -13,6 +13,43 @@ const principal = (overrides: Partial<PrincipalRecord> = {}): PrincipalRecord =>
   entityIds: ['org-1'],
   scopes: [],
   ...overrides,
+});
+
+const key = (overrides: Partial<ApiKeyRecord> = {}): ApiKeyRecord => ({
+  itemId: 'item-1',
+  accountItemId: 'account-1',
+  endpoint: 'http://auth.localhost:3000/graphql',
+  keyId: 'key-1',
+  name: 'ci',
+  expiresAt: null,
+  databaseId: null,
+  principalId: null,
+  orgId: null,
+  ...overrides,
+});
+
+describe('knownOrgIds', () => {
+  it('gathers the organizations already scoped, from principals and org keys alike', () => {
+    expect(
+      knownOrgIds(
+        [principal({ entityIds: ['org-b'] })],
+        [key({ orgId: 'org-a' }), key({ itemId: 'item-2' })]
+      )
+    ).toEqual(['org-a', 'org-b']);
+  });
+
+  it('offers each organization once, however many things are scoped to it', () => {
+    expect(
+      knownOrgIds(
+        [principal({ entityIds: ['org-a'] }), principal({ entityIds: ['org-a'] })],
+        [key({ orgId: 'org-a' })]
+      )
+    ).toEqual(['org-a']);
+  });
+
+  it('is empty for an account that has scoped nothing, so the id must be typed', () => {
+    expect(knownOrgIds([principal({ entityIds: [] })], [key()])).toEqual([]);
+  });
 });
 
 describe('principalReach', () => {

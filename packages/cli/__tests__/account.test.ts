@@ -110,12 +110,12 @@ describe('dcrypt account', () => {
     expect(stderr()).toContain('exactly one account');
   });
 
-  it('needs an org for a principal', async () => {
+  it('needs an account for a principal, but not an org: one without is personal', async () => {
     const pass = file('pass.txt', 'a strong master password');
     expect(
       await run(`account principal create ci --passphrase-file ${pass} --kdf ${FAST_KDF}`)
-    ).toBe(EXIT.usage);
-    expect(stderr()).toContain('--org <id> is required');
+    ).toBe(EXIT.notFound);
+    expect(stderr()).toContain('no account in the vault');
   });
 
   it('says which key it cannot tag', async () => {
