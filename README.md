@@ -28,6 +28,7 @@ socket is `dcrypt account`, which talks to the Constructive endpoint you name.
 | **@decryption/keys** | [![npm](https://img.shields.io/npm/v/@decryption/keys.svg)](https://www.npmjs.com/package/@decryption/keys) | [GitHub](./packages/keys) | X25519 identities, recipient strings, on-disk keyring |
 | **@decryption/secrets** | [![npm](https://img.shields.io/npm/v/@decryption/secrets.svg)](https://www.npmjs.com/package/@decryption/secrets) | [GitHub](./packages/secrets) | Team secrets file format, rekeying and `.env` export |
 | **@decryption/accounts** | [![npm](https://img.shields.io/npm/v/@decryption/accounts.svg)](https://www.npmjs.com/package/@decryption/accounts) | [GitHub](./packages/accounts) | Constructive accounts and API keys, held in the local vault |
+| **@decryption/webauthn** | [![npm](https://img.shields.io/npm/v/@decryption/webauthn.svg)](https://www.npmjs.com/package/@decryption/webauthn) | [GitHub](./packages/webauthn) | A software WebAuthn authenticator: passkeys kept in the vault |
 | **@decryption/cli** | [![npm](https://img.shields.io/npm/v/@decryption/cli.svg)](https://www.npmjs.com/package/@decryption/cli) | [GitHub](./packages/cli) | The `dcrypt` command-line interface |
 
 ### Vendored primitives
