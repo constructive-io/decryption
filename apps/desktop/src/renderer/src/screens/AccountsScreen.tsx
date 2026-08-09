@@ -20,10 +20,12 @@ import { Label } from '@constructive-io/ui/label';
 import { Separator } from '@constructive-io/ui/separator';
 import {
   Copy,
+  Database,
   KeyRound,
   LogIn,
   LogOut,
   Plus,
+  ShieldUser,
   Timer,
   Trash2,
   UserPlus,
@@ -34,9 +36,11 @@ import { toast } from 'sonner';
 import type {
   AccountRecord,
   ApiKeyRecord,
+  PrincipalRecord,
   StepUpProof,
   TotpEntry,
 } from '../../../shared/api';
+import { principalReach } from '../../../shared/principal';
 import {
   StepUpKind,
   stepUpKind,
@@ -70,6 +74,18 @@ export const AccountsScreen = () => {
   const [keyFor, setKeyFor] = useState<AccountRecord | null>(null);
   const [keyName, setKeyName] = useState('');
   const [keyDays, setKeyDays] = useState('');
+  const [keyPrincipal, setKeyPrincipal] = useState<PrincipalRecord | null>(null);
+  const [keyDatabase, setKeyDatabase] = useState('');
+
+  const [tagFor, setTagFor] = useState<ApiKeyRecord | null>(null);
+  const [tagValue, setTagValue] = useState('');
+
+  const [principals, setPrincipals] = useState<Record<string, PrincipalRecord[]>>({});
+  const [principalFor, setPrincipalFor] = useState<AccountRecord | null>(null);
+  const [principalName, setPrincipalName] = useState('');
+  const [principalOrg, setPrincipalOrg] = useState('');
+  const [principalReadOnly, setPrincipalReadOnly] = useState(true);
+  const [principalBypass, setPrincipalBypass] = useState(false);
 
   const [held, setHeld] = useState<HeldRequest | null>(null);
   const [proofValue, setProofValue] = useState('');
@@ -87,6 +103,19 @@ export const AccountsScreen = () => {
       setAccounts(nextAccounts);
       setKeys(nextKeys);
       setCodes(nextCodes);
+
+      // principals live on the server; a signed-out account simply has none to show
+      const signedIn = nextAccounts.filter((account) => account.signedIn);
+      const fetched = await Promise.all(
+        signedIn.map(async (account) => {
+          try {
+            return [account.itemId, await dcrypt.accounts.principals(account.itemId)] as const;
+          } catch {
+            return [account.itemId, []] as const;
+          }
+        })
+      );
+      setPrincipals(Object.fromEntries(fetched));
     } catch {
       // vault locked mid-refresh
     }
@@ -150,13 +179,41 @@ export const AccountsScreen = () => {
       toast.error('Expiry must be a whole number of days');
       return;
     }
-    const request = { name: keyName.trim(), expiresDays: days };
+    const request = {
+      name: keyName.trim(),
+      expiresDays: days,
+      principalId: keyPrincipal?.principalId,
+      orgId: keyPrincipal?.entityIds[0],
+      databaseId: keyDatabase.trim() || undefined,
+    };
     await run(async (proof) => {
       const key = await dcrypt.accounts.createKey(account.itemId, request, proof);
       setKeyName('');
       setKeyDays('');
+      setKeyPrincipal(null);
+      setKeyDatabase('');
       setKeyFor(null);
-      return `Created "${key.name}" — the secret is in your vault`;
+      return keyPrincipal
+        ? `Created "${key.name}" as ${keyPrincipal.name} — the secret is in your vault`
+        : `Created "${key.name}" — the secret is in your vault`;
+    });
+  };
+
+  const createPrincipal = async (): Promise<void> => {
+    const account = principalFor;
+    if (!account) return;
+    const request = {
+      name: principalName.trim(),
+      orgId: principalOrg.trim(),
+      isReadOnly: principalReadOnly,
+      bypassStepUp: principalBypass,
+    };
+    await run(async (proof) => {
+      await dcrypt.accounts.createPrincipal(account.itemId, request, proof);
+      setPrincipalName('');
+      setPrincipalOrg('');
+      setPrincipalFor(null);
+      return `Created ${request.name} — mint a key as it to give it credentials`;
     });
   };
 
@@ -200,6 +257,11 @@ export const AccountsScreen = () => {
 
       {accounts.map((account) => {
         const accountKeys = keys.filter((key) => key.accountItemId === account.itemId);
+        const accountPrincipals = principals[account.itemId] ?? [];
+        const mintedAs = (key: ApiKeyRecord): string =>
+          accountPrincipals.find(
+            (principal) => principal.principalId === key.principalId
+          )?.name ?? 'a principal';
         return (
           <Card key={account.itemId}>
             <CardHeader className="pb-3">
@@ -222,6 +284,14 @@ export const AccountsScreen = () => {
                   onClick={() => setKeyFor(account)}
                 >
                   <Plus className="size-4" /> New API key
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={busy || !account.signedIn}
+                  onClick={() => setPrincipalFor(account)}
+                >
+                  <ShieldUser className="size-4" /> New principal
                 </Button>
                 <Button
                   size="sm"
@@ -276,13 +346,65 @@ export const AccountsScreen = () => {
                 </p>
               )}
 
+              {accountPrincipals.length > 0 && <Separator />}
+              {accountPrincipals.map((principal) => (
+                <div key={principal.principalId} className="flex items-start gap-2 text-sm">
+                  <ShieldUser className="mt-0.5 size-4 text-muted-foreground" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{principal.name}</span>
+                    <span className="text-xs text-muted-foreground">{principalReach(principal)}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-auto"
+                    aria-label={`Delete ${principal.name}`}
+                    disabled={busy}
+                    onClick={() =>
+                      run(async (proof) => {
+                        await dcrypt.accounts.deletePrincipal(
+                          account.itemId,
+                          principal.principalId,
+                          proof
+                        );
+                        return `Removed ${principal.name}`;
+                      })
+                    }
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
+
               {accountKeys.length > 0 && <Separator />}
               {accountKeys.map((key) => (
                 <div key={key.itemId} className="flex items-center gap-2 text-sm">
                   <KeyRound className="size-4 text-muted-foreground" />
                   <span className="font-medium">{key.name}</span>
                   <span className="text-xs text-muted-foreground">{expiry(key.expiresAt)}</span>
+                  {key.principalId && (
+                    <span className="text-xs text-muted-foreground">
+                      as {mintedAs(key)}
+                    </span>
+                  )}
+                  {key.databaseId && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Database className="size-3" /> {key.databaseId}
+                    </span>
+                  )}
                   <div className="ml-auto flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Tag ${key.name} with a database`}
+                      disabled={busy}
+                      onClick={() => {
+                        setTagValue(key.databaseId ?? '');
+                        setTagFor(key);
+                      }}
+                    >
+                      <Database className="size-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -403,6 +525,54 @@ export const AccountsScreen = () => {
                 placeholder="30"
               />
             </div>
+            {keyFor && (principals[keyFor.itemId] ?? []).length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <Label>Mint as</Label>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={keyPrincipal ? 'outline' : 'default'}
+                    onClick={() => setKeyPrincipal(null)}
+                  >
+                    Yourself
+                  </Button>
+                  {(principals[keyFor.itemId] ?? []).map((principal) => (
+                    <Button
+                      key={principal.principalId}
+                      type="button"
+                      size="sm"
+                      variant={
+                        keyPrincipal?.principalId === principal.principalId
+                          ? 'default'
+                          : 'outline'
+                      }
+                      onClick={() => setKeyPrincipal(principal)}
+                    >
+                      <ShieldUser className="size-4" /> {principal.name}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  A key minted as a principal carries that principal&apos;s scope, not a
+                  copy of your own access.
+                </p>
+              </div>
+            )}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="key-database">Database (optional)</Label>
+              <Input
+                id="key-database"
+                value={keyDatabase}
+                onChange={(e) => setKeyDatabase(e.target.value)}
+                placeholder="database id"
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                Tag the key as that database&apos;s data-plane token, and dcrypt will serve
+                it to a harness asking for one.
+              </p>
+            </div>
           </DialogPanel>
           <DialogFooter>
             <Button variant="outline" disabled={busy} onClick={() => setKeyFor(null)}>
@@ -410,6 +580,120 @@ export const AccountsScreen = () => {
             </Button>
             <Button disabled={busy || !keyName.trim()} onClick={createKey}>
               {busy ? 'Creating…' : 'Create key'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={tagFor !== null} onOpenChange={(open) => !open && setTagFor(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Which database is this key for?</DialogTitle>
+            <DialogDescription>
+              dcrypt serves a tagged key to a harness asking for that database&apos;s data
+              token. Only one key may claim a database — with two, it refuses rather than
+              picks.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-1.5">
+            <Label htmlFor="tag-database">Database</Label>
+            <Input
+              id="tag-database"
+              value={tagValue}
+              onChange={(e) => setTagValue(e.target.value)}
+              placeholder="database id"
+              className="font-mono"
+            />
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" disabled={busy} onClick={() => setTagFor(null)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={busy || !tagValue.trim()}
+              onClick={() => {
+                const key = tagFor;
+                if (!key) return;
+                void run(async () => {
+                  await dcrypt.accounts.assignKeyToDatabase(key.itemId, tagValue.trim());
+                  setTagFor(null);
+                  return `"${key.name}" now answers for ${tagValue.trim()}`;
+                });
+              }}
+            >
+              {busy ? 'Saving…' : 'Tag key'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={principalFor !== null}
+        onOpenChange={(open) => !open && setPrincipalFor(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New principal</DialogTitle>
+            <DialogDescription>
+              A principal is a scoped sub-identity for keys and agents. It is owned by
+              this account and can only ever narrow it — never reach further than you do.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="principal-name">Name</Label>
+              <Input
+                id="principal-name"
+                value={principalName}
+                onChange={(e) => setPrincipalName(e.target.value)}
+                placeholder="ci-deploy"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="principal-org">Organization</Label>
+              <Input
+                id="principal-org"
+                value={principalOrg}
+                onChange={(e) => setPrincipalOrg(e.target.value)}
+                placeholder="org id"
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                The organization it is scoped to.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant={principalReadOnly ? 'default' : 'outline'}
+                onClick={() => setPrincipalReadOnly(!principalReadOnly)}
+              >
+                Read-only
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={principalBypass ? 'default' : 'outline'}
+                onClick={() => setPrincipalBypass(!principalBypass)}
+              >
+                Skips step-up
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Skipping step-up is what lets an unattended job use its key without a
+              one-time code, so pair it with read-only unless the job needs to write.
+            </p>
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" disabled={busy} onClick={() => setPrincipalFor(null)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={busy || !principalName.trim() || !principalOrg.trim()}
+              onClick={createPrincipal}
+            >
+              {busy ? 'Creating…' : 'Create principal'}
             </Button>
           </DialogFooter>
         </DialogContent>
