@@ -1,4 +1,4 @@
-import { EndpointError, normalizeEndpoint } from '../src';
+import { EndpointError, missingField, normalizeEndpoint } from '../src';
 
 describe('normalizeEndpoint', () => {
   it('appends the graphql path to a bare host', () => {
@@ -41,5 +41,24 @@ describe('normalizeEndpoint', () => {
       /unsupported scheme/
     );
     expect(() => normalizeEndpoint('http://')).toThrow(EndpointError);
+  });
+});
+
+describe('missingField', () => {
+  it('recognises a server that lacks a field the SDK types promise', () => {
+    expect(
+      missingField(
+        'GraphQL Error: Cannot query field "useAdminOwner" on type "Principal".; ' +
+          'Cannot query field "isActive" on type "PrincipalScopeOverride". Did you mean "isAdmin"?'
+      )
+    ).toBe(true);
+  });
+
+  it('is not a catch-all: a real failure must not be retried as drift', () => {
+    expect(missingField('STEP_UP_REQUIRED')).toBe(false);
+    expect(missingField('permission denied for table principals')).toBe(false);
+    expect(missingField('no GraphQL endpoint at http://x — try http://x/graphql')).toBe(
+      false
+    );
   });
 });

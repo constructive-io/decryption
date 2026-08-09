@@ -182,6 +182,60 @@ const readPrincipal = (node: PrincipalNode): PrincipalRecord => ({
   })),
 });
 
+/**
+ * Whether the server rejected a *field*, rather than the request.
+ *
+ * The published SDK's types are generated from one schema and an auth plane may
+ * be running an older one, so a field the types promise can still be absent —
+ * something no amount of type-checking on this side can catch.
+ */
+export const missingField = (message: string): boolean =>
+  /Cannot query field/i.test(message);
+
+/**
+ * Everything a principal can tell us. Optimistic on purpose: ask for the whole
+ * picture, and fall back only when a particular server cannot supply it.
+ */
+const PRINCIPAL_SELECT = {
+  id: true,
+  name: true,
+  ownerId: true,
+  isReadOnly: true,
+  bypassStepUp: true,
+  useAdminOwner: true,
+  principalEntities: { select: { entityId: true }, first: 100 },
+  principalScopeOverrides: {
+    select: {
+      membershipType: true,
+      allowedMask: true,
+      isActive: true,
+      isReadOnly: true,
+      useAdminOwner: true,
+    },
+    first: 100,
+  },
+} as const;
+
+/**
+ * The fields every vintage of the auth schema has. Dropping the rest costs
+ * detail, never correctness: an unread flag reads as inherited, which is what
+ * the server means by its absence anyway.
+ */
+const PRINCIPAL_SELECT_CORE = {
+  id: true,
+  name: true,
+  ownerId: true,
+  isReadOnly: true,
+  bypassStepUp: true,
+  principalEntities: { select: { entityId: true }, first: 100 },
+  principalScopeOverrides: {
+    select: { membershipType: true, allowedMask: true, isReadOnly: true },
+    first: 100,
+  },
+} as const;
+
+type PrincipalSelect = typeof PRINCIPAL_SELECT | typeof PRINCIPAL_SELECT_CORE;
+
 const rethrow = (operation: string, endpoint: string, error: unknown): never => {
   const message = error instanceof Error ? error.message : String(error);
   const kind = stepUpKind(message);
@@ -281,35 +335,23 @@ export const sdkAuthClient: AuthClientFactory = (options) => {
     },
 
     async listPrincipals() {
-      try {
-        const data = await client.principal
-          .findMany({
-            first: 200,
-            select: {
-              id: true,
-              name: true,
-              ownerId: true,
-              isReadOnly: true,
-              bypassStepUp: true,
-              useAdminOwner: true,
-              principalEntities: { select: { entityId: true }, first: 100 },
-              principalScopeOverrides: {
-                select: {
-                  membershipType: true,
-                  allowedMask: true,
-                  isActive: true,
-                  isReadOnly: true,
-                  useAdminOwner: true,
-                },
-                first: 100,
-              },
-            },
-          })
-          .unwrap();
+      const read = async (select: PrincipalSelect): Promise<PrincipalRecord[]> => {
+        const data = await client.principal.findMany({ first: 200, select }).unwrap();
         return data.principals.nodes.map(readPrincipal);
+      };
+      try {
+        return await read(PRINCIPAL_SELECT);
       } catch (error) {
         if (error instanceof AuthError) throw error;
-        return rethrow('listPrincipals', endpoint, error);
+        if (!missingField(error instanceof Error ? error.message : String(error))) {
+          return rethrow('listPrincipals', endpoint, error);
+        }
+        try {
+          return await read(PRINCIPAL_SELECT_CORE);
+        } catch (retried) {
+          if (retried instanceof AuthError) throw retried;
+          return rethrow('listPrincipals', endpoint, retried);
+        }
       }
     },
 
@@ -323,7 +365,11 @@ export const sdkAuthClient: AuthClientFactory = (options) => {
                 orgId: options.orgId,
                 isReadOnly: options.isReadOnly,
                 bypassStepUp: options.bypassStepUp,
-                useAdminOwner: options.useAdminOwner,
+                // omitted rather than sent as null, so a server that predates
+                // the field is not asked about it at all
+                ...(options.useAdminOwner === undefined
+                  ? {}
+                  : { useAdminOwner: options.useAdminOwner }),
               },
             },
             { select: { result: true } }
