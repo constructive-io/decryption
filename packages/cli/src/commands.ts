@@ -6,6 +6,7 @@ import { cosmologyCommand } from './commands/cosmology';
 import { decryptCommand, encryptCommand } from './commands/encrypt';
 import { keychainCommand } from './commands/keychain';
 import { keysCommand } from './commands/keys';
+import { passkeyCommand } from './commands/passkey';
 import { saltCommand } from './commands/salt';
 import { secretsCommand } from './commands/secrets';
 import { shamirCommand } from './commands/shamir';
@@ -29,6 +30,7 @@ Commands:
   secrets                 Team secrets files (.env generation, recipients, rekeying)
   vault                   The local encrypted vault, shared with the desktop app
   account                 Constructive accounts and API keys, stored in the vault
+  passkey                 Passkeys held in the vault; dcrypt signs for the site
   keychain                Store named secrets locally, always encrypted
   shamir                  Split and recombine a secret into authenticated shares
   salt                    Two-layer encryption: data under a salt, salt under your passphrase
@@ -57,6 +59,7 @@ export const createCommandMap = (): Record<string, Handler> => ({
   secrets: secretsCommand,
   vault: vaultCommand,
   account: accountCommand,
+  passkey: passkeyCommand,
   keychain: keychainCommand,
   shamir: shamirCommand,
   salt: saltCommand,

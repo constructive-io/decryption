@@ -7,7 +7,8 @@ export type ItemKind =
   | 'totp'
   | 'ssh_key'
   | 'account'
-  | 'api_key';
+  | 'api_key'
+  | 'passkey';
 
 export type FieldPurpose =
   | 'username'
