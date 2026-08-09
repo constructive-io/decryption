@@ -15,6 +15,8 @@ export const ENV_VARS = {
   encryptedSalt: ['ENCRYPTED_SALT', 'DCRYPT_ENCRYPTED_SALT'],
   keychainAccount: ['KEYCHAIN_ACCOUNT', 'DCRYPT_KEYCHAIN_ACCOUNT'],
   passphrase: ['DCRYPT_PASSPHRASE'],
+  accountPassword: ['DCRYPT_ACCOUNT_PASSWORD'],
+  authEndpoint: ['DCRYPT_AUTH_ENDPOINT'],
 } as const;
 
 export type EnvInput = keyof typeof ENV_VARS;
@@ -42,6 +44,8 @@ Environment:
   ENCRYPTED_SALT          The encrypted salt, for the two-layer scheme
   KEYCHAIN_ACCOUNT        Keychain namespace                  (default: dcrypt)
   DCRYPT_PASSPHRASE       The passphrase, for unattended runs
+  DCRYPT_AUTH_ENDPOINT    Constructive auth endpoint, for account commands
+  DCRYPT_ACCOUNT_PASSWORD The account password, for unattended sign-in
 
   Each also accepts a DCRYPT_-prefixed alias (DCRYPT_MNEMONIC, DCRYPT_SALT, ...).
   Flags take precedence over the environment, which takes precedence over stdin.

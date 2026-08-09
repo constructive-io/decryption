@@ -77,6 +77,9 @@ importers:
 
   apps/desktop:
     dependencies:
+      '@decryption/accounts':
+        specifier: workspace:*
+        version: link:../../packages/accounts/dist
       '@decryption/core':
         specifier: workspace:*
         version: link:../../packages/core/dist
@@ -110,7 +113,7 @@ importers:
         version: 1.6.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@constructive-io/ui':
         specifier: ^0.4.1
-        version: 0.4.1(f0f9140c8a4d38cb55f7df841bcff432)
+        version: 0.4.1(f16f011c60c5c8b6c937d4aa824336b8)
       '@internationalized/date':
         specifier: ^3.12.2
         version: 3.12.2
@@ -155,7 +158,7 @@ importers:
         version: 8.3.0
       motion:
         specifier: ^12.42.2
-        version: 12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       png2icons:
         specifier: ^2.0.1
         version: 2.0.1
@@ -195,6 +198,20 @@ importers:
       vitest:
         specifier: ^4.1.10
         version: 4.1.10(@types/node@20.19.43)(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  packages/accounts:
+    dependencies:
+      '@constructive-io/sdk':
+        specifier: ^1.11.9
+        version: 1.11.9(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafserv@1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(pg-sql2@5.0.1)(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tamedevil@0.1.1)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      '@decryption/vault':
+        specifier: workspace:*
+        version: link:../vault/dist
+    devDependencies:
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
 
   packages/base:
     devDependencies:
@@ -246,6 +263,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@decryption/accounts':
+        specifier: workspace:*
+        version: link:../accounts/dist
       '@decryption/base':
         specifier: workspace:*
         version: link:../base/dist
@@ -501,6 +521,105 @@ packages:
   12factor-env@1.18.2:
     resolution: {integrity: sha512-lW+ytI7TxOW2c7n6U2xr2yEENtj/npHffM8nPUpdxmORhs69asLTb9X469AY9h41HOdulZbKL1cDTxeHUkEX6w==}
 
+  12factor-env@1.27.1:
+    resolution: {integrity: sha512-i8KO5QPU69ntJsjG746Yj1hWN/eFc1A+wJRUaDcCJOG6ibw2oQ1ZV37t3pkmRIy8vRJzLnLZGsKhPmgkvZdP5A==}
+
+  '@0no-co/graphql.web@1.3.3':
+    resolution: {integrity: sha512-4gFGBdyaFmQ6n9euhp5JtIGS4ZeivwDr1tCPENUxTvy5wyv532yOtFCr9zzYAJh1s6uibgC+TRXUcay+mxzCoQ==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    peerDependenciesMeta:
+      graphql:
+        optional: true
+
+  '@agentic-kit/ollama@2.13.0':
+    resolution: {integrity: sha512-PCU4M00vgNuaygQS5FhqBLbyr775CM6dygey+lBwX6TsYTj3DjTrZq/+ah7Eth1XxRJVRqvBtuLdi5tBOFHiMw==}
+
+  '@agentic-kit/protocol@1.15.0':
+    resolution: {integrity: sha512-OxzyG8uus6gSqJpFVXcb+gwzaMnRgD0wTzAOeVIUEy2TvKc+xu+NaVK4CU1zqnohGG8jCuSAHy2qtoirEsTzcQ==}
+
+  '@aws-sdk/checksums@3.1000.26':
+    resolution: {integrity: sha512-CGznePoL+1oWCSzqmkvlYMpWQEZohPR3LntjKXXfVH+oh6Kd8d+yHLkjpiAGwPIHAxFe4OAq3aKfRnv/wqWIyA==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/client-s3@3.1106.0':
+    resolution: {integrity: sha512-hUTlnyRRGlVdfvJLL3hCEnMm7CmunSzc/lxFVRX8g1fjJTMUVbyQCfhfMhp7dZ7JBftLU6OYresu3Hje4nvkJw==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/core@3.977.6':
+    resolution: {integrity: sha512-QiaJV4/zDrB4ZY2mfeSXSzSTc36W16sZXcGz+SPFk0CJ26gziO0cS+4LjJUMAbdeeBOvS0k0Aq1cZpfGdUXxSw==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-env@3.972.67':
+    resolution: {integrity: sha512-rcIpk5kxUqDaaNa6Xk23pQ6ViY7jlqzmfFWCahQcBT97ddXaXYYwzCen9Tz1Jvo6aJft6wDl5bN44/Jw5B4oLA==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-http@3.972.69':
+    resolution: {integrity: sha512-nggwJtZ4eeNsUw5IeWBMXsi1ryct5idi0K+/SCRF3kybLubOMaNTb3XCihXpWMiVpyzyPeIrl0zTkzhBH9porA==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-ini@3.973.12':
+    resolution: {integrity: sha512-pNEf/OeyN5X3VmLKlgSO6TqaWmW10CvI3TfwL1XhsuhYjSLT2VDaxFnCPHnOeQXSaFisMX4jNhpETriqN8DOmg==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-login@3.972.74':
+    resolution: {integrity: sha512-0AQfDcf99TNmqVKv0owHrw/TQs6i4ZE5t9qmz6NvO53bE/sA/tpXhXL9AAcEP1qHc6Zzjd1UMb69+/9zdhvY3g==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-node@3.972.78':
+    resolution: {integrity: sha512-OgPAnfvbGAMWac6yvxJ1ihslrvDpPVwR68D2csospdNCCyPvHk9JLzYKwz48SNiS1T2znDwHauywRKRFfpyYng==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-process@3.972.67':
+    resolution: {integrity: sha512-IlUEejorGTWKb4/Dm7K5Yw4QxUmXLThLhrvBmzVBqZFTbW72cv9LTcITmo1dsnYriALE4h68mOq4LB99x6sQ7Q==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-sso@3.973.11':
+    resolution: {integrity: sha512-gAQBkBZxUB84d71+pPcI9L+jh2ujhuAVxc/4FgGiWFDjkPBlMKxzd5XDtkSXTFX8Ro7ansnT88+XadasxMeCRw==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/credential-provider-web-identity@3.972.73':
+    resolution: {integrity: sha512-SnlEmQa6SjOgs6iOPLUQl1Eyq4AKiAdPQlkOhFhqNfDtDCwibMGvL6QlkSmf3o6vAUSImzdPCxowT5dfQUZP1A==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/lib-storage@3.1106.0':
+    resolution: {integrity: sha512-xAK/baB/XLoiWYXEBFt9/YXtegqBVYfJbTWJMSXkeWSL8kuAHaCZiqJ6BRnpftKMgOyEuQ56os1hHxdaWk99mA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@aws-sdk/client-s3': ^3.1106.0
+
+  '@aws-sdk/middleware-sdk-s3@3.972.72':
+    resolution: {integrity: sha512-lSAoVPvQxX1d8TOM6waKDBQrvvZcm4w6pCldFAsRUffEaXq6lYY0pPyew3KlLu6Xqb74DXI42hGvSsbGBLljlw==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/nested-clients@3.997.41':
+    resolution: {integrity: sha512-RDHqPGQWlF6tatA/Tp3rg6oIwtgN9IVderxE+9av2Y93Dfyu+mO1hZ5Bu2jpfZg2rwdNbsssnwM+sLafIczMlQ==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/s3-request-presigner@3.1106.0':
+    resolution: {integrity: sha512-ZI5SCkyz8jB3Qr6NPSJ7R4A/PkniQvbD1DO8APwhMsubFcfwPSJMMUxrkv9k1E20ikRk7skpM9itZh+0wI9K/w==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/signature-v4-multi-region@3.996.43':
+    resolution: {integrity: sha512-lKekx8bLBXSv4O+cslk9Zfnw2XKSkWBs3uWL5QGhH2ZAQfNS7FE0vcSSN2vD/AhxX54ZTywWxR4STThoeOXlBA==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/token-providers@3.1103.0':
+    resolution: {integrity: sha512-N4wy26MNn31ItGVHYHPrEuCIFY4MBBjC+C5v1lJKqIUSA7OZBdhleCY53zCCrXn27hsk7YNOaTuhQu807S4AfQ==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/types@3.974.2':
+    resolution: {integrity: sha512-3W6IUtSxFbH6X7Wb7DzGCV5QiFQsd0g8bOfntpmDxQlzBoKWUMBu/JPQR0DwkE+Hpnxd6db1tXbOwdeHddG6cA==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/xml-builder@3.972.37':
+    resolution: {integrity: sha512-zKq4HQum8JwDyEuyfuI4bbiAcU0KxP6qy+9PR/IsR92IyE/DaBAikzAS50tjxip4bqIIANpCcG+Yyj6CVhXupg==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws/lambda-invoke-store@0.3.0':
+    resolution: {integrity: sha512-sl4Bm6yiMNYrZKkqqDFWN0UfnWhlS8ivKxrYl+6t0gCLrqr8y3B2IqZZbFRkfaVVp7C/baApyh71P+LeE1A2sQ==}
+    engines: {node: '>=18.0.0'}
+
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
     engines: {node: '>=6.9.0'}
@@ -715,8 +834,46 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
+  '@constructive-io/bucket-provisioner@0.24.0':
+    resolution: {integrity: sha512-Uz3DpbptbsLIxVmJWlINYwrsEuucD4ew6ghLsVFw4dAyFqxxfkgBEZ9d2OHegKmU0ssgPbENmWg6Z6/1aHS5lg==}
+
+  '@constructive-io/content-type-stream@2.30.0':
+    resolution: {integrity: sha512-Ulw749jjvgkBssx7ZFd52rnDMwn0JDGv4kDgLQyc8PKWLGZRbGDQUnNQSQX2/9HMiXdKtK+fS/IN4DcxtV2dHA==}
+
+  '@constructive-io/errors@0.10.0':
+    resolution: {integrity: sha512-AFMvEcT7mqHBlqTJytJVvzmGdio2ys1uG4E9d0qF5wz+sdLwBMdEl8TBbxuBieSQgZAMAUoYOynCIrbwWtwArw==}
+
+  '@constructive-io/express-context@0.24.4':
+    resolution: {integrity: sha512-7Wt649dzE/csYToSzcjZlhd6C9VjSOUCvD1wH3B/7qiLo30hKGQXp76yPS53lusU8ozy2ulY8E1Tsz/3PCvkFA==}
+    peerDependencies:
+      express: ^5.0.0
+
+  '@constructive-io/fetch@1.2.0':
+    resolution: {integrity: sha512-Np5D2MONxZDgTULEX4vGxe2Ap4hZsd8ss9+GzkvED02eV71uPAswQzG6a0g3ppxQhqguKJvS5lGnUWtQ/u4y4g==}
+
+  '@constructive-io/graphql-env@3.29.3':
+    resolution: {integrity: sha512-i5XaHe9DnfgKn+TWqesCZcpqp5vAWXW2GUseVgKQaNPGFpPo3XXANAnISxeadv4OEBuvP25IiSc0Oeyk27tVKw==}
+
+  '@constructive-io/graphql-query@4.12.9':
+    resolution: {integrity: sha512-sVN0Lz8+j9vOPNqADk2PoPZDppDGUVIv8Acwu5+R81iHuz9uW5Hhlx4swkmlX9DVElvIB+JiKn75TXe/FtAKLQ==}
+
+  '@constructive-io/graphql-types@3.28.3':
+    resolution: {integrity: sha512-A1pu29lh5Wujfa7gra3v+Knfg7YKDMN5D7wrkaj+bmLc5kzMTJWAPa0k8HOGX1kR8tdABkzOOnl5ePFyFkWFTg==}
+
+  '@constructive-io/llm-env@0.13.0':
+    resolution: {integrity: sha512-umRrIxwa3nWpZwh+7Q25WvXRa8Thc5umDH2ZcHRCW+c6jtPvynOGfs+AWHDw3y3D8vlyiCuIPFyNkddvrS/Lgg==}
+
   '@constructive-io/pnpm-policy@0.2.1':
     resolution: {integrity: sha512-tAgH3Zgwn2shQXGlfl5zxmtY/tyZw9jYX7QAOFMp5ALKSrxO5xsxZQmckwMqOeHyyV/MZJWzIZ4t/QYznJeVmw==}
+
+  '@constructive-io/s3-streamer@2.40.0':
+    resolution: {integrity: sha512-B86Hkud9LS66Sfskofuxg/9cb+hBxXj2uy5OWfxol1gyAfpiqDI88r1fqSNcC6eJjmQhB7z+ObsFR0jDAO4HyQ==}
+
+  '@constructive-io/s3-utils@2.30.0':
+    resolution: {integrity: sha512-dbzL+1kr4Yy89ISoHV0QZUe+oR3ZFFD5J4Cbe81V+cFozBjDanG2cDczRUKJjCatGzIS1/MkzKZt0eFjSFdsUA==}
+
+  '@constructive-io/sdk@1.11.9':
+    resolution: {integrity: sha512-/Y9cbKxThvB/fEoe6FbZE8FYqBZqCIMOCG19Ng8E/eN+FfqtMA6HgYtjvdpA1qLGfXU9ejDkRc9CJZhr6mewEQ==}
 
   '@constructive-io/ui@0.4.1':
     resolution: {integrity: sha512-2Sn0buP2BPtKK9qRN2+6Om8DdGjhAFejN+d2gAPnptbshqDz/+YpdBgRFRs0luADSwYqB8C1tJevHn/3KwFn0A==}
@@ -768,9 +925,35 @@ packages:
       vaul:
         optional: true
 
+  '@constructive-io/upload-names@2.29.0':
+    resolution: {integrity: sha512-9FVIXIUFcipYxEy+jm/tB4el7wlsPkYyWldDkISmfHXs7wTdIw3C4inwiNUOPh3jNf73fRg5LLaUv8NFJNJt1Q==}
+
+  '@constructive-io/url-domains@2.29.0':
+    resolution: {integrity: sha512-pFqPA4GiLteS6VMeVFLCZEk6JdONTT2Ji+f0ykm1ddSHbiKeqWTpa2AKC0FNxkAgEnaiBk7/LnS3NtWaPR7K2g==}
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@dataplan/json@1.0.1':
+    resolution: {integrity: sha512-wE+FK5rravDZMCd5xQNk5gZtfoVooVHREQWQ15oRJzOPbypZHDvRIMilWbKzgW8uJy3mGfVSP6xWZqxm/3651A==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      grafast: ^1.0.0-rc.8
+
+  '@dataplan/pg@1.1.1':
+    resolution: {integrity: sha512-SeD4AaImCFp0mWGJRgACdojHTn98szY/DTaXifeg7tztXJ/xtNOG1xjB7uHWp0qfZbwINep0saOGzFRnyrppzQ==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@dataplan/json': ^1.0.1
+      grafast: ^1.1.0
+      graphile-config: ^1.0.0-rc.5
+      graphql: ^16.9.0
+      pg: ^8.7.1
+      pg-sql2: ^5.0.1
+    peerDependenciesMeta:
+      pg:
+        optional: true
 
   '@electric-sql/pglite@0.5.4':
     resolution: {integrity: sha512-yYZUyyXrHU7tPlCjwZQJ6hIG9DscdCCn7Uk0mYKwC1FeHX286AbcmFveMiRBEak8e9iPupjsoVImN3yJZVed2g==}
@@ -796,6 +979,12 @@ packages:
 
   '@emnapi/wasi-threads@1.2.3':
     resolution: {integrity: sha512-ELEBe8PsLvvJ6QMr0zLt8ffvOHW/dc1m3CEzNMg7aJUv3bMaoDtw2TXyDAwkYBuroxxuHEwhRTLJSe5sya547g==}
+
+  '@emotion/is-prop-valid@1.4.0':
+    resolution: {integrity: sha512-QgD4fyscGcbbKwJmqNvUMSE02OsHUa+lAWKdEUIJKgqe5IwRSKd7+KhibEWdaKwgjLj0DRSHA9biAIqGBk05lw==}
+
+  '@emotion/memoize@0.9.0':
+    resolution: {integrity: sha512-30FAj7/EoJ5mwVPOWhAyCX+FPfMDrVecJAM+Iw9NRoSl4BBAQeqj4cApHHUXOVvIPgLVDsCFoz/hGD+5QQD1GQ==}
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -1168,8 +1357,69 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+  '@floating-ui/react@0.26.28':
+    resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@graphile-contrib/pg-many-to-many@2.0.0-rc.2':
+    resolution: {integrity: sha512-aPu/oPWIsljTmlj58UNy95+JzXwHrClQA51bvfZUgj3l7kaUiwCCBYCFql2nSrMwdlFgexphs3faJbHiqsEDrw==}
+    engines: {node: '>=10'}
+
+  '@graphile/lru@5.0.0':
+    resolution: {integrity: sha512-NeRBDdUd/l4H284HrYL2/wNHv/FmW5stAMPFAiBZanLHwq9J3suZTtyN5CwTxUFA/vgqzu0B1/9XtIEaJYEKig==}
+    engines: {node: '>=22'}
+
+  '@graphiql/plugin-doc-explorer@0.4.2':
+    resolution: {integrity: sha512-jqRUSaP9pq2JdoovKaiNQoV4ZVcDP5nn+QEa++vEYh0nCn76836SAde2/LkYMc9NnN8/PHMKqeUBnClZ+AUtVQ==}
+    peerDependencies:
+      '@graphiql/react': ^0.37.0
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  '@graphiql/plugin-history@0.4.2':
+    resolution: {integrity: sha512-kwQYc1gmmkLbJPRHI/df3wtYNKNBGHxVkbkd+tbnRuCkrpdMm6NygCQeproJFKHTRbd3lYBAolaBcfgWNd196A==}
+    peerDependencies:
+      '@graphiql/react': ^0.37.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  '@graphiql/react@0.37.7':
+    resolution: {integrity: sha512-yHK+9wk9xWggrDdAOEOPwNJFCgkAG01ZDVcwuteBw1DCkDaPyBYC6H7hkw5AVYw8PbhlgPOEWBwXzceb9IV4zw==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  '@graphiql/toolkit@0.11.3':
+    resolution: {integrity: sha512-Glf0fK1cdHLNq52UWPzfSrYIJuNxy8h4451Pw1ZVpJ7dtU+tm7GVVC64UjEDQ/v2j3fnG4cX8jvR75IvfL6nzQ==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      graphql-ws: '>= 4.5.0'
+    peerDependenciesMeta:
+      graphql-ws:
+        optional: true
+
+  '@graphiql/toolkit@0.12.1':
+    resolution: {integrity: sha512-OuHVUIvPL7nz3uAdG9eyZ5cZx87JH+XMOHiXgv3foYZWBPW8FNMGUyFflxP70jhv7bX9UPyYmRsTIJ+GSlK0PQ==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      graphql-ws: '>= 4.5.0'
+    peerDependenciesMeta:
+      graphql-ws:
+        optional: true
+
+  '@headlessui/react@2.2.10':
+    resolution: {integrity: sha512-5pVLNK9wlpxTUTy9GpgbX/SdcRh+HBnPktjM2wbiLTH4p+2EPHBO1aoSryUCuKUIItdDWO9ITlhUL8UnUN/oIA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^18 || ^19 || ^19.0.0-rc
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -1504,6 +1754,10 @@ packages:
     engines: {node: '>=18.0.0'}
     deprecated: This package is an implementation detail of Lerna and is no longer published separately.
 
+  '@n1ru4l/push-pull-async-iterable-iterator@3.2.0':
+    resolution: {integrity: sha512-3fkKj25kEjsfObL6IlKPAlHYPq/oYwUkkQ03zsTTiDjD7vg/RxjdiLeCydqtxHZP0JgsXL3D/X5oAkMGzuUp/Q==}
+    engines: {node: '>=12'}
+
   '@napi-rs/wasm-runtime@0.2.4':
     resolution: {integrity: sha512-9zESzOO5aDByvhIAsOy9TbpZ0Ur2AJbUI7UT73kcUTS2mxAMHOBaa1st/jAymNoCtvrit99kkzT1FZuXVcgfIQ==}
 
@@ -1722,8 +1976,14 @@ packages:
   '@pgpmjs/env@2.30.2':
     resolution: {integrity: sha512-ZxQH/Ck4zYt5sIK+qRbmlv++6J38wRcFgw927kFuf01UZwzYa7Cb7KMM0nDNNRaLQ/l/tVNLsAZXD3FNCFfN5g==}
 
+  '@pgpmjs/env@2.41.3':
+    resolution: {integrity: sha512-11XEcfSMPJ0xAErusa6qo4A1+/YfqRLWM8j43M1HzLM0cnDiZyhriGyWQFZUaOOUDh6OVuIl0UJEggX8Hof0Tw==}
+
   '@pgpmjs/logger@2.15.2':
     resolution: {integrity: sha512-XWoJlkE4v4s7KDh28BQVaimI/JdyjnNF9HRgppKjwcaeZdFDGw7fZm2alUb4dTeu2AfoSLiKhXs6quMx3cgObw==}
+
+  '@pgpmjs/logger@2.24.1':
+    resolution: {integrity: sha512-T8WxB4GBM0zAE/C8HewmA88zIIrAGDV4cQi6v8tf630lXkg2JxeCDv4Ze8gtgB7A4NLnN0R+b3AdFmJd8c/30Q==}
 
   '@pgpmjs/pglite-adapter@0.1.5':
     resolution: {integrity: sha512-c9SP0wTkm2cNju98O9imWvQHc+PVxK40yExsZDMciJnz7Hjvy2RMxH6j2+NTHsd/wK+yzphmQ/iOvuNsasb4Fw==}
@@ -1733,11 +1993,20 @@ packages:
   '@pgpmjs/server-utils@3.16.2':
     resolution: {integrity: sha512-MaKBGSwU+x7dmfEdCqZSFB+gsfez6us2slTqdJiwtox7IJp2V68liNGFhDnJLXyCbbO2YiTvjL3VII08YANZPQ==}
 
+  '@pgpmjs/server-utils@3.25.4':
+    resolution: {integrity: sha512-0XrttIUyjZfMd6/goaEuD1f7gyVx/tvjUAIiUXuerCceWnuP6Rpg08mVcOe56WTZrF3jnkulbbbuEpo1INRDjw==}
+
   '@pgpmjs/types@2.37.2':
     resolution: {integrity: sha512-QscdUwDcqG4HfeTTDBWUPIyvTQSIdhDL36IPQDDyJJ+5N95ytga1nfBmAPfyhvTZOdXHOpno5WR6cirBjt7/0Q==}
 
+  '@pgpmjs/types@2.50.3':
+    resolution: {integrity: sha512-8b4LKFpcbJCzLslwcriPiFbr2fkmEBvzJzvF/Oc5xqzdT/cM6KEyX/w2brMqtA8b4lmEiODcXk4/4j7W/f9g7A==}
+
   '@pgsql/quotes@17.1.0':
     resolution: {integrity: sha512-J/H+LcrENBpYgL45WW6aTjb5Yk4tX4+AmB2/k8KZa+Zh3wiCtqmNIag+HZz5HmWaF6EZK9ZGC95NBD1fs+rUvg==}
+
+  '@pgsql/quotes@18.2.4':
+    resolution: {integrity: sha512-muCDdPu/bM/f9d7IquBNfkMgiRPehv6vvjdhSMxXeVKwJKPX9xIscDu11ju15s7UeEXoWntE8zrSaR9wQ9wgCg==}
 
   '@pgsql/types@17.6.2':
     resolution: {integrity: sha512-1UtbELdbqNdyOShhrVfSz3a1gDi0s9XXiQemx+6QqtsrXe62a6zOGU+vjb2GRfG5jeEokI1zBBcfD42enRv0Rw==}
@@ -1755,6 +2024,32 @@ packages:
 
   '@radix-ui/primitive@1.1.7':
     resolution: {integrity: sha512-rqWnm76nYT8HoNNqEjpgJ7Pw/DrBj5iBTrmEPo6HTX5+VJyBNOqTdv4g89G63HuR5g0AaENoAcH7Is5fF2kZ8Q==}
+
+  '@radix-ui/react-arrow@1.1.15':
+    resolution: {integrity: sha512-v4zggRcjadnI+ClKDuijlQEW4tw3NoaeHc/PwpKnLoLLKNUG4InLegkstooLcRIUWCs+8L22dGURCVuFfOKfnA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-collection@1.1.15':
+    resolution: {integrity: sha512-9W+B9NPF0NaaPh/1NJd3+KqsnlLqU9H7T2rvww+fp+T/evVXdNAyYcnfRQZFOjkR1ajQp3yORlqnI8soawLvNA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
 
   '@radix-ui/react-compose-refs@1.1.5':
     resolution: {integrity: sha512-+48PbAAbq3didjJxa+OaWY2ZwgAKsNiRGyeHKszblZMQ+kcpd9pAaT11cMkGEie0vsOi3QdeTE6d5Fe3Gn61kA==}
@@ -1787,8 +2082,30 @@ packages:
       '@types/react-dom':
         optional: true
 
+  '@radix-ui/react-direction@1.1.4':
+    resolution: {integrity: sha512-5pzg4FGQNpExhnhT2zlrP1wZFaYCd1K0nYWoFAdcYoYK868IEigqMX3B3f8yIoRlAhAeDWciLI6ZdCKHF9P4Vg==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   '@radix-ui/react-dismissable-layer@1.1.19':
     resolution: {integrity: sha512-8g4pfOL9HoKKLWGiypT+dphVqjFfmcXO5GBnhsG6zI+lxAx/8feQpr+1LSN8Re3hiZ+XkLNS4O9ztK11/LzQ6w==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-dropdown-menu@2.1.24':
+    resolution: {integrity: sha512-geq8l2rJkxvkXsT9RMgtUE3P8pITFpTsvYpbySi1IH4fZEABD/Gp85myayFgxk0ktljGMJnCbeFkyTusvSvv7g==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -1831,6 +2148,32 @@ packages:
       '@types/react':
         optional: true
 
+  '@radix-ui/react-menu@2.1.24':
+    resolution: {integrity: sha512-uW7RVuU6Lp/ZtfeY4b3kL32zccgEWvPv1+cf17ubYzHa9cL8AHokmk36cG/XEiH/smbQvumnieXX9j/e9RqJWA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-popper@1.3.7':
+    resolution: {integrity: sha512-UsJrrd7w4wuKKTdvd/DNERVlwSlUcyXzjhyDwBk+3aPOsCjOY6ZSbxuw8E6lZTjjfP8Cpd0J8VVkrYUWyGYXyg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
   '@radix-ui/react-portal@1.1.17':
     resolution: {integrity: sha512-vKQLcWypUnwZVvfV7UkGahH2g6ySe8M8R+zYBwPrv5byZ9QAW6cQVvNKo7GgmD+p8aYb6D9JBuvy8/WhOno2wQ==}
     peerDependencies:
@@ -1870,6 +2213,19 @@ packages:
       '@types/react-dom':
         optional: true
 
+  '@radix-ui/react-roving-focus@1.1.19':
+    resolution: {integrity: sha512-V9jI6hDjT7l3jsCQD9bLNvDLM3tH/gdbOTp7Tefp3hbbgCGQoK7tUvrWiRlcoBHIZ809ElXwNQwVo0B98LuTXQ==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
   '@radix-ui/react-slot@1.3.3':
     resolution: {integrity: sha512-qx7oqnYbxnK9kYI9m317qmFmEgo6ywqWvbTogdj7cL9p3/yx4M48p7Rnw5z3H890cL/ow/EeWJsuTykeZVXP5Q==}
     peerDependencies:
@@ -1877,6 +2233,19 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
+        optional: true
+
+  '@radix-ui/react-tooltip@1.2.16':
+    resolution: {integrity: sha512-6EamKFRRnlpdadndbZ6LMwycfwkwPte1B42hs6QA0gYhjaOKqW4PZ4pjaW9UrlDX5eVt/OjncE7BFTPL5nmZhg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
         optional: true
 
   '@radix-ui/react-use-callback-ref@1.1.4':
@@ -1906,6 +2275,15 @@ packages:
       '@types/react':
         optional: true
 
+  '@radix-ui/react-use-is-hydrated@0.1.3':
+    resolution: {integrity: sha512-umO/aJ+82CpOnhDZUTbILCQf7kU/g0iv+oGs/Q8jw7IkhWBzaEP4sA268PhFAJTFetbwp3ICc6ktpI4TqtxcIw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   '@radix-ui/react-use-layout-effect@1.1.4':
     resolution: {integrity: sha512-K20DkRkUwDnxEYMBPcg3Y6voLkEy5p5QQmszZgLngKKiC7dzBR/aEuK3w1qlx2JWDUNH6FluahYdgR3BP+QbYw==}
     peerDependencies:
@@ -1914,6 +2292,52 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@radix-ui/react-use-rect@1.1.4':
+    resolution: {integrity: sha512-cSOCh6JlkmfjLyNcLiu2nB4v+nm+dkZ+Q5KHWk/soo4U7ZLiEQFKHK9/YmtBHjfCEaU43IBKQOc4/uJmCaiCTQ==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@radix-ui/react-use-size@1.1.4':
+    resolution: {integrity: sha512-D3anSY15EJoxrihpsXI6SMrmmonnQtR2ni7arO+Lfdg3O95b9hNXxONk8jA5C8ANdF/h5HMAxejgs8PWJ6rlhw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@radix-ui/react-visually-hidden@1.2.11':
+    resolution: {integrity: sha512-NFS86RYYZb4/exihaESBGOpMJFz8MGLAfu3mOBSGByVnVPC9JPASfYubxd/8KbkQK0sYAv8lVQDEQukDX/qXvQ==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/rect@1.1.3':
+    resolution: {integrity: sha512-JtyZR+mqgBibTo8xea3B6ZRmzZiM/YeVBtUkas6zMuXjAlfIFIW2FgqeM9eLyvEaYX66vr6DJMK+4U6LV0KhNw==}
+
+  '@react-aria/focus@3.22.1':
+    resolution: {integrity: sha512-CPxtkyrBi/HYY5P3lE/57sQ6qfa0lN8E55TOm89H0kNGv0lKt+/0zP7lWERzBjRr5IxBVrQX4gFEowBN52LPaA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+      react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+
+  '@react-aria/interactions@3.28.1':
+    resolution: {integrity: sha512-Bqb+HrD5I5MHS2SKBhISYqo2SW8Y2dfzgF/Y1lIJq7xqLxheo9vzxPGEHhz+XzkgGfoqEJx8A6a3C7uiqS3HWA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+      react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
   '@react-types/shared@3.36.0':
     resolution: {integrity: sha512-DkP/H0C2YjjS7gZWKNqOmU8a16qHPjQNdzMwmTq9SzplM6Iw0kVMTZ0OIoe6FOgGqa+FwMsE2QbPjh/n3g/jXQ==}
@@ -2110,6 +2534,30 @@ packages:
   '@sinonjs/fake-timers@15.4.0':
     resolution: {integrity: sha512-DsG+8/LscQIQg68J6Ef3dv10u6nVyetYn923s3/sus5eaGfTo1of5WMZSLf0UJc9KDuKPilPH0UDJCjvNbDNCA==}
 
+  '@smithy/core@3.31.1':
+    resolution: {integrity: sha512-CyogUINxvi7C7LDsh8Syo6hVJOT9ckz4rG8dRZfTJ8r91HkMY59PnNooaj7WcHyxEkxPfBAmbgztZU+xTo76lg==}
+    engines: {node: '>=18.0.0'}
+
+  '@smithy/credential-provider-imds@4.4.16':
+    resolution: {integrity: sha512-QfuLWAkLzptffFW980AFeHZFdqds2B64rpEd3uJ6lgs3xVn9QegGMUgUcj+4d7dRrAsya3r58ZKpku97WcFb4w==}
+    engines: {node: '>=18.0.0'}
+
+  '@smithy/fetch-http-handler@5.6.13':
+    resolution: {integrity: sha512-4fW86pEUOMbrD5nkbyl/tTvPHHWJFbuB2odl6ps9lWfHoXf9HWh3Q/Smh59qH1g7+c/BSZghX6bbUk4gsiMs8A==}
+    engines: {node: '>=18.0.0'}
+
+  '@smithy/node-http-handler@4.9.13':
+    resolution: {integrity: sha512-Nmd/Nl35zfYrd+a6OO2cDJb3GPh9bgTjIUhcM+JFfjpp8/osCgboDV5nCT1I01Pv6R13eSKDKLSoVa5ZB6Zsfw==}
+    engines: {node: '>=18.0.0'}
+
+  '@smithy/signature-v4@5.6.12':
+    resolution: {integrity: sha512-I6KLtq3H0qqSuV9vLglfi8puHqzygzWHOnI4z/Rdoo+q50vvo18vBRdPAvvEtcaKROz7Zn6qnPa14kRfPH6PcQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@smithy/types@4.16.1':
+    resolution: {integrity: sha512-0JFs3V2y2M9tKW5na/qxe69Zv+uxLMO7QBbhxF/FHu/Gp2NFZAAL9tWl9PU02xxo07pb3G9FTyjNc6D5uZrJIg==}
+    engines: {node: '>=18.0.0'}
+
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
@@ -2213,6 +2661,15 @@ packages:
     resolution: {integrity: sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==}
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
+
+  '@tanstack/react-virtual@3.14.9':
+    resolution: {integrity: sha512-qZyr0FZDP8rDC4WBhsryIZmAd9bveJvFGUJJtskWaew6/0dTRS6wZxnR6VQ5bY2KwL3LjerrHqQLk3a0GKcPXQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/virtual-core@3.17.7':
+    resolution: {integrity: sha512-bp+v10y65sp2H7WpWfIMyxTNfl8ZVfxFTLRjPIFRryi6FV/J33z4IS53WO4pTk36KlvJ4iLiQz+oaydDC1xbcA==}
 
   '@tsconfig/node10@1.0.12':
     resolution: {integrity: sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ==}
@@ -2321,6 +2778,12 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
+  '@types/pg@8.21.0':
+    resolution: {integrity: sha512-AYdtudzabjLZgVgRZmAnU8bAnVUXzuJX2IYHeSIiIHm68olD+LgQYCGWdtcNYnP0uq9c4S4NibVG3Ni7VbKW7Q==}
+
+  '@types/pluralize@0.0.33':
+    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
+
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
@@ -2331,6 +2794,9 @@ packages:
 
   '@types/responselike@1.0.3':
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
+
+  '@types/semver@7.8.0':
+    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -2604,6 +3070,9 @@ packages:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  accept-language-parser@1.5.0:
+    resolution: {integrity: sha512-QhyTbMLYo0BBGg1aWbeMG4ekWtds/31BrEU+DONOg/7ax23vxpL03Pb7/zBmha2v7vdD3AyzZVWBVGEZxKOXWw==}
+
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
     engines: {node: '>= 0.6'}
@@ -2639,6 +3108,9 @@ packages:
 
   ajv@6.15.0:
     resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
+
+  ajv@8.20.0:
+    resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
   ansi-colors@4.1.3:
     resolution: {integrity: sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==}
@@ -2781,6 +3253,9 @@ packages:
     resolution: {integrity: sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==}
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
+  bowser@2.14.1:
+    resolution: {integrity: sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg==}
+
   brace-expansion@1.1.16:
     resolution: {integrity: sha512-IDw48K2/2kRkg9LdJxurvq3lV3aBgq0REY89duEqFRthjlPdXHKMj7EnQOXVckxzgisinf3nHfrcE2FufFLXMw==}
 
@@ -2810,8 +3285,14 @@ packages:
   buffer-crc32@0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
 
+  buffer-equal-constant-time@1.0.1:
+    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
+
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
+  buffer@5.6.0:
+    resolution: {integrity: sha512-/gDYp/UtU0eA1ys8bOs9J6a+E/KWIY+DZ+Q2WESNUA0jFRsJOc0SNUO6xJ5SGA1xueg3NL65W6s+NY5l9cunuw==}
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -2947,6 +3428,10 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+
+  clsx@1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
 
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
@@ -3164,6 +3649,9 @@ packages:
   dateformat@3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}
 
+  debounce-promise@3.1.2:
+    resolution: {integrity: sha512-rZHcgBkbYavBeD9ej6sP56XfG53d51CD4dnaw989YX/nZ/ZJfgRx/9ePKmTNiUiyQvh4mtrMoS3OAWW+yoYtpg==}
+
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
@@ -3283,6 +3771,9 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
+  ecdsa-sig-formatter@1.0.11:
+    resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
+
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
@@ -3337,6 +3828,10 @@ packages:
   enquirer@2.3.6:
     resolution: {integrity: sha512-yjNnPr315/FjS4zIsUxYguYUPP2e1NK4d7E7ZOLiyYCcbFBiTMyID+2wvm2w6+pZ/odMA7cRkjhsPbltwBOrLg==}
     engines: {node: '>=8.6'}
+
+  entities@4.5.0:
+    resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
+    engines: {node: '>=0.12'}
 
   env-paths@2.2.1:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
@@ -3496,12 +3991,22 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
+  etag-hash@2.30.0:
+    resolution: {integrity: sha512-lJDG9bd0EtTzwIKrYoabf/QqtZikL4Ouf5j2qKqsr+mOHinT1tOtKxsxW+170TSOxtRV7pRh3il26TwR782e3g==}
+
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
 
   eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+
+  eventemitter3@5.0.4:
+    resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
+
+  events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
 
   execa@5.0.0:
     resolution: {integrity: sha512-ov6w/2LCiuyO4RLYGdpFGjkcs0wMTgGE8PrkTHikeUy5iJekXyPIKUjifk5CsE0pt7sMCrMZ3YNqoCj6idQOnQ==}
@@ -3550,6 +4055,9 @@ packages:
 
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+
+  fast-uri@3.1.5:
+    resolution: {integrity: sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==}
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
@@ -3734,6 +4242,10 @@ packages:
     resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
     engines: {node: '>=10'}
 
+  get-value@3.0.1:
+    resolution: {integrity: sha512-mKZj9JLQrwMBtj5wxi6MH8Z5eSKaERpAwjg43dPtlGI1ZVEgH/qC7T8/6R2OBSUA+zzHBZgICsVJaEIV2tKTDA==}
+    engines: {node: '>=6.0'}
+
   git-raw-commits@3.0.0:
     resolution: {integrity: sha512-b5OHmZ3vAgGrDn/X0kS+9qCfNKWe4K/jFnhwzVWWg0/k5eLa3060tZShrRg8Dja5kPc+YjS0Gc6y7cRr44Lpjw==}
     engines: {node: '>=14'}
@@ -3819,8 +4331,311 @@ packages:
     resolution: {integrity: sha512-6tfZ91bOr7bOXnK7PRDCGBLa1H4U080YHNaAQ2KsMGlLEzRbk44nsZF2E1IeRc3vtJHPVbKCYgdFbaGO2ljd8g==}
     engines: {node: '>=10.19.0'}
 
+  gql-ast@3.23.0:
+    resolution: {integrity: sha512-Eh09Wi/JOA121lQ9+VlOWDrHW9U5AkF0q2K8ivJYH59diUo6N7vkZS+PAgys0XYyeLLiWQep2eMR9kpRCG6azQ==}
+
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  grafast@1.1.1:
+    resolution: {integrity: sha512-vDWzrut52LeZF+wLt/5vVlAfuziXJdJMvgndBEc0DCKuQtgd0z1a5QNnUtk7PLOooexcz8LX7o60wJzvXrepDw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@envelop/core': ^5.0.0
+      graphql: ^16.9.0
+    peerDependenciesMeta:
+      '@envelop/core':
+        optional: true
+
+  grafserv@1.0.1:
+    resolution: {integrity: sha512-SKcO2Zbf5m+REL0rk6I1xywP3P3Vrg6e1BzCmZIiznJU5KVGADMAOMOVxifiaUiexlGjGoGbT6adOhfU0ZzenA==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@envelop/core': ^5.0.0
+      '@whatwg-node/server': ^0.9.64
+      grafast: ^1.0.0-rc.8
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      h3: ^1.13.0
+      hono: ^4.6.15
+      ws: ^8.12.1
+    peerDependenciesMeta:
+      '@envelop/core':
+        optional: true
+      '@whatwg-node/server':
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
+      ws:
+        optional: true
+
+  graphile-bucket-provisioner-plugin@1.12.4:
+    resolution: {integrity: sha512-DorRRtA8eUmuUUoNOyLmktKZtnwZJQ4/8VRNkxRl58Y0IZgTg/XxJdGn9Fk3YGOctWw6lMqVmRfEd7cngDR7cw==}
+    peerDependencies:
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-utils: ^5.0.3
+      graphql: ^16.9.0
+      postgraphile: ^5.1.3
+
+  graphile-build-pg@5.1.3:
+    resolution: {integrity: sha512-zApeKJNtSQLhrjaaFo1GvZwMTMrkHjCru4+kZxWXt7Gv78B7cAqRxVFMGwNLX6yk/Rz1UZ1IvUjefd6+oG/XIA==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@dataplan/pg': ^1.0.0-rc.7
+      grafast: ^1.0.0-rc.8
+      graphile-build: ^5.0.0-rc.5
+      graphile-config: ^1.0.0-rc.5
+      graphql: ^16.9.0
+      pg: ^8.7.1
+      pg-sql2: ^5.0.0-rc.4
+      tamedevil: ^0.1.0-rc.5
+    peerDependenciesMeta:
+      pg:
+        optional: true
+
+  graphile-build@5.1.1:
+    resolution: {integrity: sha512-L+UvIp56hE7UZjS9HY21xeype4D94L5yk6lshxcK1BDOeNsXp3cizP4N0ev5kTjeDo/vGpHkBOgzwiCoa1qx9A==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      grafast: ^1.0.0-rc.8
+      graphile-config: ^1.0.0-rc.5
+      graphql: ^16.9.0
+
+  graphile-bulk-mutations@1.11.7:
+    resolution: {integrity: sha512-v4fD46+mA8wdHt8a0XEKmJ86MhvQDilgw8mNOoXvc1gyg0NtVz8OYxRWbIuKY/akp7Wtj1Vemp9E/G1Q7Ahb9g==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-cache@4.10.5:
+    resolution: {integrity: sha512-tw5weqPsBovNSuzemmUjYet6oayS7O+Ii8YQWSkPHi5VQFj6kf16JDNwomo5bir3T+nNl0VFLOP00ANZAOYpkw==}
+
+  graphile-config@1.1.0:
+    resolution: {integrity: sha512-R9q8a1MtxYLpQCw79GBxktdCFwM5y6RYgf92Nv1uOBKTL9bCy01iCsOSLuLkeSJ9Ol9Z+/lGQTCbJSXoR3QhpQ==}
+    engines: {node: '>=22'}
+
+  graphile-connection-filter@2.11.7:
+    resolution: {integrity: sha512-xF4S6ipLfc45lrQdyDPZ1Qa0plEuegRcnKvPTDWyV//AMtGoEj7f0Xe1lpliCyq5LD8PlWc/RdPQDz+GnhABXg==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-history@1.3.7:
+    resolution: {integrity: sha512-kC4k1W8DrN1eZ8CkiVHHYiYPDX//suHY3CalThZXbgaAD+FV5uztk1LsLCh1GsgX8fgPna3YYO853okqFj5+dg==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-i18n@2.11.7:
+    resolution: {integrity: sha512-l5ScNPkD8wogiU33hn9Xepu4GLq7a05GEsA++MLuxYptNLl7UyqRJWcG1TYc7jlmD28qvwyMdFfqf6UMUZT6wA==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-llm@1.11.7:
+    resolution: {integrity: sha512-6P0Zl/gZHQrpS+liobY9jHMZVRaoZtfTrvKkNVb2x3b4o7c+c5Eac7BBti23S7wJhHCMSC/M6qOyCAANkQKKyA==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-search: ^1.18.0
+      graphile-utils: ^5.0.3
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+    peerDependenciesMeta:
+      graphile-search:
+        optional: true
+      graphile-utils:
+        optional: true
+
+  graphile-ltree@2.11.7:
+    resolution: {integrity: sha512-xyMInnII0P4h3bmUAJblimfCfIplQua9B3IbNQe5tX/Ou1z3tU8K4A4qhT33Da9K3xVMlEGVnBCki7u9Q7/pyg==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-connection-filter: ^2.11.3
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+    peerDependenciesMeta:
+      graphile-connection-filter:
+        optional: true
+
+  graphile-meta@1.7.1:
+    resolution: {integrity: sha512-MLuBMMlqP6VVw7E1a2R8K6n0gYwZZ9w1siq6OlM1m8lQLzk8ghHaS3ct3bzCwR7EW39QAF2yRTvUpaPq0B7Lag==}
+    peerDependencies:
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      postgraphile: ^5.1.3
+
+  graphile-pg-aggregates@2.11.7:
+    resolution: {integrity: sha512-k8oNp6pCW1S/Y/0UKeuob4H6+YQTUteVkALNy4Zolm+1X8hVZ8CoAL2Z7/0t2djAuU2/tGEgdpLLwyFAD2xfbA==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-connection-filter: ^2.11.3
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-plugin-utils@1.10.1:
+    resolution: {integrity: sha512-9raH5CQsg8XDbaAHPF5kF+oNUWpO9ie4sBPGjt0pD/EpWgafITdKsD40fEfMWkNHvE6dFjWsHRPJLH7tjaiIXQ==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-postgis@3.11.7:
+    resolution: {integrity: sha512-1kbF4oabVTOQ+G+r0ZpaxArs/6YigdPlSA3lcYA3NGn4ArMBVOwijh8FH1dbDNkimVQocfRIyUvZzVVb3qBMGQ==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-connection-filter: ^2.11.3
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+    peerDependenciesMeta:
+      graphile-connection-filter:
+        optional: true
+
+  graphile-presigned-url-plugin@1.12.0:
+    resolution: {integrity: sha512-yfSE1ZXKdmDgVWwvAg+mnvMlZqLGHtTFj9ximi0t+1RlwZMoNa3UPRLnltNugAt1hipeJ47SvUFfhQ0iGmTj4Q==}
+    peerDependencies:
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-utils: ^5.0.3
+      graphql: ^16.9.0
+      postgraphile: ^5.1.3
+
+  graphile-realtime-subscriptions@1.10.5:
+    resolution: {integrity: sha512-09JWE+F/NrEi0u5SsiX3IfEg7Q2nmTNV8SFM2Hjsq3Wj7i4z/PNJDsgtUTz58TEZMmwI4SVvyDxfDti8A1aBrg==}
+    peerDependencies:
+      grafast: ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphile-utils: ^5.0.3
+      graphql: ^16.9.0
+      postgraphile: ^5.1.3
+
+  graphile-search@2.11.7:
+    resolution: {integrity: sha512-hriHP4YyT58cO1hsc8gsA4DeWITxOVecvJ8UQpMAMVTF1O1S3mFXMuOqG+g9KjB+c/18OimdzLsoaoqXWfPGcA==}
+    peerDependencies:
+      '@dataplan/pg': ^1.1.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg-sql2: ^5.0.1
+      postgraphile: ^5.1.3
+
+  graphile-settings@6.14.0:
+    resolution: {integrity: sha512-FTW2Ew+FWI/R+Vo5aGUjM6D3zr/noi/PhRwtkhEayMkHTQ26CVcRWrDjsgIxEwy3ZXe8ND5Vg67uAvhtDVTu1g==}
+
+  graphile-upload-plugin@2.25.0:
+    resolution: {integrity: sha512-A71Q2grJOAN8d1L23BzlwyLrEzqzBt5p095dNjuyRqJyLwxaOfgIG/PRagU29kjkDvGqBz/22OrSynBU0MzITg==}
+    peerDependencies:
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      postgraphile: ^5.1.3
+
+  graphile-utils@5.0.3:
+    resolution: {integrity: sha512-imT1voKDD6qGtlYVLfye9Wo33zgV8LzT7hPxF4SZMekx+iyEH8PmR4gWMqScMPfo69cL49zGwy+0hETAr9kXrg==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@dataplan/pg': ^1.0.0-rc.7
+      grafast: ^1.0.0-rc.8
+      graphile-build: ^5.0.0-rc.5
+      graphile-build-pg: ^5.0.0-rc.7
+      graphile-config: ^1.0.0-rc.5
+      graphql: ^16.9.0
+      tamedevil: ^0.1.0-rc.5
+    peerDependenciesMeta:
+      graphile-build-pg:
+        optional: true
+
+  graphiql@5.2.4:
+    resolution: {integrity: sha512-UfxiFYWM3BYfydi/ljfFvVim2pShR5Law+23BFokvgJ3F7zEqRak8gTQdw5EBFKYZynR1DsvDrjj6QuGP/ByWQ==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  graphql-language-service@5.5.2:
+    resolution: {integrity: sha512-NJhgEKTArkyNPcy4NRUFdbpNs5/F99LcvXbNtmGzNGwwruN8tBE3YPMjpYmp8KpBQtOx3uSuvXJlOOE3Vy2KRQ==}
+    hasBin: true
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+
+  graphql-ws@6.2.1:
+    resolution: {integrity: sha512-NMbPNeTwXpUOxmczdMtzEnynLNbbR267E9hRcJ81SSbQeIvZup3cMjbD1ZT3jpS2xkpxooisitvO7LZNOyz17Q==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@fastify/websocket': ^10 || ^11
+      crossws: ~0.3
+      graphql: ^15.10.1 || ^16 || ^17
+      ws: ^8
+    peerDependenciesMeta:
+      '@fastify/websocket':
+        optional: true
+      crossws:
+        optional: true
+      ws:
+        optional: true
+
+  graphql@16.13.0:
+    resolution: {integrity: sha512-uSisMYERbaB9bkA9M4/4dnqyktaEkf1kMHNKq/7DHyxVeWqHQ2mBmVqm5u6/FVHwF3iCNalKcg82Zfl+tffWoA==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
 
   handlebars@4.7.9:
     resolution: {integrity: sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==}
@@ -3877,6 +4692,10 @@ packages:
   http-proxy-agent@7.0.2:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
+
+  http-proxy@1.18.1:
+    resolution: {integrity: sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==}
+    engines: {node: '>=8.0.0'}
 
   http2-wrapper@1.0.3:
     resolution: {integrity: sha512-V+23sDMr12Wnz7iTcDeJr3O6AIxlnvT/bmaAAAP/Xda35C90p9599p0F1eHR/N1KILWSoWVAiOMFjBBXaXSMxg==}
@@ -3939,6 +4758,13 @@ packages:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
 
+  inflection@3.0.2:
+    resolution: {integrity: sha512-+Bg3+kg+J6JUWn8J6bzFmOWkTQ6L/NHfDRSYU+EVvuKHDxUDHAXgqixHfVlzuBQaPOTac8hn43aPhMNk6rMe3g==}
+    engines: {node: '>=18.0.0'}
+
+  inflekt@0.8.1:
+    resolution: {integrity: sha512-HC0tqBX/gyiudcpmhxFirVIITGcqqPJDLGQIr9XktqS77EC+EK0JVabZpI8swtxC5ZjV1/PVdAXdhZG+CnrM4A==}
+
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
@@ -3963,6 +4789,10 @@ packages:
 
   inquirerer@4.9.1:
     resolution: {integrity: sha512-RXgbivwNs9luseSHnjIcJ05A8VRGcdCQuLjyWWBmI1zwyorkSzCw4KyK8634a5KrbbXehSJHBE3rIrtgJJiBEQ==}
+
+  interpret@3.1.1:
+    resolution: {integrity: sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==}
+    engines: {node: '>=10.13.0'}
 
   ip-address@10.3.1:
     resolution: {integrity: sha512-1e9d3kb97NHJTIJDZW9rKqW2h6+dFa50Dy0fpPSMQp2ADje5gvKsXmdiK6dwY5t76TaTt5+P5N1Y/LoToIxP6g==}
@@ -4027,6 +4857,10 @@ packages:
     resolution: {integrity: sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==}
     engines: {node: '>=0.10.0'}
 
+  is-primitive@3.0.1:
+    resolution: {integrity: sha512-GljRxhWvlCNRfZyORiH77FwdFwGcMO620o37EOYC0ORWdq+WYNVqW0w2Juzew4M+L81l6/QS3t5gkkihyRqv9w==}
+    engines: {node: '>=0.10.0'}
+
   is-promise@4.0.0:
     resolution: {integrity: sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==}
 
@@ -4086,6 +4920,9 @@ packages:
   istanbul-reports@3.2.0:
     resolution: {integrity: sha512-HGYWWS/ehqTV3xN10i23tkPkpH46MLCIMFNCaaKNavAXTF1RkqxawEPtnjnGZ6XKSInBKkiOA5BKS+aZiY3AvA==}
     engines: {node: '>=8'}
+
+  iterall@1.3.0:
+    resolution: {integrity: sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==}
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -4275,6 +5112,9 @@ packages:
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
+  json-schema-traverse@1.0.0:
+    resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
@@ -4292,6 +5132,9 @@ packages:
   jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
 
+  jsonc-parser@3.3.1:
+    resolution: {integrity: sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==}
+
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
 
@@ -4301,6 +5144,10 @@ packages:
   jsonparse@1.3.1:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
     engines: {'0': node >= 0.2.0}
+
+  jsonwebtoken@9.0.3:
+    resolution: {integrity: sha512-MT/xP0CrubFRNLNKvxJ2BYfy53Zkm++5bX9dtuPbqAeQpTVe0MQTFhao8+Cp//EmJp244xt6Drw/GVEGCUj40g==}
+    engines: {node: '>=12', npm: '>=6'}
 
   junk@4.0.1:
     resolution: {integrity: sha512-Qush0uP+G8ZScpGMZvHUiRfI0YBWuB3gVBYlI0v0vvOJt5FLicco+IkP0a50LqTTQhmts/m6tP5SWE+USyIvcQ==}
@@ -4312,12 +5159,21 @@ packages:
   just-diff@6.0.2:
     resolution: {integrity: sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==}
 
+  jwa@2.0.1:
+    resolution: {integrity: sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==}
+
+  jws@4.0.1:
+    resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
+
+  komoji@0.9.1:
+    resolution: {integrity: sha512-PFrwm24JclYWrnN3hvXW6ORePNAqL8k+AqQ58TioOpWsioGXkJPBcMwaD9SlSwowxrxLvxBpjSO8xodR9mcKOg==}
 
   lerna@8.2.4:
     resolution: {integrity: sha512-0gaVWDIVT7fLfprfwpYcQajb7dBJv3EGavjG7zvJ+TmGx3/wovl5GklnSwM2/WeE0Z2wrIz7ndWhBcDUHVjOcQ==}
@@ -4424,6 +5280,9 @@ packages:
     resolution: {integrity: sha512-cNOjgCnLB+FnvWWtyRTzmB3POJ+cXxTA81LoW7u8JdmhfXzriropYwpjShnz1QLLWsQwY7nIxoDmcPTwphDK9w==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  linkify-it@5.0.2:
+    resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
+
   load-json-file@4.0.0:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
     engines: {node: '>=4'}
@@ -4444,14 +5303,35 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash.includes@4.3.0:
+    resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
+
+  lodash.isboolean@3.0.3:
+    resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==}
+
+  lodash.isinteger@4.0.4:
+    resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==}
+
   lodash.ismatch@4.4.0:
     resolution: {integrity: sha512-fPMfXjGQEV9Xsq/8MTSgUf255gawYRbjwMyDbcvDhXgV7enSZA0hynz6vMPnpAb5iONEzBHBPsT+0zes5Z301g==}
+
+  lodash.isnumber@3.0.3:
+    resolution: {integrity: sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==}
+
+  lodash.isplainobject@4.0.6:
+    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
+
+  lodash.isstring@4.0.1:
+    resolution: {integrity: sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==}
 
   lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lodash.once@4.1.1:
+    resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -4516,6 +5396,10 @@ packages:
     resolution: {integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==}
     engines: {node: '>=8'}
 
+  markdown-it@14.3.0:
+    resolution: {integrity: sha512-RCEsPjR+sr0x+AuYp601tKTkgFG4YEPLCzHST3cQ/fhlJkqAkz1L2/Qbp1j9qw5SBwQHFBoW8+hoN5xssOF0Tw==}
+    hasBin: true
+
   match-sorter@8.3.0:
     resolution: {integrity: sha512-8Py1GbZi5zsclYSFcPAH4H5xfTbeD0bOREA7qP/t8bW4MbOSlPl8sbqHOedEV7O+Bxyvxm6xs/v6BXJGe+JDNA==}
 
@@ -4526,6 +5410,9 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
+
+  mdurl@2.1.0:
+    resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
 
   media-typer@1.1.1:
     resolution: {integrity: sha512-yz3xRaG20c6/BOzvYoDaGtPmGscs7YivItZEEqe6GbwNfHuxu9YNmvnEkMzKldAGY4/80pRcQRZSEnhquk9XuQ==}
@@ -4550,9 +5437,21 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+  meros@1.3.2:
+    resolution: {integrity: sha512-Q3mobPbvEx7XbwhnC1J1r60+5H6EZyNccdzSz0eGexJRwouUtTZxPVRGdqKtxlpD84ScK4+tIGldkqDtCKdI0A==}
+    engines: {node: '>=13'}
+    peerDependencies:
+      '@types/node': '>=13'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
+
+  mime-bytes@0.30.0:
+    resolution: {integrity: sha512-jNTUN9mLFT0Xu7P+Ucey0PlQ75UPMYCIes1SRP7+1hlFYCBwMbAEXs0A3xaZrIWhrMjBRe8Bhb0IlUJJ8gJB6Q==}
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -4672,6 +5571,16 @@ packages:
   modify-values@1.0.1:
     resolution: {integrity: sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==}
     engines: {node: '>=0.10.0'}
+
+  monaco-editor@0.52.2:
+    resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
+
+  monaco-graphql@1.8.0:
+    resolution: {integrity: sha512-rWvWUpJdtpTu6YF2qgeaR2HnGPFthUJKSposB38f5wtBKwHlISYZHZLD/LukoMWDEyegNLOF/1bPMRs0SZrNzA==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      monaco-editor: '>= 0.20.0 < 0.53'
+      prettier: ^2.8.0 || ^3.0.0
 
   motion-dom@12.42.2:
     resolution: {integrity: sha512-5gIMWLp/PycBtJRJWRgjxke5n8dlvkSn2DrYW+tr3XcqAZY1xZh6BJyooJXCM8wdfM7wfMjkBJNLge1CKPUIRA==}
@@ -4816,6 +5725,9 @@ packages:
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
+
+  nullthrows@1.1.1:
+    resolution: {integrity: sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==}
 
   nx@20.8.4:
     resolution: {integrity: sha512-/++x0OM3/UTmDR+wmPeV13tSxeTr+QGzj3flgtH9DiOPmQnn2CjHWAMZiOhcSh/hHoE/V3ySL4757InQUsVtjQ==}
@@ -5040,6 +5952,9 @@ packages:
   pg-cache@3.16.2:
     resolution: {integrity: sha512-5UXt/HZHlRK5m7VKi4mOyyv4VAS+KTt0OadPB23Ke6KYGNl/sm0Z1Zm8q2c+qKLbo2aHZ74VjvROqHKYtpdXwg==}
 
+  pg-cache@3.25.4:
+    resolution: {integrity: sha512-uf8Dcot//6oMQkdXYE5To7PbTGNTK1b/pgVlsUFKr3ODsJjxa4WeYMPFegW7mvAGZVsaeSnLwnpk1kx3bt69Bg==}
+
   pg-cloudflare@1.4.0:
     resolution: {integrity: sha512-Vo7z/6rrQYxpNRylp4Tlob2elzbh+N/MOQbxFVWCxS7oEx6jF53GTJFxK2WWpKuBRkmiin4Mt+xofFDjx09R0A==}
 
@@ -5052,9 +5967,16 @@ packages:
   pg-env@1.19.2:
     resolution: {integrity: sha512-gNjwaKoNCS1zk0qF1Nb6EwhuW6R7kpQQo6IBqw/gz5rSPy7/vpYYz5HfdW4/vwEwd+/yRTkizBToI46wo5aweA==}
 
+  pg-env@1.29.1:
+    resolution: {integrity: sha512-0XkYQgZf/+dNrNYIYrEVQsbtd92hP9FYPbaJ8NLzRWQ/GOqtGTk9KW5M3OS4HI1ii4AGzClyX5CW3IAZj0/aYQ==}
+
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
+
+  pg-introspection@1.0.1:
+    resolution: {integrity: sha512-HwxpCEWygpRPfvFf7IVtEPchtjl1Fw0TxzCYXJIQdTEFio/AcGnp2XI5x+LpowbyEa3XgB9L5gvw2D0Jqji4eA==}
+    engines: {node: '>=22'}
 
   pg-pool@3.14.0:
     resolution: {integrity: sha512-gKtPkFdQPU3DksooVLi9LsjZxrsBUZIpa+7aVx+LV5pNh0KzP4Zleud2po+ConrxbuXGBJ6Hfer6hdgpIBpBaw==}
@@ -5064,8 +5986,15 @@ packages:
   pg-protocol@1.15.0:
     resolution: {integrity: sha512-cq9sECI5s0+uPUXjbz8ioyPJni6RzsRib0US67i5IoTZKw8fNeYlVE7u8F4dG7vEJJtc5wdD1K189lCCUwqWTQ==}
 
+  pg-query-context@2.29.1:
+    resolution: {integrity: sha512-de7cdPDrJu/n3bM7GWtQKmt92EgAKQ5LV/RYgGMHpnKcc9eSJrkAv68yJ0rW4m0FTs73vtbEsagsldX4AzI+pA==}
+
   pg-seed@0.17.0:
     resolution: {integrity: sha512-3n98YVCfOjivQ/iUXKQVXDsUKZHe5CmN12oGg24dgMbdlrqthDhp9lHlhvEEd5vMy4GXK0j4y5ZgS79f1yg5OQ==}
+
+  pg-sql2@5.0.1:
+    resolution: {integrity: sha512-DdOZNUBhuBuGcq3UgUNsYE9FPdPzw9YA1K/WQxutNhC17DA/CImapyamv6lliVvdAVNZ+CWB1z+p7SmSJmkezw==}
+    engines: {node: '>=22'}
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
@@ -5106,6 +6035,10 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
+  picomatch-browser@2.2.6:
+    resolution: {integrity: sha512-0ypsOQt9D4e3hziV8O4elD9uN0z/jtUEfxVRtNaAAtXIyUx9m/SzlO020i8YNL2aL/E6blOvvHQcin6HZlFy/w==}
+    engines: {node: '>=8.6'}
+
   picomatch@2.3.2:
     resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
@@ -5138,6 +6071,10 @@ packages:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
 
+  pluralize@7.0.0:
+    resolution: {integrity: sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==}
+    engines: {node: '>=4'}
+
   png2icons@2.0.1:
     resolution: {integrity: sha512-GDEQJr8OG4e6JMp7mABtXFSEpgJa1CCpbQiAR+EjhkHJHnUL9zPPtbOrjsMD8gUbikgv3j7x404b0YJsV3aVFA==}
     hasBin: true
@@ -5154,9 +6091,34 @@ packages:
     resolution: {integrity: sha512-g50586zr4bZmwFiTlflMu8E0bDTb5I5gertgwAKmsdUlTQIhZtunzUlD1WSzwcVWPoAVpsrA6vlfCD7oXvRwgg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgraphile@5.1.3:
+    resolution: {integrity: sha512-7IS51iDpdQqWg61zmrLkUjeZE0JmGEAn2yFq86cL0F+We03dgUuujfnWuBgiBkPpF8VplRPlGQBK6BPxWyrQQg==}
+    engines: {node: '>=22'}
+    hasBin: true
+    peerDependencies:
+      '@dataplan/json': ^1.0.1
+      '@dataplan/pg': ^1.1.1
+      '@envelop/core': ^5.0.0
+      grafast: ^1.1.1
+      grafserv: ^1.0.1
+      graphile-build: ^5.1.1
+      graphile-build-pg: ^5.1.3
+      graphile-config: ^1.1.0
+      graphql: ^16.9.0
+      pg: ^8.7.1
+      pg-sql2: ^5.0.1
+      tamedevil: ^0.1.1
+    peerDependenciesMeta:
+      '@envelop/core':
+        optional: true
+
   postgres-array@2.0.0:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
     engines: {node: '>=4'}
+
+  postgres-array@3.0.4:
+    resolution: {integrity: sha512-nAUSGfSDGOaOAEGwqsRY27GPOea7CNipJPOA7lPbdEpx5Kg3qzdP0AaWC5MlhTWV9s4hFX39nomVZ+C4tnGOJQ==}
+    engines: {node: '>=12'}
 
   postgres-bytea@1.0.1:
     resolution: {integrity: sha512-5+5HqXnsZPE65IJZSMkZtURARZelel2oXUEO8rH83VS/hxH5vv1uHquPg5wZs8yMAfdv971IU+kcPUczi7NVBQ==}
@@ -5169,6 +6131,9 @@ packages:
   postgres-interval@1.2.0:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
+
+  postgres-range@1.1.4:
+    resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -5242,6 +6207,10 @@ packages:
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
 
+  punycode.js@2.3.1:
+    resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
+    engines: {node: '>=6'}
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -5283,6 +6252,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
       react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+
+  react-compiler-runtime@19.1.0-rc.1:
+    resolution: {integrity: sha512-wCt6g+cRh8g32QT18/9blfQHywGjYu+4FlEc3CW1mx3pPxYzZZl1y+VtqxRgnKKBCFLIGUYxog4j4rs5YS86hw==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
   react-dom@19.2.8:
     resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
@@ -5392,9 +6366,19 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
+  request-ip@3.3.0:
+    resolution: {integrity: sha512-cA6Xh6e0fDBBBwH77SLJaJPBmD3nWVAcF9/XAcsrIHdjhFzFiB5aNQFytdjCGPezU3ROwrR11IddKAM08vohxA==}
+
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
+
+  require-from-string@2.0.2:
+    resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
+    engines: {node: '>=0.10.0'}
+
+  requires-port@1.0.0:
+    resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
 
   reselect@5.2.0:
     resolution: {integrity: sha512-AgZ3UOZm3YndfrJ4OYjgrT7bmCm/1iqkjvEfH/oYjzh6PD2qw4QuT3jjnXIrpdt4MTpMXclMT3lXbmRY+XRakw==}
@@ -5468,6 +6452,34 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  ruru-types@2.0.0:
+    resolution: {integrity: sha512-7dBZHeU8Pnj0V+tLiPzr8RhpdsNuAwu5yhZqcolu6pzpItLG/LKKzN+gKAiCp17z6Lfpdu7bXs+9JS39PO+VxA==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      graphql: ^16.9.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  ruru@2.0.1:
+    resolution: {integrity: sha512-m6W2jZN4LrnOU0N7g+dRFGnW3iFrk7oOq3LGjQ2o9nyP4vdjgcgNtJanCu0mKaCx2H6qqSHwN7qKrqrbjjtw9w==}
+    engines: {node: '>=22'}
+    hasBin: true
+    peerDependencies:
+      graphile-config: ^1.0.0-rc.5
+      graphql: ^16.9.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
@@ -5513,6 +6525,10 @@ packages:
 
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
+
+  set-value@4.1.0:
+    resolution: {integrity: sha512-zTEg4HL0RwVrqcWs3ztF+x1vkxfm0lP+MQQFPiMJTKVceBwEV0A569Ou8l9IYQG8jOZdMVI1hGsc0tmeD2o/Lw==}
+    engines: {node: '>=11.0'}
 
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
@@ -5659,6 +6675,9 @@ packages:
   std-env@4.2.0:
     resolution: {integrity: sha512-oCUKSupKTHX53EyjDtuZQ64pjLJ6yYCtpmEw0goYxtjG9KpbRe8KAsl2tBUGU9DyMcJ0RwJ8GqJAFzMXcXW1Rw==}
 
+  stream-browserify@3.0.0:
+    resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
+
   string-length@4.0.2:
     resolution: {integrity: sha512-+l6rNN5fYHNhZZy41RXsYptCjA2Igmq4EG7kZAYFQI1E1VTXarr6ZPXBg6eq7Y6eK4FEhY6AJlyuFIb/v/S0VQ==}
     engines: {node: '>=10'}
@@ -5725,11 +6744,18 @@ packages:
     resolution: {integrity: sha512-eNRKgb3z66Yp3D2CixVujOUvXLFUTij/zVnV8KRyvFdQwpz7I5DS8UfRkTeLzb64u+dkzDSdelE24izu+zSSUg==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
+  tabbable@6.5.0:
+    resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
+
   tailwind-merge@3.6.0:
     resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
+
+  tamedevil@0.1.1:
+    resolution: {integrity: sha512-YH5/T/FXUYrsfFSsCdLqJwUGAlbTBrK2V78dftXnOIgnOnM9aYBi3C+uUg9pevezjE2ENPyOxHqnXJrTG9WPFQ==}
+    engines: {node: '>=22'}
 
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
@@ -5798,6 +6824,11 @@ packages:
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
+  transliteration@2.6.1:
+    resolution: {integrity: sha512-hJ9BhrQAOnNTbpOr1MxsNjZISkn7ppvF5TKUeFmTE1mG4ZPD/XVxF0L0LUoIUCWmQyxH0gJpVtfYLAWf298U9w==}
+    engines: {node: '>=20.0.0'}
+    hasBin: true
 
   treeverse@3.0.0:
     resolution: {integrity: sha512-gcANaAnd2QDZFmHFEOF4k7uc1J/6a6z3DJMd/QwEyxLoKGiptJRwid582r7QIsFlFMIZ3SnxfS52S4hm2DHkuQ==}
@@ -5923,6 +6954,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  uc.micro@2.1.0:
+    resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
+
   uglify-js@3.19.3:
     resolution: {integrity: sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ==}
     engines: {node: '>=0.8.0'}
@@ -6001,6 +7035,9 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  uuid-hash@2.29.0:
+    resolution: {integrity: sha512-2OStzyhJ0NXnJLNu7prvao+Xh1pxpDMkXFqugLzG0DScfZU7wZhkhiRXJ55kZZsPMFATp3RD7lXA9B6O0oWdSw==}
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
@@ -6112,6 +7149,9 @@ packages:
       jsdom:
         optional: true
 
+  vscode-languageserver-types@3.18.0:
+    resolution: {integrity: sha512-8TsGPNMIMiiBdkORgRSvLjuiEIiAFtO+KssmYWxQ+uSVvlf7RjK8YKCOjPzZ+YA04jXEV7+7LvkSmHkhpNS99g==}
+
   walk-up-path@3.0.1:
     resolution: {integrity: sha512-9YlCL/ynK3CTlrSRrDxZvUauLzAswPCrsaCgilqFevUYpeEW0/3ScEjaa3kbW/T0ghhkEr7mv+fpjqn1Y1YuTA==}
 
@@ -6182,6 +7222,18 @@ packages:
     resolution: {integrity: sha512-v2UQ+50TNf2rNHJ8NyWttfm/EJUBWMJcx6ZTYZr6Qp52uuegWw/lBkCtCbnYZEmPRNL61m+u67dAmGxo+HTULA==}
     engines: {node: '>=8'}
 
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -6206,6 +7258,9 @@ packages:
 
   yanse@0.2.1:
     resolution: {integrity: sha512-SMi3ZO1IqsvPLLXuy8LBCP1orqcjOT8VygiuyAlplaGeH2g+n4ZSSyWlA/BZjuUuN58TyOcz89mVkflSqIPxxQ==}
+
+  yanse@0.2.2:
+    resolution: {integrity: sha512-T+4OAK9/idBEgH0M6WwFT5k55OOcNLBbheVgJ5qqBchzUA+DN7SfHBDi47zsQeXcBg6Mf5z9FFASTxPwAGbO2A==}
 
   yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
@@ -6253,11 +7308,227 @@ packages:
       react:
         optional: true
 
+  zustand@5.0.14:
+    resolution: {integrity: sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
 
   12factor-env@1.18.2:
     dependencies:
       envalid: 8.2.0
+
+  12factor-env@1.27.1:
+    dependencies:
+      envalid: 8.2.0
+
+  '@0no-co/graphql.web@1.3.3(graphql@16.13.0)':
+    optionalDependencies:
+      graphql: 16.13.0
+
+  '@agentic-kit/ollama@2.13.0':
+    dependencies:
+      '@agentic-kit/protocol': 1.15.0
+
+  '@agentic-kit/protocol@1.15.0': {}
+
+  '@aws-sdk/checksums@3.1000.26':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/client-s3@3.1106.0':
+    dependencies:
+      '@aws-sdk/checksums': 3.1000.26
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/credential-provider-node': 3.972.78
+      '@aws-sdk/middleware-sdk-s3': 3.972.72
+      '@aws-sdk/signature-v4-multi-region': 3.996.43
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/fetch-http-handler': 5.6.13
+      '@smithy/node-http-handler': 4.9.13
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/core@3.977.6':
+    dependencies:
+      '@aws-sdk/types': 3.974.2
+      '@aws-sdk/xml-builder': 3.972.37
+      '@aws/lambda-invoke-store': 0.3.0
+      '@smithy/core': 3.31.1
+      '@smithy/signature-v4': 5.6.12
+      '@smithy/types': 4.16.1
+      bowser: 2.14.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-env@3.972.67':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-http@3.972.69':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/fetch-http-handler': 5.6.13
+      '@smithy/node-http-handler': 4.9.13
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-ini@3.973.12':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/credential-provider-env': 3.972.67
+      '@aws-sdk/credential-provider-http': 3.972.69
+      '@aws-sdk/credential-provider-login': 3.972.74
+      '@aws-sdk/credential-provider-process': 3.972.67
+      '@aws-sdk/credential-provider-sso': 3.973.11
+      '@aws-sdk/credential-provider-web-identity': 3.972.73
+      '@aws-sdk/nested-clients': 3.997.41
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/credential-provider-imds': 4.4.16
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-login@3.972.74':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/nested-clients': 3.997.41
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-node@3.972.78':
+    dependencies:
+      '@aws-sdk/credential-provider-env': 3.972.67
+      '@aws-sdk/credential-provider-http': 3.972.69
+      '@aws-sdk/credential-provider-ini': 3.973.12
+      '@aws-sdk/credential-provider-process': 3.972.67
+      '@aws-sdk/credential-provider-sso': 3.973.11
+      '@aws-sdk/credential-provider-web-identity': 3.972.73
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/credential-provider-imds': 4.4.16
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-process@3.972.67':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-sso@3.973.11':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/nested-clients': 3.997.41
+      '@aws-sdk/token-providers': 3.1103.0
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/credential-provider-web-identity@3.972.73':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/nested-clients': 3.997.41
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/lib-storage@3.1106.0(@aws-sdk/client-s3@3.1106.0)':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      buffer: 5.6.0
+      events: 3.3.0
+      stream-browserify: 3.0.0
+      tslib: 2.8.1
+
+  '@aws-sdk/middleware-sdk-s3@3.972.72':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/signature-v4-multi-region': 3.996.43
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/nested-clients@3.997.41':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/signature-v4-multi-region': 3.996.43
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/fetch-http-handler': 5.6.13
+      '@smithy/node-http-handler': 4.9.13
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/s3-request-presigner@3.1106.0':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/signature-v4-multi-region': 3.996.43
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/signature-v4-multi-region@3.996.43':
+    dependencies:
+      '@aws-sdk/types': 3.974.2
+      '@smithy/signature-v4': 5.6.12
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/token-providers@3.1103.0':
+    dependencies:
+      '@aws-sdk/core': 3.977.6
+      '@aws-sdk/nested-clients': 3.997.41
+      '@aws-sdk/types': 3.974.2
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/types@3.974.2':
+    dependencies:
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/xml-builder@3.972.37':
+    dependencies:
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws/lambda-invoke-store@0.3.0': {}
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -6488,9 +7759,152 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
+  '@constructive-io/bucket-provisioner@0.24.0':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@constructive-io/s3-utils': 2.30.0
+
+  '@constructive-io/content-type-stream@2.30.0':
+    dependencies:
+      etag-hash: 2.30.0
+      mime-bytes: 0.30.0
+      uuid-hash: 2.29.0
+
+  '@constructive-io/errors@0.10.0': {}
+
+  '@constructive-io/express-context@0.24.4(express@5.2.1)':
+    dependencies:
+      '@constructive-io/url-domains': 2.29.0
+      '@pgpmjs/env': 2.41.3
+      '@pgpmjs/logger': 2.24.1
+      '@pgpmjs/server-utils': 3.25.4
+      '@pgpmjs/types': 2.50.3
+      express: 5.2.1
+      lru-cache: 11.5.2
+      pg: 8.22.0
+      pg-cache: 3.25.4
+      pg-query-context: 2.29.1
+    transitivePeerDependencies:
+      - pg-native
+      - supports-color
+
+  '@constructive-io/fetch@1.2.0': {}
+
+  '@constructive-io/graphql-env@3.29.3':
+    dependencies:
+      12factor-env: 1.27.1
+      '@constructive-io/graphql-types': 3.28.3
+      '@pgpmjs/env': 2.41.3
+      deepmerge: 4.3.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@constructive-io/graphql-query@4.12.9(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafserv@1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(pg-sql2@5.0.1)(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tamedevil@0.1.1)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)':
+    dependencies:
+      '@0no-co/graphql.web': 1.3.3(graphql@16.13.0)
+      '@constructive-io/errors': 0.10.0
+      '@constructive-io/fetch': 1.2.0
+      '@constructive-io/graphql-types': 3.28.3
+      ajv: 8.20.0
+      gql-ast: 3.23.0
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-settings: 6.14.0(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      graphql: 16.13.0
+      inflection: 3.0.2
+      inflekt: 0.8.1
+      lru-cache: 11.5.2
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+    transitivePeerDependencies:
+      - '@dataplan/json'
+      - '@dataplan/pg'
+      - '@envelop/core'
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@whatwg-node/server'
+      - bufferutil
+      - crossws
+      - grafserv
+      - graphile-build
+      - h3
+      - hono
+      - immer
+      - pg
+      - pg-native
+      - pg-sql2
+      - react
+      - react-dom
+      - supports-color
+      - tamedevil
+      - use-sync-external-store
+      - utf-8-validate
+      - ws
+
+  '@constructive-io/graphql-types@3.28.3':
+    dependencies:
+      '@pgpmjs/types': 2.50.3
+      deepmerge: 4.3.1
+      graphile-config: 1.1.0
+      pg-env: 1.29.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@constructive-io/llm-env@0.13.0': {}
+
   '@constructive-io/pnpm-policy@0.2.1': {}
 
-  '@constructive-io/ui@0.4.1(f0f9140c8a4d38cb55f7df841bcff432)':
+  '@constructive-io/s3-streamer@2.40.0':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@aws-sdk/lib-storage': 3.1106.0(@aws-sdk/client-s3@3.1106.0)
+      '@constructive-io/content-type-stream': 2.30.0
+      '@constructive-io/s3-utils': 2.30.0
+      '@pgpmjs/types': 2.50.3
+
+  '@constructive-io/s3-utils@2.30.0':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@aws-sdk/lib-storage': 3.1106.0(@aws-sdk/client-s3@3.1106.0)
+      '@aws-sdk/s3-request-presigner': 3.1106.0
+
+  '@constructive-io/sdk@1.11.9(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafserv@1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(pg-sql2@5.0.1)(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tamedevil@0.1.1)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)':
+    dependencies:
+      '@0no-co/graphql.web': 1.3.3(graphql@16.13.0)
+      '@constructive-io/graphql-query': 4.12.9(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafserv@1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(pg-sql2@5.0.1)(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tamedevil@0.1.1)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      '@constructive-io/graphql-types': 3.28.3
+      gql-ast: 3.23.0
+      graphql: 16.13.0
+    transitivePeerDependencies:
+      - '@dataplan/json'
+      - '@dataplan/pg'
+      - '@envelop/core'
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@whatwg-node/server'
+      - bufferutil
+      - crossws
+      - grafserv
+      - graphile-build
+      - h3
+      - hono
+      - immer
+      - pg
+      - pg-native
+      - pg-sql2
+      - react
+      - react-dom
+      - supports-color
+      - tamedevil
+      - use-sync-external-store
+      - utf-8-validate
+      - ws
+
+  '@constructive-io/ui@0.4.1(f16f011c60c5c8b6c937d4aa824336b8)':
     dependencies:
       '@base-ui/react': 1.6.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       class-variance-authority: 0.7.1
@@ -6506,16 +7920,50 @@ snapshots:
       '@use-gesture/react': 10.3.1(react@19.2.8)
       '@xyflow/react': 12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       match-sorter: 8.3.0
-      motion: 12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      motion: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-aria-components: 1.19.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-hook-form: 7.83.0(react@19.2.8)
       react-resizable-panels: 3.0.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       sonner: 2.0.7(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       vaul: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
 
+  '@constructive-io/upload-names@2.29.0': {}
+
+  '@constructive-io/url-domains@2.29.0':
+    dependencies:
+      express: 5.2.1
+    transitivePeerDependencies:
+      - supports-color
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  '@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0))':
+    dependencies:
+      chalk: 4.1.2
+      grafast: 1.1.1(graphql@16.13.0)
+      tslib: 2.8.1
+
+  '@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)':
+    dependencies:
+      '@dataplan/json': 1.0.1(grafast@1.1.1(graphql@16.13.0))
+      '@graphile/lru': 5.0.0
+      '@types/node': 22.20.1
+      chalk: 4.1.2
+      debug: 4.4.3
+      eventemitter3: 5.0.4
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgres-array: 3.0.4
+      postgres-range: 1.1.4
+      tslib: 2.8.1
+    optionalDependencies:
+      pg: 8.22.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@electric-sql/pglite@0.5.4': {}
 
@@ -6561,6 +8009,12 @@ snapshots:
   '@emnapi/wasi-threads@1.2.3':
     dependencies:
       tslib: 2.8.1
+
+  '@emotion/is-prop-valid@1.4.0':
+    dependencies:
+      '@emotion/memoize': 0.9.0
+
+  '@emotion/memoize@0.9.0': {}
 
   '@esbuild/aix-ppc64@0.25.12':
     optional: true
@@ -6783,7 +8237,112 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  '@floating-ui/react@0.26.28(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@floating-ui/utils': 0.2.12
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      tabbable: 6.5.0
+
   '@floating-ui/utils@0.2.12': {}
+
+  '@graphile-contrib/pg-many-to-many@2.0.0-rc.2': {}
+
+  '@graphile/lru@5.0.0':
+    dependencies:
+      tslib: 2.8.1
+
+  '@graphiql/plugin-doc-explorer@0.4.2(@graphiql/react@0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)))(@types/react@19.2.17)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))':
+    dependencies:
+      '@graphiql/react': 0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      '@headlessui/react': 2.2.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      graphql: 16.13.0
+      react: 19.2.8
+      react-compiler-runtime: 19.1.0-rc.1(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+      zustand: 5.0.14(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - use-sync-external-store
+
+  '@graphiql/plugin-history@0.4.2(@graphiql/react@0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)))(@types/node@22.20.1)(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))':
+    dependencies:
+      '@graphiql/react': 0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      '@graphiql/toolkit': 0.12.1(@types/node@22.20.1)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)
+      react: 19.2.8
+      react-compiler-runtime: 19.1.0-rc.1(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+      zustand: 5.0.14(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+    transitivePeerDependencies:
+      - '@types/node'
+      - '@types/react'
+      - graphql
+      - graphql-ws
+      - immer
+      - use-sync-external-store
+
+  '@graphiql/react@0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))':
+    dependencies:
+      '@graphiql/toolkit': 0.12.1(@types/node@22.20.1)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)
+      '@radix-ui/react-dialog': 1.1.23(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-dropdown-menu': 2.1.24(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-tooltip': 1.2.16(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-visually-hidden': 1.2.11(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      clsx: 1.2.1
+      framer-motion: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      get-value: 3.0.1
+      graphql: 16.13.0
+      graphql-language-service: 5.5.2(graphql@16.13.0)
+      jsonc-parser: 3.3.1
+      markdown-it: 14.3.0
+      monaco-editor: 0.52.2
+      monaco-graphql: 1.8.0(graphql@16.13.0)(monaco-editor@0.52.2)(prettier@3.9.6)
+      prettier: 3.9.6
+      react: 19.2.8
+      react-compiler-runtime: 19.1.0-rc.1(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+      set-value: 4.1.0
+      zustand: 5.0.14(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - graphql-ws
+      - immer
+      - use-sync-external-store
+
+  '@graphiql/toolkit@0.11.3(@types/node@22.20.1)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)':
+    dependencies:
+      '@n1ru4l/push-pull-async-iterable-iterator': 3.2.0
+      graphql: 16.13.0
+      meros: 1.3.2(@types/node@22.20.1)
+    optionalDependencies:
+      graphql-ws: 6.2.1(graphql@16.13.0)(ws@8.21.3)
+    transitivePeerDependencies:
+      - '@types/node'
+
+  '@graphiql/toolkit@0.12.1(@types/node@22.20.1)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)':
+    dependencies:
+      '@n1ru4l/push-pull-async-iterable-iterator': 3.2.0
+      graphql: 16.13.0
+      meros: 1.3.2(@types/node@22.20.1)
+    optionalDependencies:
+      graphql-ws: 6.2.1(graphql@16.13.0)(ws@8.21.3)
+    transitivePeerDependencies:
+      - '@types/node'
+
+  '@headlessui/react@2.2.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@floating-ui/react': 0.26.28(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@react-aria/focus': 3.22.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@react-aria/interactions': 3.28.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@tanstack/react-virtual': 3.14.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      use-sync-external-store: 1.6.0(react@19.2.8)
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -7239,6 +8798,8 @@ snapshots:
       - supports-color
       - typescript
 
+  '@n1ru4l/push-pull-async-iterable-iterator@3.2.0': {}
+
   '@napi-rs/wasm-runtime@0.2.4':
     dependencies:
       '@emnapi/core': 1.11.3
@@ -7539,9 +9100,19 @@ snapshots:
       '@pgpmjs/types': 2.37.2
       deepmerge: 4.3.1
 
+  '@pgpmjs/env@2.41.3':
+    dependencies:
+      12factor-env: 1.27.1
+      '@pgpmjs/types': 2.50.3
+      deepmerge: 4.3.1
+
   '@pgpmjs/logger@2.15.2':
     dependencies:
       yanse: 0.2.1
+
+  '@pgpmjs/logger@2.24.1':
+    dependencies:
+      yanse: 0.2.2
 
   '@pgpmjs/pglite-adapter@0.1.5(@electric-sql/pglite@0.5.4)':
     dependencies:
@@ -7560,11 +9131,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@pgpmjs/server-utils@3.25.4':
+    dependencies:
+      '@pgpmjs/logger': 2.24.1
+      '@pgpmjs/types': 2.50.3
+      cors: 2.8.6
+      express: 5.2.1
+      lru-cache: 11.5.2
+    transitivePeerDependencies:
+      - supports-color
+
   '@pgpmjs/types@2.37.2':
     dependencies:
       pg-env: 1.19.2
 
+  '@pgpmjs/types@2.50.3':
+    dependencies:
+      '@constructive-io/errors': 0.10.0
+      pg-env: 1.29.1
+
   '@pgsql/quotes@17.1.0': {}
+
+  '@pgsql/quotes@18.2.4': {}
 
   '@pgsql/types@17.6.2': {}
 
@@ -7579,6 +9167,27 @@ snapshots:
   '@pkgr/core@0.3.6': {}
 
   '@radix-ui/primitive@1.1.7': {}
+
+  '@radix-ui/react-arrow@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
+  '@radix-ui/react-collection@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-slot': 1.3.3(@types/react@19.2.17)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
   '@radix-ui/react-compose-refs@1.1.5(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
@@ -7615,6 +9224,12 @@ snapshots:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
+  '@radix-ui/react-direction@1.1.4(@types/react@19.2.17)(react@19.2.8)':
+    dependencies:
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.17
+
   '@radix-ui/react-dismissable-layer@1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@radix-ui/primitive': 1.1.7
@@ -7622,6 +9237,21 @@ snapshots:
       '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@radix-ui/react-use-callback-ref': 1.1.4(@types/react@19.2.17)(react@19.2.8)
       '@radix-ui/react-use-effect-event': 0.0.5(@types/react@19.2.17)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
+  '@radix-ui/react-dropdown-menu@2.1.24(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.7
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-id': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-menu': 2.1.24(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-use-controllable-state': 1.2.6(@types/react@19.2.17)(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
     optionalDependencies:
@@ -7652,6 +9282,50 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
+  '@radix-ui/react-menu@2.1.24(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.7
+      '@radix-ui/react-collection': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-direction': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-dismissable-layer': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-focus-guards': 1.1.6(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-focus-scope': 1.1.16(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-id': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-popper': 1.3.7(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-portal': 1.1.17(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-presence': 1.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-roving-focus': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-slot': 1.3.3(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-callback-ref': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      aria-hidden: 1.2.6
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-remove-scroll: 2.7.2(@types/react@19.2.17)(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
+  '@radix-ui/react-popper@1.3.7(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-arrow': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-use-callback-ref': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-layout-effect': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-rect': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-size': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/rect': 1.1.3
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
   '@radix-ui/react-portal@1.1.17(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -7680,12 +9354,52 @@ snapshots:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
+  '@radix-ui/react-roving-focus@1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.7
+      '@radix-ui/react-collection': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-direction': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-id': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-use-callback-ref': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-controllable-state': 1.2.6(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-is-hydrated': 0.1.3(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-layout-effect': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
   '@radix-ui/react-slot@1.3.3(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
       '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
       react: 19.2.8
     optionalDependencies:
       '@types/react': 19.2.17
+
+  '@radix-ui/react-tooltip@1.2.16(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.7
+      '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-context': 1.2.2(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-dismissable-layer': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-id': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-popper': 1.3.7(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-portal': 1.1.17(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-presence': 1.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-slot': 1.3.3(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-controllable-state': 1.2.6(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-use-layout-effect': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      '@radix-ui/react-visually-hidden': 1.2.11(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
   '@radix-ui/react-use-callback-ref@1.1.4(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
@@ -7709,11 +9423,57 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
+  '@radix-ui/react-use-is-hydrated@0.1.3(@types/react@19.2.17)(react@19.2.8)':
+    dependencies:
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.17
+
   '@radix-ui/react-use-layout-effect@1.1.4(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
       react: 19.2.8
     optionalDependencies:
       '@types/react': 19.2.17
+
+  '@radix-ui/react-use-rect@1.1.4(@types/react@19.2.17)(react@19.2.8)':
+    dependencies:
+      '@radix-ui/rect': 1.1.3
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.17
+
+  '@radix-ui/react-use-size@1.1.4(@types/react@19.2.17)(react@19.2.8)':
+    dependencies:
+      '@radix-ui/react-use-layout-effect': 1.1.4(@types/react@19.2.17)(react@19.2.8)
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.17
+
+  '@radix-ui/react-visually-hidden@1.2.11(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@radix-ui/react-primitive': 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
+  '@radix-ui/rect@1.1.3': {}
+
+  '@react-aria/focus@3.22.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@swc/helpers': 0.5.23
+      react: 19.2.8
+      react-aria: 3.50.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+
+  '@react-aria/interactions@3.28.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@react-types/shared': 3.36.0(react@19.2.8)
+      '@swc/helpers': 0.5.23
+      react: 19.2.8
+      react-aria: 3.50.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
 
   '@react-types/shared@3.36.0(react@19.2.8)':
     dependencies:
@@ -7848,6 +9608,39 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
+  '@smithy/core@3.31.1':
+    dependencies:
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@smithy/credential-provider-imds@4.4.16':
+    dependencies:
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@smithy/fetch-http-handler@5.6.13':
+    dependencies:
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@smithy/node-http-handler@4.9.13':
+    dependencies:
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@smithy/signature-v4@5.6.12':
+    dependencies:
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@smithy/types@4.16.1':
+    dependencies:
+      tslib: 2.8.1
+
   '@standard-schema/spec@1.1.0': {}
 
   '@swc/helpers@0.5.23':
@@ -7925,6 +9718,14 @@ snapshots:
       '@tailwindcss/oxide': 4.3.3
       tailwindcss: 4.3.3
       vite: 7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)
+
+  '@tanstack/react-virtual@3.14.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@tanstack/virtual-core': 3.17.7
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
+  '@tanstack/virtual-core@3.17.7': {}
 
   '@tsconfig/node10@1.0.12': {}
 
@@ -8047,6 +9848,14 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
+  '@types/pg@8.21.0':
+    dependencies:
+      '@types/node': 22.20.1
+      pg-protocol: 1.15.0
+      pg-types: 2.2.0
+
+  '@types/pluralize@0.0.33': {}
+
   '@types/react-dom@19.2.3(@types/react@19.2.17)':
     dependencies:
       '@types/react': 19.2.17
@@ -8058,6 +9867,8 @@ snapshots:
   '@types/responselike@1.0.3':
     dependencies:
       '@types/node': 20.19.43
+
+  '@types/semver@7.8.0': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -8338,6 +10149,8 @@ snapshots:
 
   abbrev@2.0.0: {}
 
+  accept-language-parser@1.5.0: {}
+
   accepts@2.0.0:
     dependencies:
       mime-types: 3.0.2
@@ -8374,6 +10187,13 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+
+  ajv@8.20.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-uri: 3.1.5
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
 
   ansi-colors@4.1.3: {}
 
@@ -8432,7 +10252,7 @@ snapshots:
 
   axios@1.18.1:
     dependencies:
-      follow-redirects: 1.16.0
+      follow-redirects: 1.16.0(debug@4.4.3)
       form-data: 4.0.6
       https-proxy-agent: 5.0.1
       proxy-from-env: 2.1.0
@@ -8532,6 +10352,8 @@ snapshots:
   boolean@3.2.0:
     optional: true
 
+  bowser@2.14.1: {}
+
   brace-expansion@1.1.16:
     dependencies:
       balanced-match: 1.0.2
@@ -8567,7 +10389,14 @@ snapshots:
 
   buffer-crc32@0.2.13: {}
 
+  buffer-equal-constant-time@1.0.1: {}
+
   buffer-from@1.1.2: {}
+
+  buffer@5.6.0:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
 
   buffer@5.7.1:
     dependencies:
@@ -8698,6 +10527,8 @@ snapshots:
       mimic-response: 1.0.1
 
   clone@1.0.4: {}
+
+  clsx@1.2.1: {}
 
   clsx@2.1.1: {}
 
@@ -8920,6 +10751,8 @@ snapshots:
 
   dateformat@3.0.3: {}
 
+  debounce-promise@3.1.2: {}
+
   debug@4.4.3:
     dependencies:
       ms: 2.1.3
@@ -9004,6 +10837,10 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
+  ecdsa-sig-formatter@1.0.11:
+    dependencies:
+      safe-buffer: 5.2.1
+
   ee-first@1.1.1: {}
 
   ejs@3.1.10:
@@ -9057,6 +10894,8 @@ snapshots:
   enquirer@2.3.6:
     dependencies:
       ansi-colors: 4.1.3
+
+  entities@4.5.0: {}
 
   env-paths@2.2.1: {}
 
@@ -9259,9 +11098,15 @@ snapshots:
 
   esutils@2.0.3: {}
 
+  etag-hash@2.30.0: {}
+
   etag@1.8.1: {}
 
   eventemitter3@4.0.7: {}
+
+  eventemitter3@5.0.4: {}
+
+  events@3.3.0: {}
 
   execa@5.0.0:
     dependencies:
@@ -9361,6 +11206,8 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
+  fast-uri@3.1.5: {}
+
   fastq@1.20.1:
     dependencies:
       reusify: 1.1.0
@@ -9429,7 +11276,9 @@ snapshots:
 
   flatted@3.4.3: {}
 
-  follow-redirects@1.16.0: {}
+  follow-redirects@1.16.0(debug@4.4.3):
+    optionalDependencies:
+      debug: 4.4.3
 
   foreground-child@3.3.1:
     dependencies:
@@ -9446,12 +11295,13 @@ snapshots:
 
   forwarded@0.2.0: {}
 
-  framer-motion@12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+  framer-motion@12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       motion-dom: 12.42.2
       motion-utils: 12.39.0
       tslib: 2.8.1
     optionalDependencies:
+      '@emotion/is-prop-valid': 1.4.0
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
@@ -9537,6 +11387,10 @@ snapshots:
   get-stream@6.0.0: {}
 
   get-stream@6.0.1: {}
+
+  get-value@3.0.1:
+    dependencies:
+      isobject: 3.0.1
 
   git-raw-commits@3.0.0:
     dependencies:
@@ -9660,7 +11514,456 @@ snapshots:
       p-cancelable: 2.1.1
       responselike: 2.0.1
 
+  gql-ast@3.23.0:
+    dependencies:
+      graphql: 16.13.0
+
   graceful-fs@4.2.11: {}
+
+  grafast@1.1.1(graphql@16.13.0):
+    dependencies:
+      '@graphile/lru': 5.0.0
+      chalk: 4.1.2
+      debug: 4.4.3
+      eventemitter3: 5.0.4
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      iterall: 1.3.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  grafserv@1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3):
+    dependencies:
+      '@graphile/lru': 5.0.0
+      debug: 4.4.3
+      eventemitter3: 5.0.4
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      graphql-ws: 6.2.1(graphql@16.13.0)(ws@8.21.3)
+      ruru: 2.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(debug@4.4.3)(graphile-config@1.1.0)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      tslib: 2.8.1
+    optionalDependencies:
+      ws: 8.21.3
+    transitivePeerDependencies:
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - crossws
+      - immer
+      - react
+      - react-dom
+      - supports-color
+      - use-sync-external-store
+
+  graphile-bucket-provisioner-plugin@1.12.4(74a5a6d8356320c56bc4945fbdb57ed3):
+    dependencies:
+      '@constructive-io/bucket-provisioner': 0.24.0
+      '@pgpmjs/logger': 2.24.1
+      '@pgsql/quotes': 18.2.4
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+      graphql: 16.13.0
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      '@types/node': 22.20.1
+      debug: 4.4.3
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      jsonwebtoken: 9.0.3
+      pg-introspection: 1.0.1
+      pg-sql2: 5.0.1
+      tamedevil: 0.1.1
+      tslib: 2.8.1
+    optionalDependencies:
+      pg: 8.22.0
+    transitivePeerDependencies:
+      - supports-color
+
+  graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0):
+    dependencies:
+      '@types/node': 22.20.1
+      '@types/pluralize': 0.0.33
+      '@types/semver': 7.8.0
+      chalk: 4.1.2
+      debug: 4.4.3
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      lodash: 4.18.1
+      pluralize: 7.0.0
+      semver: 7.8.5
+      tamedevil: 0.1.1
+      transliteration: 2.6.1
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  graphile-bulk-mutations@1.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-cache@4.10.5(415e53381523d96d6680eaef3c0c8de5):
+    dependencies:
+      12factor-env: 1.27.1
+      '@pgpmjs/logger': 2.24.1
+      express: 5.2.1
+      grafserv: 1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      graphile-realtime-subscriptions: 1.10.5(74a5a6d8356320c56bc4945fbdb57ed3)
+      lru-cache: 11.5.2
+      pg-cache: 3.25.4
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+    transitivePeerDependencies:
+      - '@dataplan/json'
+      - '@dataplan/pg'
+      - '@envelop/core'
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@whatwg-node/server'
+      - bufferutil
+      - crossws
+      - grafast
+      - graphile-build
+      - graphile-build-pg
+      - graphile-config
+      - graphile-utils
+      - graphql
+      - h3
+      - hono
+      - immer
+      - pg
+      - pg-native
+      - pg-sql2
+      - react
+      - react-dom
+      - supports-color
+      - tamedevil
+      - use-sync-external-store
+      - utf-8-validate
+      - ws
+
+  graphile-config@1.1.0:
+    dependencies:
+      chalk: 4.1.2
+      debug: 4.4.3
+      interpret: 3.1.1
+      semver: 7.8.5
+      tslib: 2.8.1
+      yargs: 17.7.3
+    transitivePeerDependencies:
+      - supports-color
+
+  graphile-connection-filter@2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-plugin-utils: 1.10.1(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-history@1.3.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-i18n@2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      accept-language-parser: 1.5.0
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-llm@1.11.7(8291cf5fa89e42b0a9616a590b4333a2):
+    dependencies:
+      '@agentic-kit/ollama': 2.13.0
+      '@constructive-io/express-context': 0.24.4(express@5.2.1)
+      '@constructive-io/llm-env': 0.13.0
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-cache: 4.10.5(415e53381523d96d6680eaef3c0c8de5)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+    optionalDependencies:
+      graphile-search: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+    transitivePeerDependencies:
+      - '@dataplan/json'
+      - '@envelop/core'
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@whatwg-node/server'
+      - bufferutil
+      - crossws
+      - express
+      - h3
+      - hono
+      - immer
+      - pg
+      - pg-native
+      - react
+      - react-dom
+      - supports-color
+      - tamedevil
+      - use-sync-external-store
+      - utf-8-validate
+      - ws
+
+  graphile-ltree@2.11.7(d3fc0ef97495e4b9a3c4437eb448411b):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+    optionalDependencies:
+      graphile-connection-filter: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+
+  graphile-meta@1.7.1(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-pg-aggregates@2.11.7(d3fc0ef97495e4b9a3c4437eb448411b):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-connection-filter: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-plugin-utils: 1.10.1(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-plugin-utils@1.10.1(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-postgis@3.11.7(d3fc0ef97495e4b9a3c4437eb448411b):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+    optionalDependencies:
+      graphile-connection-filter: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+
+  graphile-presigned-url-plugin@1.12.0(74a5a6d8356320c56bc4945fbdb57ed3):
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@aws-sdk/s3-request-presigner': 3.1106.0
+      '@pgpmjs/logger': 2.24.1
+      '@pgsql/quotes': 18.2.4
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+      graphql: 16.13.0
+      lru-cache: 11.5.2
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-realtime-subscriptions@1.10.5(74a5a6d8356320c56bc4945fbdb57ed3):
+    dependencies:
+      '@pgpmjs/logger': 2.24.1
+      '@pgsql/quotes': 18.2.4
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+      graphql: 16.13.0
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-search@2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-plugin-utils: 1.10.1(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphql: 16.13.0
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-settings@6.14.0(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3):
+    dependencies:
+      '@aws-sdk/client-s3': 3.1106.0
+      '@constructive-io/bucket-provisioner': 0.24.0
+      '@constructive-io/graphql-env': 3.29.3
+      '@constructive-io/graphql-types': 3.28.3
+      '@constructive-io/s3-streamer': 2.40.0
+      '@constructive-io/s3-utils': 2.30.0
+      '@constructive-io/upload-names': 2.29.0
+      '@dataplan/json': 1.0.1(grafast@1.1.1(graphql@16.13.0))
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      '@graphile-contrib/pg-many-to-many': 2.0.0-rc.2
+      '@pgpmjs/logger': 2.24.1
+      '@pgpmjs/types': 2.50.3
+      '@pgsql/quotes': 18.2.4
+      cors: 2.8.6
+      express: 5.2.1
+      grafast: 1.1.1(graphql@16.13.0)
+      grafserv: 1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      graphile-bucket-provisioner-plugin: 1.12.4(74a5a6d8356320c56bc4945fbdb57ed3)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-bulk-mutations: 1.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-config: 1.1.0
+      graphile-connection-filter: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-history: 1.3.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-i18n: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-llm: 1.11.7(8291cf5fa89e42b0a9616a590b4333a2)
+      graphile-ltree: 2.11.7(d3fc0ef97495e4b9a3c4437eb448411b)
+      graphile-meta: 1.7.1(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-pg-aggregates: 2.11.7(d3fc0ef97495e4b9a3c4437eb448411b)
+      graphile-postgis: 3.11.7(d3fc0ef97495e4b9a3c4437eb448411b)
+      graphile-presigned-url-plugin: 1.12.0(74a5a6d8356320c56bc4945fbdb57ed3)
+      graphile-realtime-subscriptions: 1.10.5(74a5a6d8356320c56bc4945fbdb57ed3)
+      graphile-search: 2.11.7(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-upload-plugin: 2.25.0(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace))
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+      graphql: 16.13.0
+      inflekt: 0.8.1
+      lru-cache: 11.5.2
+      pg: 8.22.0
+      pg-query-context: 2.29.1
+      pg-sql2: 5.0.1
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+      request-ip: 3.3.0
+      tamedevil: 0.1.1
+    transitivePeerDependencies:
+      - '@envelop/core'
+      - '@fastify/websocket'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@whatwg-node/server'
+      - bufferutil
+      - crossws
+      - h3
+      - hono
+      - immer
+      - pg-native
+      - react
+      - react-dom
+      - supports-color
+      - use-sync-external-store
+      - utf-8-validate
+      - ws
+
+  graphile-upload-plugin@2.25.0(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace)):
+    dependencies:
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      postgraphile: 5.1.3(99a149f4b10f7dbea1189578b170eace)
+
+  graphile-utils@5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1):
+    dependencies:
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      debug: 4.4.3
+      grafast: 1.1.1(graphql@16.13.0)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      json5: 2.2.3
+      tamedevil: 0.1.1
+      tslib: 2.8.1
+    optionalDependencies:
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  graphiql@5.2.4(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)):
+    dependencies:
+      '@graphiql/plugin-doc-explorer': 0.4.2(@graphiql/react@0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)))(@types/react@19.2.17)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      '@graphiql/plugin-history': 0.4.2(@graphiql/react@0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)))(@types/node@22.20.1)(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      '@graphiql/react': 0.37.7(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      graphql: 16.13.0
+      react: 19.2.8
+      react-compiler-runtime: 19.1.0-rc.1(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - graphql-ws
+      - immer
+      - use-sync-external-store
+
+  graphql-language-service@5.5.2(graphql@16.13.0):
+    dependencies:
+      debounce-promise: 3.1.2
+      graphql: 16.13.0
+      nullthrows: 1.1.1
+      vscode-languageserver-types: 3.18.0
+
+  graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3):
+    dependencies:
+      graphql: 16.13.0
+    optionalDependencies:
+      ws: 8.21.3
+
+  graphql@16.13.0: {}
 
   handlebars@4.7.9:
     dependencies:
@@ -9721,6 +12024,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  http-proxy@1.18.1(debug@4.4.3):
+    dependencies:
+      eventemitter3: 4.0.7
+      follow-redirects: 1.16.0(debug@4.4.3)
+      requires-port: 1.0.0
+    transitivePeerDependencies:
+      - debug
+
   http2-wrapper@1.0.3:
     dependencies:
       quick-lru: 5.1.1
@@ -9780,6 +12091,13 @@ snapshots:
 
   indent-string@4.0.0: {}
 
+  inflection@3.0.2: {}
+
+  inflekt@0.8.1:
+    dependencies:
+      inflection: 3.0.2
+      komoji: 0.9.1
+
   inflight@1.0.6:
     dependencies:
       once: 1.4.0
@@ -9830,6 +12148,8 @@ snapshots:
       minimist: 1.2.8
       yanse: 0.2.1
 
+  interpret@3.1.1: {}
+
   ip-address@10.3.1: {}
 
   ipaddr.js@1.9.1: {}
@@ -9869,6 +12189,8 @@ snapshots:
   is-plain-object@2.0.4:
     dependencies:
       isobject: 3.0.1
+
+  is-primitive@3.0.1: {}
 
   is-promise@4.0.0: {}
 
@@ -9928,6 +12250,8 @@ snapshots:
     dependencies:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.1
+
+  iterall@1.3.0: {}
 
   jackspeak@3.4.3:
     dependencies:
@@ -10295,6 +12619,8 @@ snapshots:
 
   json-schema-traverse@0.4.1: {}
 
+  json-schema-traverse@1.0.0: {}
+
   json-stable-stringify-without-jsonify@1.0.1: {}
 
   json-stringify-nice@1.1.4: {}
@@ -10304,6 +12630,8 @@ snapshots:
   json5@2.2.3: {}
 
   jsonc-parser@3.2.0: {}
+
+  jsonc-parser@3.3.1: {}
 
   jsonfile@4.0.0:
     optionalDependencies:
@@ -10317,17 +12645,43 @@ snapshots:
 
   jsonparse@1.3.1: {}
 
+  jsonwebtoken@9.0.3:
+    dependencies:
+      jws: 4.0.1
+      lodash.includes: 4.3.0
+      lodash.isboolean: 3.0.3
+      lodash.isinteger: 4.0.4
+      lodash.isnumber: 3.0.3
+      lodash.isplainobject: 4.0.6
+      lodash.isstring: 4.0.1
+      lodash.once: 4.1.1
+      ms: 2.1.3
+      semver: 7.8.5
+
   junk@4.0.1: {}
 
   just-diff-apply@5.5.0: {}
 
   just-diff@6.0.2: {}
 
+  jwa@2.0.1:
+    dependencies:
+      buffer-equal-constant-time: 1.0.1
+      ecdsa-sig-formatter: 1.0.11
+      safe-buffer: 5.2.1
+
+  jws@4.0.1:
+    dependencies:
+      jwa: 2.0.1
+      safe-buffer: 5.2.1
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
 
   kind-of@6.0.3: {}
+
+  komoji@0.9.1: {}
 
   lerna@8.2.4(@types/node@22.20.1)(encoding@0.1.13):
     dependencies:
@@ -10504,6 +12858,10 @@ snapshots:
 
   lines-and-columns@2.0.3: {}
 
+  linkify-it@5.0.2:
+    dependencies:
+      uc.micro: 2.1.0
+
   load-json-file@4.0.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -10531,11 +12889,25 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash.includes@4.3.0: {}
+
+  lodash.isboolean@3.0.3: {}
+
+  lodash.isinteger@4.0.4: {}
+
   lodash.ismatch@4.4.0: {}
+
+  lodash.isnumber@3.0.3: {}
+
+  lodash.isplainobject@4.0.6: {}
+
+  lodash.isstring@4.0.1: {}
 
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
+
+  lodash.once@4.1.1: {}
 
   lodash@4.18.1: {}
 
@@ -10607,6 +12979,15 @@ snapshots:
 
   map-obj@4.3.0: {}
 
+  markdown-it@14.3.0:
+    dependencies:
+      argparse: 2.0.1
+      entities: 4.5.0
+      linkify-it: 5.0.2
+      mdurl: 2.1.0
+      punycode.js: 2.3.1
+      uc.micro: 2.1.0
+
   match-sorter@8.3.0:
     dependencies:
       '@babel/runtime': 7.29.7
@@ -10618,6 +12999,8 @@ snapshots:
     optional: true
 
   math-intrinsics@1.1.0: {}
+
+  mdurl@2.1.0: {}
 
   media-typer@1.1.1: {}
 
@@ -10643,10 +13026,16 @@ snapshots:
 
   merge2@1.4.1: {}
 
+  meros@1.3.2(@types/node@22.20.1):
+    optionalDependencies:
+      '@types/node': 22.20.1
+
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
       picomatch: 2.3.2
+
+  mime-bytes@0.30.0: {}
 
   mime-db@1.52.0: {}
 
@@ -10749,17 +13138,28 @@ snapshots:
 
   modify-values@1.0.1: {}
 
+  monaco-editor@0.52.2: {}
+
+  monaco-graphql@1.8.0(graphql@16.13.0)(monaco-editor@0.52.2)(prettier@3.9.6):
+    dependencies:
+      graphql: 16.13.0
+      graphql-language-service: 5.5.2(graphql@16.13.0)
+      monaco-editor: 0.52.2
+      picomatch-browser: 2.2.6
+      prettier: 3.9.6
+
   motion-dom@12.42.2:
     dependencies:
       motion-utils: 12.39.0
 
   motion-utils@12.39.0: {}
 
-  motion@12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+  motion@12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      framer-motion: 12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      framer-motion: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       tslib: 2.8.1
     optionalDependencies:
+      '@emotion/is-prop-valid': 1.4.0
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
@@ -10892,6 +13292,8 @@ snapshots:
   npm-run-path@4.0.1:
     dependencies:
       path-key: 3.1.1
+
+  nullthrows@1.1.1: {}
 
   nx@20.8.4:
     dependencies:
@@ -11172,6 +13574,17 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
+  pg-cache@3.25.4:
+    dependencies:
+      12factor-env: 1.27.1
+      '@pgpmjs/logger': 2.24.1
+      '@pgpmjs/types': 2.50.3
+      lru-cache: 11.5.2
+      pg: 8.22.0
+      pg-env: 1.29.1
+    transitivePeerDependencies:
+      - pg-native
+
   pg-cloudflare@1.4.0:
     optional: true
 
@@ -11183,13 +13596,27 @@ snapshots:
     dependencies:
       12factor-env: 1.18.2
 
+  pg-env@1.29.1:
+    dependencies:
+      12factor-env: 1.27.1
+
   pg-int8@1.0.1: {}
+
+  pg-introspection@1.0.1:
+    dependencies:
+      tslib: 2.8.1
 
   pg-pool@3.14.0(pg@8.22.0):
     dependencies:
       pg: 8.22.0
 
   pg-protocol@1.15.0: {}
+
+  pg-query-context@2.29.1:
+    dependencies:
+      pg: 8.22.0
+    transitivePeerDependencies:
+      - pg-native
 
   pg-seed@0.17.0:
     dependencies:
@@ -11198,6 +13625,11 @@ snapshots:
       pg-copy-streams: 7.0.0
     transitivePeerDependencies:
       - pg-native
+
+  pg-sql2@5.0.1:
+    dependencies:
+      '@graphile/lru': 5.0.0
+      tslib: 2.8.1
 
   pg-types@2.2.0:
     dependencies:
@@ -11285,6 +13717,8 @@ snapshots:
 
   picocolors@1.1.1: {}
 
+  picomatch-browser@2.2.6: {}
+
   picomatch@2.3.2: {}
 
   picomatch@4.0.5: {}
@@ -11302,6 +13736,8 @@ snapshots:
   pkg-dir@4.2.0:
     dependencies:
       find-up: 4.1.0
+
+  pluralize@7.0.0: {}
 
   png2icons@2.0.1: {}
 
@@ -11321,7 +13757,36 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postgraphile@5.1.3(99a149f4b10f7dbea1189578b170eace):
+    dependencies:
+      '@dataplan/json': 1.0.1(grafast@1.1.1(graphql@16.13.0))
+      '@dataplan/pg': 1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)
+      '@graphile/lru': 5.0.0
+      '@types/node': 22.20.1
+      '@types/pg': 8.21.0
+      debug: 4.4.3
+      grafast: 1.1.1(graphql@16.13.0)
+      grafserv: 1.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))(ws@8.21.3)
+      graphile-build: 5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)
+      graphile-build-pg: 5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1)
+      graphile-config: 1.1.0
+      graphile-utils: 5.0.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build-pg@5.1.3(@dataplan/pg@1.1.1(@dataplan/json@1.0.1(grafast@1.1.1(graphql@16.13.0)))(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0))(grafast@1.1.1(graphql@16.13.0))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(pg-sql2@5.0.1)(pg@8.22.0)(tamedevil@0.1.1))(graphile-build@5.1.1(grafast@1.1.1(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0))(graphile-config@1.1.0)(graphql@16.13.0)(tamedevil@0.1.1)
+      graphql: 16.13.0
+      iterall: 1.3.0
+      jsonwebtoken: 9.0.3
+      pg: 8.22.0
+      pg-sql2: 5.0.1
+      tamedevil: 0.1.1
+      tslib: 2.8.1
+      ws: 8.21.3
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
   postgres-array@2.0.0: {}
+
+  postgres-array@3.0.4: {}
 
   postgres-bytea@1.0.1: {}
 
@@ -11330,6 +13795,8 @@ snapshots:
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
+
+  postgres-range@1.1.4: {}
 
   prelude-ls@1.2.1: {}
 
@@ -11389,6 +13856,8 @@ snapshots:
       end-of-stream: 1.4.5
       once: 1.4.0
 
+  punycode.js@2.3.1: {}
+
   punycode@2.3.1: {}
 
   pure-rand@7.0.1: {}
@@ -11437,6 +13906,10 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       react-stately: 3.48.0(react@19.2.8)
       use-sync-external-store: 1.6.0(react@19.2.8)
+
+  react-compiler-runtime@19.1.0-rc.1(react@19.2.8):
+    dependencies:
+      react: 19.2.8
 
   react-dom@19.2.8(react@19.2.8):
     dependencies:
@@ -11555,7 +14028,13 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
+  request-ip@3.3.0: {}
+
   require-directory@2.1.1: {}
+
+  require-from-string@2.0.2: {}
+
+  requires-port@1.0.0: {}
 
   reselect@5.2.0: {}
 
@@ -11657,6 +14136,44 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  ruru-types@2.0.0(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)):
+    dependencies:
+      '@graphiql/toolkit': 0.11.3(@types/node@22.20.1)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)
+      graphiql: 5.2.4(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      graphql: 16.13.0
+    optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - graphql-ws
+      - immer
+      - use-sync-external-store
+
+  ruru@2.0.1(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(debug@4.4.3)(graphile-config@1.1.0)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)):
+    dependencies:
+      '@emotion/is-prop-valid': 1.4.0
+      graphile-config: 1.1.0
+      graphql: 16.13.0
+      http-proxy: 1.18.1(debug@4.4.3)
+      ruru-types: 2.0.0(@emotion/is-prop-valid@1.4.0)(@types/node@22.20.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(graphql-ws@6.2.1(graphql@16.13.0)(ws@8.21.3))(graphql@16.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+      tslib: 2.8.1
+      yargs: 17.7.3
+    optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    transitivePeerDependencies:
+      - '@types/node'
+      - '@types/react'
+      - '@types/react-dom'
+      - debug
+      - graphql-ws
+      - immer
+      - use-sync-external-store
+
   rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
@@ -11709,6 +14226,11 @@ snapshots:
       - supports-color
 
   set-blocking@2.0.0: {}
+
+  set-value@4.1.0:
+    dependencies:
+      is-plain-object: 2.0.4
+      is-primitive: 3.0.1
 
   setprototypeof@1.2.0: {}
 
@@ -11882,6 +14404,11 @@ snapshots:
 
   std-env@4.2.0: {}
 
+  stream-browserify@3.0.0:
+    dependencies:
+      inherits: 2.0.4
+      readable-stream: 3.6.2
+
   string-length@4.0.2:
     dependencies:
       char-regex: 1.0.2
@@ -11947,9 +14474,16 @@ snapshots:
     dependencies:
       '@pkgr/core': 0.3.6
 
+  tabbable@6.5.0: {}
+
   tailwind-merge@3.6.0: {}
 
   tailwindcss@4.3.3: {}
+
+  tamedevil@0.1.1:
+    dependencies:
+      '@graphile/lru': 5.0.0
+      tslib: 2.8.1
 
   tapable@2.3.3: {}
 
@@ -12014,6 +14548,8 @@ snapshots:
   toidentifier@1.0.1: {}
 
   tr46@0.0.3: {}
+
+  transliteration@2.6.1: {}
 
   treeverse@3.0.0: {}
 
@@ -12121,6 +14657,8 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  uc.micro@2.1.0: {}
+
   uglify-js@3.19.3:
     optional: true
 
@@ -12204,6 +14742,8 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
+  uuid-hash@2.29.0: {}
+
   uuid@10.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
@@ -12273,6 +14813,8 @@ snapshots:
       '@types/node': 20.19.43
     transitivePeerDependencies:
       - msw
+
+  vscode-languageserver-types@3.18.0: {}
 
   walk-up-path@3.0.1: {}
 
@@ -12358,6 +14900,8 @@ snapshots:
       type-fest: 0.4.1
       write-json-file: 3.2.0
 
+  ws@8.21.3: {}
+
   xtend@4.0.2: {}
 
   y18n@5.0.8: {}
@@ -12375,6 +14919,8 @@ snapshots:
       yaml: 2.9.0
 
   yanse@0.2.1: {}
+
+  yanse@0.2.2: {}
 
   yargs-parser@20.2.9: {}
 
@@ -12425,3 +14971,9 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
       react: 19.2.8
+
+  zustand@5.0.14(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)):
+    optionalDependencies:
+      '@types/react': 19.2.17
+      react: 19.2.8
+      use-sync-external-store: 1.6.0(react@19.2.8)
