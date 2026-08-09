@@ -17,7 +17,9 @@ import {
 } from '../shared/api';
 import { parseOtpauthUri } from '../shared/otpauth';
 import { backupVault, restoreVault } from './backup';
+import { biometricStatus, enrol, forget as forgetUnlockKey, unlockSecret } from './biometric';
 import { lookupBrandIcons } from './brand-icons';
+import { clearClipboardTimer, copyWithTimeout } from './clipboard';
 import { vaultFilePath,VaultService } from './vault-service';
 
 const WORD_COUNTS: WordCount[] = [12, 15, 18, 21, 24];
@@ -39,11 +41,16 @@ export const registerIpc = (service: VaultService): void => {
   // ─── vault lifecycle ───
   handle(CHANNELS.vaultStatus, () => service.status());
   handle(CHANNELS.vaultUnlock, (passphrase: string) => service.unlock(assertString(passphrase)));
-  handle(CHANNELS.vaultLock, () => service.lock());
+  handle(CHANNELS.vaultLock, () => {
+    clearClipboardTimer();
+    return service.lock();
+  });
   handle(CHANNELS.vaultSave, () => service.current().save());
-  handle(CHANNELS.vaultChangePassphrase, (next: string) =>
-    service.current().changePassphrase(assertString(next))
-  );
+  handle(CHANNELS.vaultChangePassphrase, async (next: string) => {
+    await service.current().changePassphrase(assertString(next));
+    // a remembered password that no longer opens the vault is worse than none
+    if (biometricStatus().enrolled) await enrol(next);
+  });
   handle(CHANNELS.vaultRebuild, () => service.rebuild());
   handle(CHANNELS.vaultEraseAll, () => service.eraseAll());
 
@@ -159,6 +166,26 @@ export const registerIpc = (service: VaultService): void => {
     // an absent vault has no item to select, so fall back to its folder
     if (existsSync(file)) shell.showItemInFolder(file);
     else await shell.openPath(path.dirname(file));
+  });
+
+  // ─── unlocking without the password ───
+  handle(CHANNELS.unlockKeyStatus, () => biometricStatus());
+  handle(CHANNELS.unlockKeyEnrol, async (passphrase: string) => {
+    // prove it opens the vault before promising the user it will
+    await service.unlock(assertString(passphrase));
+    await enrol(passphrase);
+  });
+  handle(CHANNELS.unlockKeyForget, () => forgetUnlockKey());
+  handle(CHANNELS.unlockKeyUnlock, async (): Promise<boolean> => {
+    const passphrase = await unlockSecret('unlock your dcrypt vault');
+    if (!passphrase) return false;
+    await service.unlock(passphrase);
+    return true;
+  });
+
+  // ─── clipboard ───
+  handle(CHANNELS.clipboardCopy, (value: string, seconds?: number) => {
+    copyWithTimeout(assertString(value), seconds === undefined ? 30 : assertInt(seconds, 1, 3600));
   });
 
   // ─── brand icons (bundled, offline) ───

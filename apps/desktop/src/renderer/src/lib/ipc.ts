@@ -13,12 +13,11 @@ declare global {
 
 export const dcrypt: RendererApi = window.dcrypt;
 
-/** Copy to clipboard and clear it after a timeout so secrets don't linger. */
+/**
+ * Copy to clipboard and clear it after a timeout so secrets don't linger. The
+ * main process does the work: `navigator.clipboard` needs a secure context and
+ * a read permission, and a packaged build serves the UI from `file://`.
+ */
 export const copyWithTimeout = (value: string, seconds = 30): void => {
-  void navigator.clipboard.writeText(value);
-  setTimeout(() => {
-    void navigator.clipboard.readText().then((current) => {
-      if (current === value) void navigator.clipboard.writeText('');
-    });
-  }, seconds * 1000);
+  void dcrypt.clipboard.copy(value, seconds);
 };

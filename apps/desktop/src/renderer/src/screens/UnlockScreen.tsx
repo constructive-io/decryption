@@ -2,8 +2,10 @@ import { Alert, AlertDescription, AlertTitle } from '@constructive-io/ui/alert';
 import { Button } from '@constructive-io/ui/button';
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
-import { FormEvent, useEffect, useState } from 'react';
+import { Fingerprint } from 'lucide-react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 
+import type { BiometricStatus } from '../../../shared/api';
 import { dcrypt } from '../lib/ipc';
 
 /**
@@ -23,10 +25,34 @@ export const UnlockScreen = ({
   const [exists, setExists] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [unlockKey, setUnlockKey] = useState<BiometricStatus | null>(null);
 
   useEffect(() => {
     void dcrypt.vault.status().then((status) => setExists(status.exists));
   }, []);
+
+  const useRemembered = useCallback(async () => {
+    setError('');
+    setBusy(true);
+    try {
+      if (await dcrypt.unlockKey.unlock()) onUnlocked();
+      else setBusy(false);
+    } catch (err) {
+      // a cancelled prompt is a choice, not a failure: fall back to the field
+      const text = err instanceof Error ? err.message : String(err);
+      if (!/cancel/i.test(text)) setError(text);
+      setBusy(false);
+    }
+  }, [onUnlocked]);
+
+  useEffect(() => {
+    if (exists !== true || unlockKey !== null) return;
+    void dcrypt.unlockKey.status().then((status) => {
+      setUnlockKey(status);
+      // offering the fingerprint the moment the doors appear is the whole point
+      if (status.enrolled && status.biometric) void useRemembered();
+    });
+  }, [exists, unlockKey, useRemembered]);
 
   useEffect(() => onWorkingChange?.(busy), [busy, onWorkingChange]);
 
@@ -130,6 +156,12 @@ export const UnlockScreen = ({
       <Button type="submit" disabled={!passphrase}>
         {creating ? 'Create vault' : 'Unlock'}
       </Button>
+      {unlockKey?.enrolled && (
+        <Button type="button" variant="outline" onClick={() => void useRemembered()}>
+          <Fingerprint className="size-4" />
+          {unlockKey.biometric ? 'Unlock with Touch ID' : `Unlock with ${unlockKey.store}`}
+        </Button>
+      )}
     </form>
   );
 };

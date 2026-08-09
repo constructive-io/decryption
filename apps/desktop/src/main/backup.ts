@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import type { BackupResult } from '../shared/api';
+import { forget as forgetUnlockKey } from './biometric';
 import { vaultFilePath,VaultService } from './vault-service';
 
 /** `dcrypt-vault-2026-08-07-1432.dcrypt` — sorts chronologically in a folder. */
@@ -85,5 +86,8 @@ export const restoreVault = async (
     if (replaced) await fs.rename(kept, target).catch(() => undefined);
     throw err;
   }
+  // the restored vault may well have a different password than the one this
+  // machine remembers, and a remembered password that fails is a dead end
+  await forgetUnlockKey();
   return { path: chosen, replaced: replaced ? kept : null };
 };
