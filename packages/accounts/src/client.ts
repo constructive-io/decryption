@@ -113,10 +113,27 @@ const readSession = (
 };
 
 /**
- * A 404 means the URL is not a GraphQL route at all, which is by far the most
- * common way to get this wrong — say so instead of passing on `HTTP 404`.
+ * An auth plane old enough to still keep `allowed_mask` on `principals` derives
+ * the mask from `bit_length(permissions)` in the general permission table, and
+ * inserts NULL when that lookup finds nothing — so the constraint, not the
+ * lookup, is what fails, and the raw message names a column the caller never
+ * sent. Later schemas moved the mask onto `principal_scope_overrides`, where
+ * absent means "inherits", and the personal path simply works.
  */
-const explain = (message: string, endpoint: string): string => {
+const PERSONAL_MASK =
+  /null value in column "allowed_mask" of relation "principals"/i;
+
+export const explainFailure = (message: string, endpoint: string): string => {
+  if (PERSONAL_MASK.test(message)) {
+    return (
+      'this auth plane cannot create a personal principal: it still stores a ' +
+      'permission mask on the principal itself and found no permission row to ' +
+      'size it from — scope the principal to an organization instead, or ' +
+      'update the auth plane'
+    );
+  }
+  // a 404 means the URL is not a GraphQL route at all, which is by far the
+  // most common way to get this wrong — say so instead of passing on `HTTP 404`
   if (!/\b404\b/.test(message)) return message;
   const suffix = endpoint.endsWith('/graphql')
     ? 'check the host and that the auth plane is running'
@@ -274,7 +291,7 @@ const rethrow = (operation: string, endpoint: string, error: unknown): never => 
   const message = error instanceof Error ? error.message : String(error);
   const kind = stepUpKind(message);
   if (kind) throw new StepUpRequiredError(operation, kind, message);
-  throw new AuthError(operation, explain(message, endpoint));
+  throw new AuthError(operation, explainFailure(message, endpoint));
 };
 
 /** The real client: `@constructive-io/sdk`'s generated auth ORM. */
