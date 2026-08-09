@@ -5,7 +5,9 @@ export type ItemKind =
   | 'identity'
   | 'wallet'
   | 'totp'
-  | 'ssh_key';
+  | 'ssh_key'
+  | 'account'
+  | 'api_key';
 
 export type FieldPurpose =
   | 'username'
@@ -14,7 +16,8 @@ export type FieldPurpose =
   | 'mnemonic'
   | 'private_key'
   | 'text'
-  | 'url';
+  | 'url'
+  | 'token';
 
 export interface VaultItem {
   id: string;

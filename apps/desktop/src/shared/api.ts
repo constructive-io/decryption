@@ -1,3 +1,4 @@
+import type { AccountRecord, ApiKeyRecord } from '@decryption/accounts';
 import type {
   AuditEntry,
   FieldPurpose,
@@ -9,6 +10,8 @@ import type {
 } from '@decryption/vault';
 
 export type {
+  AccountRecord,
+  ApiKeyRecord,
   AuditEntry,
   FieldPurpose,
   ItemKind,
@@ -58,6 +61,20 @@ export interface BackupResult {
 export type BrandIcon =
   | { kind: 'logo'; title: string; slug: string; light: string; dark: string }
   | { kind: 'glyph'; title: string; slug: string; path: string; hex: string };
+
+/** Credentials for a sign-in or sign-up; the password is used and discarded. */
+export interface SignInRequest {
+  endpoint: string;
+  email: string;
+  password: string;
+}
+
+export interface CreateKeyRequest {
+  name: string;
+  /** Lifetime in whole days; omitted means the server's default. */
+  expiresDays?: number;
+  accessLevel?: string;
+}
 
 /** What a rebuild carried across, so the UI can show it was not a no-op. */
 export interface RebuildReport {
@@ -122,6 +139,19 @@ export interface DcryptApi {
     urls(itemId: string): Promise<string[]>;
     addUrl(itemId: string, url: string): Promise<void>;
   };
+  accounts: {
+    list(): Promise<AccountRecord[]>;
+    signIn(request: SignInRequest): Promise<AccountRecord>;
+    signUp(request: SignInRequest): Promise<AccountRecord>;
+    signOut(itemId: string): Promise<void>;
+    /** Removes the account and its keys from this vault, server side untouched. */
+    forget(itemId: string): Promise<void>;
+    keys(accountItemId?: string): Promise<ApiKeyRecord[]>;
+    createKey(accountItemId: string, request: CreateKeyRequest): Promise<ApiKeyRecord>;
+    /** Reads the secret back out of the vault, on demand only. */
+    revealKey(itemId: string): Promise<string>;
+    revokeKey(itemId: string): Promise<void>;
+  };
   audit: {
     log(itemId?: string): Promise<AuditEntry[]>;
   };
@@ -183,6 +213,15 @@ export const CHANNELS = {
   tagsRemove: 'tags:remove',
   urlsList: 'urls:list',
   urlsAdd: 'urls:add',
+  accountsList: 'accounts:list',
+  accountsSignIn: 'accounts:sign-in',
+  accountsSignUp: 'accounts:sign-up',
+  accountsSignOut: 'accounts:sign-out',
+  accountsForget: 'accounts:forget',
+  accountsKeys: 'accounts:keys',
+  accountsCreateKey: 'accounts:create-key',
+  accountsRevealKey: 'accounts:reveal-key',
+  accountsRevokeKey: 'accounts:revoke-key',
   auditLog: 'audit:log',
   wbCreateWallet: 'workbench:create-wallet',
   wbDeriveAccounts: 'workbench:derive-accounts',
