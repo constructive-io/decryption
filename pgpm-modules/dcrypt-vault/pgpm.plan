@@ -19,3 +19,4 @@ schemas/dcrypt_vault/procedures/set_field [schemas/dcrypt_vault/tables/fields sc
 schemas/dcrypt_vault/procedures/reveal_field [schemas/dcrypt_vault/procedures/set_field] 2026-07-26T00:00:13Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/reveal_field
 schemas/dcrypt_vault/procedures/totp_code [schemas/dcrypt_vault/procedures/reveal_field pgpm-totp:schemas/totp/procedures/generate_totp] 2026-07-26T00:00:14Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/totp_code
 schemas/dcrypt_vault/procedures/search_items [schemas/dcrypt_vault/tables/urls schemas/dcrypt_vault/tables/item_tags] 2026-07-26T00:00:15Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/procedures/search_items
+schemas/dcrypt_vault/account_types [schemas/dcrypt_vault/types] 2026-07-26T00:00:16Z Dan Lynch <pyramation@gmail.com> # add schemas/dcrypt_vault/account_types

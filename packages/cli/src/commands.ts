@@ -1,6 +1,7 @@
 import { CommandHandler, getPackageJson, Inquirerer } from 'inquirerer';
 import { ParsedArgs } from 'minimist';
 
+import { accountCommand } from './commands/account';
 import { cosmologyCommand } from './commands/cosmology';
 import { decryptCommand, encryptCommand } from './commands/encrypt';
 import { keychainCommand } from './commands/keychain';
@@ -27,6 +28,7 @@ Commands:
   keys                    Manage your X25519 identity
   secrets                 Team secrets files (.env generation, recipients, rekeying)
   vault                   The local encrypted vault, shared with the desktop app
+  account                 Constructive accounts and API keys, stored in the vault
   keychain                Store named secrets locally, always encrypted
   shamir                  Split and recombine a secret into authenticated shares
   salt                    Two-layer encryption: data under a salt, salt under your passphrase
@@ -40,7 +42,8 @@ Global options:
   --version, -v           Print the version
   --help, -h              Show this help; "dcrypt <command> --help" for a command
 
-Nothing in dcrypt makes a network request, and passphrases are never accepted in argv.
+Only "dcrypt account" reaches the network, and only the endpoint you name.
+Passphrases and passwords are never accepted in argv.
 ${envUsage}
 Exit codes:
   1 usage    2 wrong passphrase    3 corrupt input    4 not found    5 not a recipient
@@ -53,6 +56,7 @@ export const createCommandMap = (): Record<string, Handler> => ({
   keys: keysCommand,
   secrets: secretsCommand,
   vault: vaultCommand,
+  account: accountCommand,
   keychain: keychainCommand,
   shamir: shamirCommand,
   salt: saltCommand,

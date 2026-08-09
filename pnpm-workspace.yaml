@@ -9,7 +9,7 @@ packages:
 # Most malicious releases are found and yanked well inside that window.
 minimumReleaseAge: 2880
 
-# Exempt from the wait: 6 scope glob(s), 21 first-party package(s).
+# Exempt from the wait: 6 scope glob(s), 47 first-party package(s).
 # First-party membership comes from what pyramation publishes on npm — waiting on your own release protects nothing.
 minimumReleaseAgeExclude:
   - "@constructive-db/*"
@@ -19,16 +19,41 @@ minimumReleaseAgeExclude:
   - "@pgpmjs/*"
   - "@pgsql/*"
   - 12factor-env
+  - "@agentic-kit/ollama"
+  - "@agentic-kit/protocol"
   - appstash
   - csv-to-pg
+  - etag-hash
   - find-and-require-package-json
   - genomic
+  - gql-ast
+  - graphile-bucket-provisioner-plugin
+  - graphile-bulk-mutations
+  - graphile-cache
+  - graphile-connection-filter
+  - graphile-history
+  - graphile-i18n
+  - graphile-llm
+  - graphile-ltree
+  - graphile-meta
+  - graphile-pg-aggregates
+  - graphile-plugin-utils
+  - graphile-postgis
+  - graphile-presigned-url-plugin
+  - graphile-realtime-subscriptions
+  - graphile-search
+  - graphile-settings
+  - graphile-upload-plugin
+  - inflekt
   - inquirerer
+  - komoji
   - libpg-query
   - makage
+  - mime-bytes
   - nested-obj
   - pg-cache
   - pg-env
+  - pg-query-context
   - pg-seed
   - pglite-test
   - pgsql-client
@@ -37,6 +62,7 @@ minimumReleaseAgeExclude:
   - pgsql-seed
   - pgsql-test
   - pnpm-policy
+  - uuid-hash
   - yamlize
   - yanse
 

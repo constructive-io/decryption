@@ -60,7 +60,10 @@ const KINDS: ItemKind[] = ['login', 'note', 'card', 'identity', 'wallet', 'totp'
 export const vaultFile = (): string =>
   join(resolve(dirs(), 'data', 'db'), 'vault.dcrypt');
 
-const openVault = async (argv: ParsedArgs, prompter: Inquirerer): Promise<Vault> => {
+export const openVault = async (
+  argv: ParsedArgs,
+  prompter: Inquirerer
+): Promise<Vault> => {
   const passphrase = await resolvePassphrase(argv, prompter, {
     message: 'Master password',
   });

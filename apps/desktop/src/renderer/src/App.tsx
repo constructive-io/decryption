@@ -7,6 +7,7 @@ import {
   Settings,
   ShieldCheck,
   Timer,
+  UserRound,
   Wrench,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -14,13 +15,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { DoorState, VaultDoors } from './components/VaultDoors';
 import { dcrypt } from './lib/ipc';
 import { ThemeProvider, useThemeMode } from './lib/theme-context';
+import { AccountsScreen } from './screens/AccountsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ToolsScreen } from './screens/ToolsScreen';
 import { TotpScreen } from './screens/TotpScreen';
 import { UnlockScreen } from './screens/UnlockScreen';
 import { VaultScreen } from './screens/VaultScreen';
 
-type Tab = 'vault' | 'codes' | 'tools' | 'settings';
+type Tab = 'vault' | 'codes' | 'accounts' | 'tools' | 'settings';
 
 /** `opening`/`closing` are the door transitions; the vault is mounted for all but `locked`. */
 type Phase = 'locked' | 'opening' | 'unlocked' | 'closing';
@@ -28,6 +30,7 @@ type Phase = 'locked' | 'opening' | 'unlocked' | 'closing';
 const NAV: { id: Tab; label: string; icon: typeof KeyRound }[] = [
   { id: 'vault', label: 'Vault', icon: KeyRound },
   { id: 'codes', label: 'Codes', icon: Timer },
+  { id: 'accounts', label: 'Accounts', icon: UserRound },
   { id: 'tools', label: 'Tools', icon: Wrench },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -110,6 +113,7 @@ const AppContent = () => {
           <main className="min-w-0 flex-1 overflow-hidden">
             {tab === 'vault' && <VaultScreen />}
             {tab === 'codes' && <TotpScreen />}
+            {tab === 'accounts' && <AccountsScreen />}
             {tab === 'tools' && <ToolsScreen />}
             {tab === 'settings' && (
               <SettingsScreen onLocked={() => setPhase('closing')} />

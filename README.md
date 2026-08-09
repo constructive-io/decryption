@@ -14,8 +14,8 @@
 </p>
 
 Audited, dependency-light building blocks for mnemonics, envelope encryption, Shamir secret sharing and
-team secret management — plus the `dcrypt` CLI. Everything runs locally; nothing in this repo makes a
-network request.
+team secret management — plus the `dcrypt` CLI. Everything runs locally; the only code here that opens a
+socket is `dcrypt account`, which talks to the Constructive endpoint you name.
 
 ## Packages
 
@@ -27,6 +27,7 @@ network request.
 | **@decryption/wallet** | [![npm](https://img.shields.io/npm/v/@decryption/wallet.svg)](https://www.npmjs.com/package/@decryption/wallet) | [GitHub](./packages/wallet) | BIP39/BIP32 wallets and offline address derivation |
 | **@decryption/keys** | [![npm](https://img.shields.io/npm/v/@decryption/keys.svg)](https://www.npmjs.com/package/@decryption/keys) | [GitHub](./packages/keys) | X25519 identities, recipient strings, on-disk keyring |
 | **@decryption/secrets** | [![npm](https://img.shields.io/npm/v/@decryption/secrets.svg)](https://www.npmjs.com/package/@decryption/secrets) | [GitHub](./packages/secrets) | Team secrets file format, rekeying and `.env` export |
+| **@decryption/accounts** | [![npm](https://img.shields.io/npm/v/@decryption/accounts.svg)](https://www.npmjs.com/package/@decryption/accounts) | [GitHub](./packages/accounts) | Constructive accounts and API keys, held in the local vault |
 | **@decryption/cli** | [![npm](https://img.shields.io/npm/v/@decryption/cli.svg)](https://www.npmjs.com/package/@decryption/cli) | [GitHub](./packages/cli) | The `dcrypt` command-line interface |
 
 ### Vendored primitives
@@ -53,6 +54,9 @@ dcrypt encrypt --in secret.txt          # Argon2id + XChaCha20-Poly1305 envelope
 dcrypt shamir split --shares 5 --threshold 3
 dcrypt secrets init && dcrypt secrets set DATABASE_URL
 dcrypt secrets run -- pnpm dev          # inject secrets without writing a .env
+
+dcrypt account signin me@example.com --endpoint https://auth.example.com/graphql
+dcrypt account key create ci --expires-days 30   # secret lands in the vault, not a .env
 ```
 
 ## Security model
@@ -62,4 +66,5 @@ dcrypt secrets run -- pnpm dev          # inject secrets without writing a .env
   returning an empty string.
 - Team secrets use X25519 per-recipient wrapping (age/sops-shaped), so adding or removing a teammate never
   requires resharing a passphrase. Shamir is reserved for break-glass recovery.
-- Nothing here opens a socket. Private keys are never written to disk unencrypted.
+- Private keys are never written to disk unencrypted. `dcrypt account` is the one command that uses the
+  network: session tokens and API-key secrets it receives go straight into the encrypted vault.

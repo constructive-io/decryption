@@ -1,7 +1,7 @@
 import {
   decrypt,
-  deriveEnvelopeKey,
   DerivedEnvelopeKey,
+  deriveEnvelopeKey,
   encryptWithDerivedKey,
   KdfParams,
   KdfProfile,
@@ -121,6 +121,8 @@ export class Vault {
       );
     }
 
+    await Vault.ensureSchema(db);
+
     const salt = await Vault.readDbKeySalt(db);
     const dbKey = deriveDbKey(passphrase, salt);
     // derive the snapshot key once: every later save costs only the AEAD pass,
@@ -159,6 +161,17 @@ export class Vault {
     // the adapter's PGlite type is resolved through the ESM declarations while
     // this CJS build resolves the CTS ones — identical runtime class
     return handle.db as unknown as PGlite;
+  }
+
+  /**
+   * Adds enum values a vault file created by an older module predates. A vault
+   * is only ever deployed once — later opens restore the snapshot — so schema
+   * additions have to be applied to the loaded database as well as to
+   * `deploy/schemas/dcrypt_vault/account_types.sql`, which is what a fresh
+   * deploy and a rebuild run.
+   */
+  private static async ensureSchema(db: PGlite): Promise<void> {
+    for (const statement of ADDED_ENUM_VALUES) await db.query(statement);
   }
 
   /**
@@ -536,6 +549,13 @@ export class Vault {
     await this.save();
   }
 }
+
+/** Mirrors `deploy/schemas/dcrypt_vault/account_types.sql`; see ensureSchema. */
+const ADDED_ENUM_VALUES: readonly string[] = [
+  "ALTER TYPE dcrypt_vault.item_kind ADD VALUE IF NOT EXISTS 'account'",
+  "ALTER TYPE dcrypt_vault.item_kind ADD VALUE IF NOT EXISTS 'api_key'",
+  "ALTER TYPE dcrypt_vault.field_purpose ADD VALUE IF NOT EXISTS 'token'",
+];
 
 interface CopySpec {
   table: string;

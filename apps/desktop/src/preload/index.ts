@@ -52,6 +52,18 @@ const api: DcryptApi & {
     urls: (itemId) => invoke(CHANNELS.urlsList, itemId),
     addUrl: (itemId, url) => invoke(CHANNELS.urlsAdd, itemId, url),
   },
+  accounts: {
+    list: () => invoke(CHANNELS.accountsList),
+    signIn: (request) => invoke(CHANNELS.accountsSignIn, request),
+    signUp: (request) => invoke(CHANNELS.accountsSignUp, request),
+    signOut: (itemId) => invoke(CHANNELS.accountsSignOut, itemId),
+    forget: (itemId) => invoke(CHANNELS.accountsForget, itemId),
+    keys: (accountItemId) => invoke(CHANNELS.accountsKeys, accountItemId),
+    createKey: (accountItemId, request) =>
+      invoke(CHANNELS.accountsCreateKey, accountItemId, request),
+    revealKey: (itemId) => invoke(CHANNELS.accountsRevealKey, itemId),
+    revokeKey: (itemId) => invoke(CHANNELS.accountsRevokeKey, itemId),
+  },
   audit: {
     log: (itemId) => invoke(CHANNELS.auditLog, itemId),
   },
