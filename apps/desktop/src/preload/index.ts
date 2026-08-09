@@ -63,6 +63,13 @@ const api: DcryptApi & {
       invoke(CHANNELS.accountsCreateKey, accountItemId, request, stepUp),
     revealKey: (itemId) => invoke(CHANNELS.accountsRevealKey, itemId),
     revokeKey: (itemId, stepUp) => invoke(CHANNELS.accountsRevokeKey, itemId, stepUp),
+    assignKeyToDatabase: (itemId, databaseId) =>
+      invoke(CHANNELS.accountsAssignKeyDatabase, itemId, databaseId),
+    principals: (accountItemId) => invoke(CHANNELS.accountsPrincipals, accountItemId),
+    createPrincipal: (accountItemId, request, stepUp) =>
+      invoke(CHANNELS.accountsCreatePrincipal, accountItemId, request, stepUp),
+    deletePrincipal: (accountItemId, principalId, stepUp) =>
+      invoke(CHANNELS.accountsDeletePrincipal, accountItemId, principalId, stepUp),
     linkTotp: (accountItemId, totpItemId) =>
       invoke(CHANNELS.accountsLinkTotp, accountItemId, totpItemId),
     unlinkTotp: (accountItemId) => invoke(CHANNELS.accountsUnlinkTotp, accountItemId),

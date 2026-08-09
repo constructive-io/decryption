@@ -1,4 +1,9 @@
-import type { AccountRecord, ApiKeyRecord, StepUpProof } from '@decryption/accounts';
+import type {
+  AccountRecord,
+  ApiKeyRecord,
+  PrincipalRecord,
+  StepUpProof,
+} from '@decryption/accounts';
 import type {
   AuditEntry,
   FieldPurpose,
@@ -15,6 +20,7 @@ export type {
   AuditEntry,
   FieldPurpose,
   ItemKind,
+  PrincipalRecord,
   StepUpProof,
   VaultFieldMeta,
   VaultFolder,
@@ -87,6 +93,19 @@ export interface CreateKeyRequest {
   /** Lifetime in whole days; omitted means the server's default. */
   expiresDays?: number;
   accessLevel?: string;
+  /** Mint the key as this principal, so it carries the principal's scope. */
+  principalId?: string;
+  /** Mint an org key rather than a personal one. */
+  orgId?: string;
+  /** Tag the key as this database's data-plane token, for a harness host. */
+  databaseId?: string;
+}
+
+export interface CreatePrincipalRequest {
+  name: string;
+  orgId: string;
+  isReadOnly?: boolean;
+  bypassStepUp?: boolean;
 }
 
 /** What a rebuild carried across, so the UI can show it was not a no-op. */
@@ -169,6 +188,20 @@ export interface DcryptApi {
     /** Reads the secret back out of the vault, on demand only. */
     revealKey(itemId: string): Promise<string>;
     revokeKey(itemId: string, stepUp?: StepUpProof): Promise<void>;
+    /** Tag a stored key as a database's data-plane token; the secret is untouched. */
+    assignKeyToDatabase(itemId: string, databaseId: string): Promise<void>;
+    /** Read from the server on demand — permissions are never mirrored locally. */
+    principals(accountItemId: string): Promise<PrincipalRecord[]>;
+    createPrincipal(
+      accountItemId: string,
+      request: CreatePrincipalRequest,
+      stepUp?: StepUpProof
+    ): Promise<string>;
+    deletePrincipal(
+      accountItemId: string,
+      principalId: string,
+      stepUp?: StepUpProof
+    ): Promise<void>;
     /** Point an account at a vault code that then answers its MFA step-ups. */
     linkTotp(accountItemId: string, totpItemId: string): Promise<void>;
     unlinkTotp(accountItemId: string): Promise<void>;
@@ -255,6 +288,10 @@ export const CHANNELS = {
   accountsCreateKey: 'accounts:create-key',
   accountsRevealKey: 'accounts:reveal-key',
   accountsRevokeKey: 'accounts:revoke-key',
+  accountsAssignKeyDatabase: 'accounts:assign-key-database',
+  accountsPrincipals: 'accounts:principals',
+  accountsCreatePrincipal: 'accounts:create-principal',
+  accountsDeletePrincipal: 'accounts:delete-principal',
   accountsLinkTotp: 'accounts:link-totp',
   accountsUnlinkTotp: 'accounts:unlink-totp',
   auditLog: 'audit:log',
