@@ -236,6 +236,40 @@ const PRINCIPAL_SELECT_CORE = {
 
 type PrincipalSelect = typeof PRINCIPAL_SELECT | typeof PRINCIPAL_SELECT_CORE;
 
+/**
+ * A principal scoped to nothing but its owner — the personal CI identity.
+ *
+ * Sent by hand because the generated ORM has no `mutation.createPrincipal`: the
+ * codegen let the principals table's CRUD create shadow the procedure of the
+ * same inflected name, so the typed surface offers only the org variant. The
+ * auth schema itself does expose it, taking the flat input built here.
+ */
+const createPersonalPrincipal = async (
+  endpoint: string,
+  token: string | undefined,
+  input: {
+    name: string;
+    isReadOnly?: boolean;
+    bypassStepUp?: boolean;
+    useAdminOwner?: boolean;
+  }
+): Promise<string | null> => {
+  const adapter = new auth.FetchAdapter(
+    endpoint,
+    token ? { Authorization: `Bearer ${token}` } : undefined
+  );
+  const result = await adapter.execute<{
+    createPrincipal: { result: string | null } | null;
+  }>(
+    `mutation CreatePrincipal($input: CreatePrincipalInput!) {
+      createPrincipal(input: $input) { result }
+    }`,
+    { input }
+  );
+  if (!result.ok) throw new Error(result.errors.map((e) => e.message).join('; '));
+  return result.data.createPrincipal?.result ?? null;
+};
+
 const rethrow = (operation: string, endpoint: string, error: unknown): never => {
   const message = error instanceof Error ? error.message : String(error);
   const kind = stepUpKind(message);
@@ -356,26 +390,29 @@ export const sdkAuthClient: AuthClientFactory = (options) => {
     },
 
     async createPrincipal(options) {
+      const flags = {
+        isReadOnly: options.isReadOnly,
+        bypassStepUp: options.bypassStepUp,
+        // omitted rather than sent as null, so a server that predates
+        // the field is not asked about it at all
+        ...(options.useAdminOwner === undefined
+          ? {}
+          : { useAdminOwner: options.useAdminOwner }),
+      };
       try {
-        const data = await client.mutation
-          .createOrgPrincipal(
-            {
-              input: {
-                name: options.name,
-                orgId: options.orgId,
-                isReadOnly: options.isReadOnly,
-                bypassStepUp: options.bypassStepUp,
-                // omitted rather than sent as null, so a server that predates
-                // the field is not asked about it at all
-                ...(options.useAdminOwner === undefined
-                  ? {}
-                  : { useAdminOwner: options.useAdminOwner }),
-              },
-            },
-            { select: { result: true } }
-          )
-          .unwrap();
-        const principalId = data.createOrgPrincipal?.result;
+        const principalId = options.orgId
+          ? (
+            await client.mutation
+              .createOrgPrincipal(
+                { input: { name: options.name, orgId: options.orgId, ...flags } },
+                { select: { result: true } }
+              )
+              .unwrap()
+          ).createOrgPrincipal?.result
+          : await createPersonalPrincipal(endpoint, token, {
+            name: options.name,
+            ...flags,
+          });
         if (!principalId) {
           throw new AuthError('createPrincipal', 'the server returned no principal');
         }

@@ -98,7 +98,7 @@ class FakeServer {
         isReadOnly: options.isReadOnly ?? false,
         bypassStepUp: options.bypassStepUp ?? false,
         useAdminOwner: options.useAdminOwner ?? true,
-        entityIds: [options.orgId],
+        entityIds: options.orgId ? [options.orgId] : [],
         scopes: [],
       };
       this.principals.push(principal);
@@ -533,6 +533,17 @@ describe('principals', () => {
     expect(key.principalId).toBe(principalId);
     expect(key.orgId).toBe('org-1');
     expect((await accounts.listApiKeys())[0].principalId).toBe(principalId);
+  });
+
+  it('creates a personal one, scoped to nothing but its owner', async () => {
+    const account = await signIn();
+    const principalId = await accounts.createPrincipal(account.itemId, {
+      name: 'my-ci',
+      isReadOnly: true,
+    });
+
+    const [principal] = await accounts.listPrincipals(account.itemId);
+    expect(principal).toMatchObject({ principalId, name: 'my-ci', entityIds: [] });
   });
 
   it('answers a step-up when creating one, like every other sensitive call', async () => {

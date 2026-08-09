@@ -98,8 +98,12 @@ export interface PrincipalRecord {
 
 export interface CreatePrincipalOptions {
   name: string;
-  /** The organization to scope it to. */
-  orgId: string;
+  /**
+   * The organization to scope it to. Omitted means a personal principal: one
+   * that reaches wherever you do, which is what an unattended job of your own
+   * wants — an org id would only narrow it.
+   */
+  orgId?: string;
   isReadOnly?: boolean;
   /** Let it skip MFA step-up — the point of a CI identity. */
   bypassStepUp?: boolean;
