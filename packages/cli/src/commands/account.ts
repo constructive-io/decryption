@@ -42,7 +42,7 @@ Subcommands:
   key assign <name> <db>  Serve this key as that database's data-plane token
   token [email]           Print the bearer a harness would be given
   principal list [email]  Scoped sub-identities, with their scopes and masks
-  principal create <name> Create one scoped to --org
+  principal create <name> Create one — personal, or scoped to --org
   principal delete <id>   Remove one server-side
 
 Options:
@@ -52,7 +52,7 @@ Options:
   --access-level <level>  Access level for a new key
   --database <id>         Tag a new key as that database's data-plane token
   --principal <id>        Mint the key as this principal, not as you
-  --org <id>              Organization for a principal, or for an org key
+  --org <id>              Scope a principal to this org; omit for a personal one
   --read-only             The principal may only read
   --bypass-step-up        The principal may skip MFA step-up (for CI)
   --password-file <path>  Read the account password from a file
@@ -537,7 +537,6 @@ const principalCreate = async (
   const { first, newArgv } = takeFirst(argv);
   if (!first) throw new CliError('a principal name is required');
   const orgId = text(newArgv.org);
-  if (!orgId) throw new CliError('--org <id> is required');
 
   await withVault(newArgv, prompter, async (accounts) => {
     const account = await resolveAccount(accounts, text(newArgv.account));

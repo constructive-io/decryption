@@ -103,7 +103,8 @@ export interface CreateKeyRequest {
 
 export interface CreatePrincipalRequest {
   name: string;
-  orgId: string;
+  /** Omitted for a personal principal, which reaches wherever its owner does. */
+  orgId?: string;
   isReadOnly?: boolean;
   bypassStepUp?: boolean;
 }
