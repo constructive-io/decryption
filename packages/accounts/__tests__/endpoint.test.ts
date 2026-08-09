@@ -1,4 +1,9 @@
-import { EndpointError, missingField, normalizeEndpoint } from '../src';
+import {
+  EndpointError,
+  explainFailure,
+  missingField,
+  normalizeEndpoint,
+} from '../src';
 
 describe('normalizeEndpoint', () => {
   it('appends the graphql path to a bare host', () => {
@@ -59,6 +64,26 @@ describe('missingField', () => {
     expect(missingField('permission denied for table principals')).toBe(false);
     expect(missingField('no GraphQL endpoint at http://x — try http://x/graphql')).toBe(
       false
+    );
+  });
+});
+
+describe('explainFailure', () => {
+  const ENDPOINT = 'http://auth.localhost:3000/graphql';
+
+  it('turns the mask constraint into what the operator can actually do about it', () => {
+    const text = explainFailure(
+      'null value in column "allowed_mask" of relation "principals" violates not-null constraint',
+      ENDPOINT
+    );
+    expect(text).toContain('personal principal');
+    expect(text).toContain('organization');
+    expect(text).not.toContain('not-null constraint');
+  });
+
+  it('leaves a failure it has nothing to add to exactly as the server put it', () => {
+    expect(explainFailure('permission denied for table principals', ENDPOINT)).toBe(
+      'permission denied for table principals'
     );
   });
 });
