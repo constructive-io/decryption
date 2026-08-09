@@ -3,8 +3,10 @@ import {
   AccountRecord,
   ApiKeyRecord,
   KeyLifetime,
+  PrincipalRecord,
   StepUpProof,
   StepUpRequiredError,
+  VaultCredentials,
 } from '@decryption/accounts';
 import { Vault } from '@decryption/vault';
 import { readFileSync } from 'fs';
@@ -37,12 +39,22 @@ Subcommands:
   key create <name>       Mint an API key for --account
   key reveal <name>       Print an API key secret
   key revoke <name>       Revoke server-side, then delete the local copy
+  key assign <name> <db>  Serve this key as that database's data-plane token
+  token [email]           Print the bearer a harness would be given
+  principal list [email]  Scoped sub-identities, with their scopes and masks
+  principal create <name> Create one scoped to --org
+  principal delete <id>   Remove one server-side
 
 Options:
   --endpoint <url>        Auth endpoint (or DCRYPT_AUTH_ENDPOINT)
   --account <email>       Which account a key command applies to
   --expires-days <n>      Lifetime for a new key (default: no expiry)
   --access-level <level>  Access level for a new key
+  --database <id>         Tag a new key as that database's data-plane token
+  --principal <id>        Mint the key as this principal, not as you
+  --org <id>              Organization for a principal, or for an org key
+  --read-only             The principal may only read
+  --bypass-step-up        The principal may skip MFA step-up (for CI)
   --password-file <path>  Read the account password from a file
   --password-stdin        Read the account password from stdin
   --json                  Machine-readable output
@@ -54,6 +66,9 @@ Examples:
   dcrypt account key create ci --account dev@example.com --expires-days 30
   dcrypt account link-code dev@example.com "Constructive dev"
   dcrypt account key reveal ci
+  dcrypt account token dev@example.com
+  dcrypt account principal create ci-deploy --org <org-id> --read-only
+  dcrypt account key create ci --principal <principal-id> --org <org-id>
 `;
 
 /**
@@ -153,6 +168,25 @@ const findAccount = async (
     all.find((account) => account.email.toLowerCase() === ref.toLowerCase());
   if (!match) throw new CliError(`no account "${ref}" in the vault`, EXIT.notFound);
   return match;
+};
+
+/**
+ * The account a command applies to: the one named, or the only one there is.
+ * Never a guess when the vault holds several.
+ */
+const resolveAccount = async (
+  accounts: AccountManager,
+  ref: string | undefined
+): Promise<AccountRecord> => {
+  if (ref) return findAccount(accounts, ref);
+  const all = await accounts.listAccounts();
+  if (all.length === 0) {
+    throw new CliError('no account in the vault — sign in first', EXIT.notFound);
+  }
+  if (all.length > 1) {
+    throw new CliError('name an account: the vault holds more than one');
+  }
+  return all[0];
 };
 
 const findKey = async (
@@ -322,6 +356,9 @@ const withStepUp = async <T>(
   }
 };
 
+const text = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.length ? value : undefined;
+
 const lifetime = (argv: ParsedArgs): KeyLifetime | undefined => {
   const raw = argv['expires-days'] ?? argv.expiresDays;
   if (raw === undefined) return undefined;
@@ -351,6 +388,9 @@ const keyCreate = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> 
       name: first,
       expiresIn: lifetime(newArgv),
       accessLevel: typeof accessLevel === 'string' ? accessLevel : undefined,
+      databaseId: text(newArgv.database),
+      principalId: text(newArgv.principal),
+      orgId: text(newArgv.org),
     };
     const key = await withStepUp(prompter, (proof) =>
       accounts.createApiKey(account.itemId, request, proof)
@@ -384,6 +424,172 @@ const keyRevoke = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> 
   });
 };
 
+/**
+ * Say that an existing key is a database's data-plane token, which is what a
+ * harness host asks for by database id.
+ */
+const keyAssign = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  const { first: databaseId, newArgv: rest } = takeFirst(newArgv);
+  if (!first) throw new CliError('a key name is required');
+  if (!databaseId) throw new CliError('a database id is required');
+  await withVault(rest, prompter, async (accounts) => {
+    const key = await findKey(accounts, first);
+    await accounts.assignKeyToDatabase(key.itemId, databaseId);
+    emit(
+      rest,
+      { itemId: key.itemId, databaseId },
+      () => `"${key.name}" is now the data-plane token for ${databaseId}`
+    );
+  });
+};
+
+/**
+ * The bearer a harness host would be handed. Printing a live token is the
+ * point of the command, so it goes to stdout alone and nowhere else — but the
+ * vault stays the only place it is stored.
+ */
+const token = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  const databaseRef = newArgv.database;
+  await withVault(newArgv, prompter, async (accounts) => {
+    const accountItemId = first
+      ? (await findAccount(accounts, first)).itemId
+      : undefined;
+    const credentials = new VaultCredentials(accounts, { accountItemId });
+
+    if (typeof databaseRef === 'string' && databaseRef.length) {
+      const result = await credentials.dataToken(databaseRef);
+      if (!result.token) {
+        throw new CliError(
+          `no key in the vault is the data-plane token for ${databaseRef} — tag one with "dcrypt account key assign <name> ${databaseRef}"`,
+          EXIT.notFound
+        );
+      }
+      emit(newArgv, result, () => result.token as string);
+      return;
+    }
+
+    const bearer = await credentials.accountBearer();
+    if (!bearer) {
+      throw new CliError(
+        first
+          ? `${first} is signed out — sign in again first`
+          : 'name an account: a bearer is only served when exactly one account is signed in',
+        EXIT.notFound
+      );
+    }
+    emit(newArgv, { accountBearer: bearer }, () => bearer);
+  });
+};
+
+/**
+ * A principal's reach: the entities it touches, and the per-scope overrides
+ * that narrow it. No override row means it simply inherits its owner there,
+ * which is worth saying out loud rather than rendering an empty list.
+ */
+const describePrincipal = (principal: PrincipalRecord): string => {
+  const flags = [
+    principal.isReadOnly ? 'read-only' : null,
+    principal.bypassStepUp ? 'skips step-up' : null,
+    principal.useAdminOwner ? "inherits owner's admin" : null,
+  ].filter(Boolean);
+  const scopes = principal.scopes.length
+    ? principal.scopes
+      .map(
+        (scope) =>
+          `    scope ${scope.membershipType}: ${
+            scope.isActive ? 'active' : 'disabled'
+          }${scope.isReadOnly ? ', read-only' : ''}, mask ${
+            scope.allowedMask ?? 'inherited'
+          }`
+      )
+      .join('\n')
+    : '    (no overrides — inherits the owner everywhere it is scoped)';
+  return [
+    `${principal.name.padEnd(24)} ${principal.principalId}`,
+    `    ${flags.join(', ') || 'no flags'}`,
+    `    entities: ${principal.entityIds.join(', ') || '(none)'}`,
+    scopes,
+  ].join('\n');
+};
+
+const principalList = async (
+  argv: ParsedArgs,
+  prompter: Inquirerer
+): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  await withVault(newArgv, prompter, async (accounts) => {
+    const account = await resolveAccount(accounts, first);
+    const principals = await accounts.listPrincipals(account.itemId);
+    emit(
+      newArgv,
+      principals,
+      () => principals.map(describePrincipal).join('\n\n') || '(no principals)'
+    );
+  });
+};
+
+const principalCreate = async (
+  argv: ParsedArgs,
+  prompter: Inquirerer
+): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  if (!first) throw new CliError('a principal name is required');
+  const orgId = text(newArgv.org);
+  if (!orgId) throw new CliError('--org <id> is required');
+
+  await withVault(newArgv, prompter, async (accounts) => {
+    const account = await resolveAccount(accounts, text(newArgv.account));
+    const principalId = await withStepUp(prompter, (proof) =>
+      accounts.createPrincipal(
+        account.itemId,
+        {
+          name: first,
+          orgId,
+          isReadOnly: Boolean(newArgv['read-only'] ?? newArgv.readOnly),
+          bypassStepUp: Boolean(newArgv['bypass-step-up'] ?? newArgv.bypassStepUp),
+        },
+        proof
+      )
+    );
+    emit(
+      newArgv,
+      { principalId },
+      () => `created "${first}" (${principalId}) — mint keys as it with --principal ${principalId}`
+    );
+  });
+};
+
+const principalDelete = async (
+  argv: ParsedArgs,
+  prompter: Inquirerer
+): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  if (!first) throw new CliError('a principal id is required');
+  await withVault(newArgv, prompter, async (accounts) => {
+    const account = await resolveAccount(accounts, text(newArgv.account));
+    await withStepUp(prompter, (proof) =>
+      accounts.deletePrincipal(account.itemId, first, proof)
+    );
+    emit(newArgv, { principalId: first }, () => `removed ${first}`);
+  });
+};
+
+const principalCommand = async (
+  argv: ParsedArgs,
+  prompter: Inquirerer
+): Promise<void> =>
+  runSubcommand(argv, prompter, {
+    name: 'account principal',
+    usage: accountUsage,
+    handlers: {
+      list: principalList,
+      create: principalCreate,
+      delete: principalDelete,
+    },
+  });
+
 const keyCommand = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> =>
   runSubcommand(argv, prompter, {
     name: 'account key',
@@ -393,6 +599,7 @@ const keyCommand = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void>
       create: keyCreate,
       reveal: keyReveal,
       revoke: keyRevoke,
+      assign: keyAssign,
     },
   });
 
@@ -412,5 +619,7 @@ export const accountCommand = async (
       'link-code': linkCode,
       'unlink-code': unlinkCode,
       key: keyCommand,
+      principal: principalCommand,
+      token,
     },
   });
