@@ -7,11 +7,13 @@ import type { RebuildReport, TotpEntry, VaultStatus } from '../shared/api';
 
 const APP_NAME = 'dcrypt';
 
+const appDirs = () => appstash(APP_NAME, { ensure: true });
+
 /** Root of everything dcrypt keeps on this machine: vault, keychain, identity. */
-export const appDataPath = (): string => appstash(APP_NAME, { ensure: true });
+export const appDataPath = (): string => appDirs().root;
 
 export const vaultFilePath = (): string =>
-  resolve(appDataPath(), 'data', 'db') + path.sep + 'vault.dcrypt';
+  resolve(appDirs(), 'data', 'db') + path.sep + 'vault.dcrypt';
 
 /** Locate the dcrypt-vault pgpm module in dev (workspace) and packaged builds. */
 export const vaultModulePath = (): string => {

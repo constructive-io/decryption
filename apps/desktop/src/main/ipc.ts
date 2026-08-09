@@ -1,3 +1,4 @@
+import { AccountManager } from '@decryption/accounts';
 import { decryptFromString, encryptToString } from '@decryption/core';
 import { decrypt as legacyDecrypt } from '@decryption/cosmology-compat';
 import { combineToString, splitToStrings } from '@decryption/shamir';
@@ -6,7 +7,13 @@ import { BrowserWindow, ipcMain, shell } from 'electron';
 import { existsSync } from 'fs';
 import * as path from 'path';
 
-import { CHANNELS, FieldPurpose, ItemKind } from '../shared/api';
+import {
+  CHANNELS,
+  CreateKeyRequest,
+  FieldPurpose,
+  ItemKind,
+  SignInRequest,
+} from '../shared/api';
 import { parseOtpauthUri } from '../shared/otpauth';
 import { backupVault, restoreVault } from './backup';
 import { lookupBrandIcons } from './brand-icons';
@@ -155,6 +162,58 @@ export const registerIpc = (service: VaultService): void => {
 
   // ─── brand icons (bundled, offline) ───
   handle(CHANNELS.iconsLookup, (names: string[]) => lookupBrandIcons(assertStringArray(names)));
+
+  // ─── constructive accounts ───
+  const accounts = (): AccountManager => new AccountManager(service.current());
+  const credentials = (request: SignInRequest): SignInRequest => ({
+    endpoint: assertString(request?.endpoint),
+    email: assertString(request?.email),
+    password: assertString(request?.password),
+  });
+
+  handle(CHANNELS.accountsList, () => accounts().listAccounts());
+  handle(CHANNELS.accountsSignIn, async (request: SignInRequest) => {
+    const account = await accounts().signIn(credentials(request));
+    service.scheduleSave();
+    return account;
+  });
+  handle(CHANNELS.accountsSignUp, async (request: SignInRequest) => {
+    const account = await accounts().signUp(credentials(request));
+    service.scheduleSave();
+    return account;
+  });
+  handle(CHANNELS.accountsSignOut, async (itemId: string) => {
+    await accounts().signOut(assertString(itemId));
+    service.scheduleSave();
+  });
+  handle(CHANNELS.accountsForget, async (itemId: string) => {
+    await accounts().forget(assertString(itemId));
+    service.scheduleSave();
+  });
+  handle(CHANNELS.accountsKeys, (accountItemId?: string) =>
+    accounts().listApiKeys(accountItemId === undefined ? undefined : assertString(accountItemId))
+  );
+  handle(
+    CHANNELS.accountsCreateKey,
+    async (accountItemId: string, request: CreateKeyRequest) => {
+      const days = request?.expiresDays;
+      const key = await accounts().createApiKey(assertString(accountItemId), {
+        name: assertString(request?.name),
+        expiresIn: days === undefined ? undefined : { days: assertInt(days, 1, 3650) },
+        accessLevel:
+          request?.accessLevel === undefined ? undefined : assertString(request.accessLevel),
+      });
+      service.scheduleSave();
+      return key;
+    }
+  );
+  handle(CHANNELS.accountsRevealKey, (itemId: string) =>
+    accounts().revealApiKey(assertString(itemId))
+  );
+  handle(CHANNELS.accountsRevokeKey, async (itemId: string) => {
+    await accounts().revokeApiKey(assertString(itemId));
+    service.scheduleSave();
+  });
 
   // ─── audit ───
   handle(CHANNELS.auditLog, (itemId?: string) => service.current().auditLog(itemId));

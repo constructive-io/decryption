@@ -21,6 +21,7 @@
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
+    "@decryption/accounts": "workspace:*",
     "@decryption/core": "workspace:*",
     "@decryption/cosmology-compat": "workspace:*",
     "@decryption/hashes": "workspace:*",
