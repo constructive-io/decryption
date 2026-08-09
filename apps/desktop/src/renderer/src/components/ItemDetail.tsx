@@ -13,7 +13,7 @@ import { Button } from '@constructive-io/ui/button';
 import { Input } from '@constructive-io/ui/input';
 import { Progress } from '@constructive-io/ui/progress';
 import { Separator } from '@constructive-io/ui/separator';
-import { Copy, Eye, EyeOff, Plus, Star, Trash2, X } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff, Pencil, Plus, Star, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -53,10 +53,16 @@ export const ItemDetail = ({
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newTag, setNewTag] = useState('');
   const [totp, setTotp] = useState<TotpEntry | null>(null);
+  /** The field being edited, and the value typed so far. */
+  const [editing, setEditing] = useState<{ name: string; value: string } | null>(null);
+  /** Non-null while the title is being renamed. */
+  const [title, setTitle] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<VaultFieldMeta | null>(null);
   const icons = useBrandIcons([item.title]);
 
   const refresh = useCallback(async () => {
     setRevealed({});
+    setEditing(null);
     setLoaded({ itemId: item.id, fields: await dcrypt.fields.list(item.id) });
     setUrls(await dcrypt.organize.urls(item.id));
     setTags(await dcrypt.organize.tags(item.id));
@@ -113,6 +119,35 @@ export const ItemDetail = ({
     toast.success(`Copied ${name} — clipboard clears in 30s`);
   };
 
+  /** Opens the editor on a field, revealing what is there to be edited. */
+  const startEdit = async (field: VaultFieldMeta) => {
+    const value = revealed[field.name] ?? (await dcrypt.fields.reveal(item.id, field.name));
+    setEditing({ name: field.name, value });
+  };
+
+  const saveEdit = async (field: VaultFieldMeta) => {
+    if (!editing) return;
+    // same name and purpose, so the vault replaces the value in place and the
+    // database keeps the previous one in the item's password history
+    await dcrypt.fields.set(item.id, field.name, field.purpose, editing.value, field.concealed);
+    toast.success(`Updated ${field.name}`);
+    await refresh();
+  };
+
+  const removeField = async (field: VaultFieldMeta) => {
+    await dcrypt.fields.remove(item.id, field.name);
+    setRemoving(null);
+    toast.success(`Removed ${field.name}`);
+    await refresh();
+  };
+
+  const saveTitle = async () => {
+    const next = title?.trim();
+    if (next && next !== item.title) await dcrypt.items.rename(item.id, next);
+    setTitle(null);
+    onChanged();
+  };
+
   const addField = async () => {
     if (!newFieldName.trim() || !newFieldValue) return;
     await dcrypt.fields.set(item.id, newFieldName.trim(), 'text', newFieldValue);
@@ -146,7 +181,28 @@ export const ItemDetail = ({
         <div>
           <h2 className="flex items-center gap-2 text-xl font-semibold">
             <BrandGlyph name={item.title} icon={icons[item.title]} className="size-6" />
-            {item.title}
+            {title === null ? (
+              <button
+                className="rounded px-1 text-left hover:bg-muted"
+                onClick={() => setTitle(item.title)}
+                aria-label="Rename item"
+              >
+                {item.title}
+              </button>
+            ) : (
+              <Input
+                autoFocus
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={() => void saveTitle()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void saveTitle();
+                  if (e.key === 'Escape') setTitle(null);
+                }}
+                className="h-9 text-xl font-semibold"
+                aria-label="Item title"
+              />
+            )}
           </h2>
           <div className="mt-1 flex items-center gap-2">
             <Badge variant="secondary">{KIND_LABEL[item.kind] ?? item.kind}</Badge>
@@ -208,24 +264,38 @@ export const ItemDetail = ({
         {fields.map((field) => (
           <div key={field.id} className="flex items-center gap-2">
             <span className="w-32 shrink-0 text-sm text-muted-foreground">{field.name}</span>
-            <Input
-              readOnly
-              type={field.concealed && revealed[field.name] === undefined ? 'password' : 'text'}
-              value={
-                revealed[field.name] !== undefined
-                  ? revealed[field.name]
-                  : field.concealed
-                    ? '••••••••••••'
-                    : (revealed[field.name] ?? '')
-              }
-              onFocus={() => {
-                if (!field.concealed && revealed[field.name] === undefined) {
-                  void toggleReveal(field.name);
+            {editing?.name === field.name ? (
+              <Input
+                autoFocus
+                value={editing.value}
+                onChange={(e) => setEditing({ name: field.name, value: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void saveEdit(field);
+                  if (e.key === 'Escape') setEditing(null);
+                }}
+                className="font-mono"
+                aria-label={`${field.name} value`}
+              />
+            ) : (
+              <Input
+                readOnly
+                type={field.concealed && revealed[field.name] === undefined ? 'password' : 'text'}
+                value={
+                  revealed[field.name] !== undefined
+                    ? revealed[field.name]
+                    : field.concealed
+                      ? '••••••••••••'
+                      : (revealed[field.name] ?? '')
                 }
-              }}
-              className="font-mono"
-            />
-            {field.concealed && (
+                onFocus={() => {
+                  if (!field.concealed && revealed[field.name] === undefined) {
+                    void toggleReveal(field.name);
+                  }
+                }}
+                className="font-mono"
+              />
+            )}
+            {field.concealed && editing?.name !== field.name && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -239,14 +309,48 @@ export const ItemDetail = ({
                 )}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => void copyField(field.name)}
-              aria-label="Copy"
-            >
-              <Copy className="size-4" />
-            </Button>
+            {editing?.name === field.name ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void saveEdit(field)}
+                  aria-label={`Save ${field.name}`}
+                >
+                  <Check className="size-4" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => setEditing(null)} aria-label="Cancel">
+                  <X className="size-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void copyField(field.name)}
+                  aria-label="Copy"
+                >
+                  <Copy className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void startEdit(field)}
+                  aria-label={`Edit ${field.name}`}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setRemoving(field)}
+                  aria-label={`Remove ${field.name}`}
+                >
+                  <Trash2 className="size-4 text-destructive" />
+                </Button>
+              </>
+            )}
           </div>
         ))}
         {!fields.length && (
@@ -298,6 +402,24 @@ export const ItemDetail = ({
           <Plus className="size-4" /> Tag
         </Button>
       </div>
+
+      <AlertDialog open={removing !== null} onOpenChange={(open) => !open && setRemoving(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {removing?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The value is deleted from the vault. A field has no trash to go to,
+              so this cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => removing && void removeField(removing)}>
+              Remove field
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
