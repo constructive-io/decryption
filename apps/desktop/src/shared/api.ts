@@ -157,6 +157,9 @@ export interface DcryptApi {
     /** Reads the secret back out of the vault, on demand only. */
     revealKey(itemId: string): Promise<string>;
     revokeKey(itemId: string, stepUp?: StepUpProof): Promise<void>;
+    /** Point an account at a vault code that then answers its MFA step-ups. */
+    linkTotp(accountItemId: string, totpItemId: string): Promise<void>;
+    unlinkTotp(accountItemId: string): Promise<void>;
   };
   audit: {
     log(itemId?: string): Promise<AuditEntry[]>;
@@ -228,6 +231,8 @@ export const CHANNELS = {
   accountsCreateKey: 'accounts:create-key',
   accountsRevealKey: 'accounts:reveal-key',
   accountsRevokeKey: 'accounts:revoke-key',
+  accountsLinkTotp: 'accounts:link-totp',
+  accountsUnlinkTotp: 'accounts:unlink-totp',
   auditLog: 'audit:log',
   wbCreateWallet: 'workbench:create-wallet',
   wbDeriveAccounts: 'workbench:derive-accounts',

@@ -229,6 +229,14 @@ export const registerIpc = (service: VaultService): void => {
     await accounts().revokeApiKey(assertString(itemId), proof(stepUp));
     service.scheduleSave();
   });
+  handle(CHANNELS.accountsLinkTotp, async (accountItemId: string, totpItemId: string) => {
+    await accounts().linkTotp(assertString(accountItemId), assertString(totpItemId));
+    service.scheduleSave();
+  });
+  handle(CHANNELS.accountsUnlinkTotp, async (accountItemId: string) => {
+    await accounts().unlinkTotp(assertString(accountItemId));
+    service.scheduleSave();
+  });
 
   // ─── audit ───
   handle(CHANNELS.auditLog, (itemId?: string) => service.current().auditLog(itemId));

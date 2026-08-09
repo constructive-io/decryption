@@ -18,11 +18,25 @@ import {
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
 import { Separator } from '@constructive-io/ui/separator';
-import { Copy, KeyRound, LogIn, LogOut, Plus, Trash2, UserPlus } from 'lucide-react';
+import {
+  Copy,
+  KeyRound,
+  LogIn,
+  LogOut,
+  Plus,
+  Timer,
+  Trash2,
+  UserPlus,
+} from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { AccountRecord, ApiKeyRecord, StepUpProof } from '../../../shared/api';
+import type {
+  AccountRecord,
+  ApiKeyRecord,
+  StepUpProof,
+  TotpEntry,
+} from '../../../shared/api';
 import {
   StepUpKind,
   stepUpKind,
@@ -60,14 +74,19 @@ export const AccountsScreen = () => {
   const [held, setHeld] = useState<HeldRequest | null>(null);
   const [proofValue, setProofValue] = useState('');
 
+  const [codes, setCodes] = useState<TotpEntry[]>([]);
+  const [linkFor, setLinkFor] = useState<AccountRecord | null>(null);
+
   const refresh = useCallback(async () => {
     try {
-      const [nextAccounts, nextKeys] = await Promise.all([
+      const [nextAccounts, nextKeys, nextCodes] = await Promise.all([
         dcrypt.accounts.list(),
         dcrypt.accounts.keys(),
+        dcrypt.totp.list(),
       ]);
       setAccounts(nextAccounts);
       setKeys(nextKeys);
+      setCodes(nextCodes);
     } catch {
       // vault locked mid-refresh
     }
@@ -230,7 +249,32 @@ export const AccountsScreen = () => {
                 >
                   <Trash2 className="size-4" /> Forget
                 </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy}
+                  onClick={() =>
+                    account.totpItemId
+                      ? run(async () => {
+                        await dcrypt.accounts.unlinkTotp(account.itemId);
+                        return 'Code unlinked';
+                      })
+                      : setLinkFor(account)
+                  }
+                >
+                  <Timer className="size-4" />
+                  {account.totpItemId ? 'Unlink code' : 'Link a code'}
+                </Button>
               </div>
+
+              {account.totpItemId && (
+                <p className="text-xs text-muted-foreground">
+                  MFA challenges are answered with{' '}
+                  {codes.find((entry) => entry.item.id === account.totpItemId)?.item
+                    .title ?? 'a code in this vault'}
+                  , so you are not asked for one.
+                </p>
+              )}
 
               {accountKeys.length > 0 && <Separator />}
               {accountKeys.map((key) => (
@@ -371,6 +415,50 @@ export const AccountsScreen = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={linkFor !== null} onOpenChange={(open) => !open && setLinkFor(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Link a one-time code</DialogTitle>
+            <DialogDescription>
+              When the server asks this account for MFA, dcrypt answers with the code
+              you pick here. Only the item is remembered — the seed stays where it is.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-2">
+            {codes.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                This vault holds no one-time codes yet.
+              </p>
+            )}
+            {codes.map((entry) => (
+              <Button
+                key={entry.item.id}
+                variant="outline"
+                className="justify-between"
+                disabled={busy}
+                onClick={() => {
+                  const account = linkFor;
+                  if (!account) return;
+                  setLinkFor(null);
+                  void run(async () => {
+                    await dcrypt.accounts.linkTotp(account.itemId, entry.item.id);
+                    return `${entry.item.title} will answer MFA for ${account.email}`;
+                  });
+                }}
+              >
+                <span>{entry.item.title}</span>
+                <Timer className="size-4 text-muted-foreground" />
+              </Button>
+            ))}
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" disabled={busy} onClick={() => setLinkFor(null)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={held !== null} onOpenChange={(open) => !open && setHeld(null)}>
         <DialogContent>
           <DialogHeader>
@@ -404,9 +492,7 @@ export const AccountsScreen = () => {
             </Button>
             <Button
               disabled={busy || !held || !proofValue}
-              onClick={() =>
-                held && run(held.work, stepUpProof(held.kind, proofValue))
-              }
+              onClick={() => held && run(held.work, stepUpProof(held.kind, proofValue))}
             >
               {busy ? 'Verifying…' : 'Confirm and continue'}
             </Button>

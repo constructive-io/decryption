@@ -140,8 +140,8 @@ describe('Vault', () => {
     await vault.tagItem(login.id, 'money');
     await vault.setFavorite(login.id, true);
     const code = await vault.createItem('totp', 'Bank 2FA');
-    await vault.setField(code.id, 'seed', 'totp_seed', 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
-    const before = await vault.totpCode(code.id);
+    const seed = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
+    await vault.setField(code.id, 'seed', 'totp_seed', seed);
 
     // the rebuild asserts the fresh database really carries the deployed schema,
     // so this passing at all rules out a deploy that quietly did nothing
@@ -157,7 +157,10 @@ describe('Vault', () => {
     expect((await vault.listTags(login.id)).map((tag) => tag.name)).toEqual(['money']);
     expect((await vault.getItem(login.id))!.favorite).toBe(true);
     expect((await vault.getItem(login.id))!.folderId).toBe(child.id);
-    expect(await vault.totpCode(code.id)).toBe(before);
+    // the seed, not the code it produces: codes read either side of the rebuild
+    // can straddle the 30s window and differ for reasons of clock, not of copy
+    expect(await vault.revealField(code.id, 'seed')).toBe(seed);
+    expect(await vault.totpCode(code.id)).toMatch(/^\d{6}$/);
     const folders = await vault.listFolders();
     expect(folders.find((folder) => folder.id === child.id)!.parentId).toBe(parent.id);
 

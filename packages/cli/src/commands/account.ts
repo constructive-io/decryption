@@ -31,6 +31,8 @@ Subcommands:
   signin <email>          Sign in and store the session
   signout <email>         Sign out and drop the stored token
   forget <email>          Remove the account and its keys from the vault
+  link-code <email> <code>  Answer this account's MFA step-ups with a vault code
+  unlink-code <email>     Stop answering its step-ups from the vault
   key list [email]        List stored API keys
   key create <name>       Mint an API key for --account
   key reveal <name>       Print an API key secret
@@ -50,6 +52,7 @@ Options:
 Examples:
   dcrypt account signin dev@example.com --endpoint http://auth.localhost:3000/graphql
   dcrypt account key create ci --account dev@example.com --expires-days 30
+  dcrypt account link-code dev@example.com "Constructive dev"
   dcrypt account key reveal ci
 `;
 
@@ -228,6 +231,50 @@ const forget = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => 
   });
 };
 
+/**
+ * Point an account at a one-time code already in the vault, so the server's
+ * MFA step-up is answered without a human reaching for a phone.
+ */
+const linkCode = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  const { first: codeRef, newArgv: rest } = takeFirst(newArgv);
+  if (!first) throw new CliError('an account is required');
+  if (!codeRef) throw new CliError('a one-time code item is required');
+
+  await withVault(rest, prompter, async (accounts, vault) => {
+    const account = await findAccount(accounts, first);
+    const codes = await vault.listItems({ kind: 'totp' });
+    const code =
+      codes.find((item) => item.id === codeRef) ??
+      codes.find((item) => item.title === codeRef) ??
+      codes.find((item) => item.title.toLowerCase() === codeRef.toLowerCase());
+    if (!code) {
+      throw new CliError(`no one-time code "${codeRef}" in the vault`, EXIT.notFound);
+    }
+
+    await accounts.linkTotp(account.itemId, code.id);
+    emit(
+      rest,
+      { itemId: account.itemId, totpItemId: code.id },
+      () => `"${code.title}" will answer MFA for ${account.email}`
+    );
+  });
+};
+
+const unlinkCode = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
+  const { first, newArgv } = takeFirst(argv);
+  if (!first) throw new CliError('an account is required');
+  await withVault(newArgv, prompter, async (accounts) => {
+    const account = await findAccount(accounts, first);
+    await accounts.unlinkTotp(account.itemId);
+    emit(
+      newArgv,
+      { itemId: account.itemId },
+      () => `${account.email} will ask for a code again`
+    );
+  });
+};
+
 const keyList = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> => {
   const { first, newArgv } = takeFirst(argv);
   await withVault(newArgv, prompter, async (accounts) => {
@@ -362,6 +409,8 @@ export const accountCommand = async (
       signin,
       signout,
       forget,
+      'link-code': linkCode,
+      'unlink-code': unlinkCode,
       key: keyCommand,
     },
   });
