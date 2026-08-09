@@ -13,6 +13,10 @@ describe('stepUpKind', () => {
     expect(stepUpKind('STEP_UP_REQUIRED_FRESH_AUTH')).toBe('fresh_auth');
   });
 
+  it('treats the bare code as a password demand', () => {
+    expect(stepUpKind('GraphQL Error: STEP_UP_REQUIRED')).toBe('password');
+  });
+
   it('does not fire on any other failure', () => {
     expect(stepUpKind('no GraphQL endpoint at http://x/graphql')).toBeNull();
     expect(stepUpKind('invalid email or password')).toBeNull();

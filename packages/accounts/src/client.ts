@@ -113,16 +113,20 @@ const explain = (message: string, endpoint: string): string => {
   return `no GraphQL endpoint at ${endpoint} — ${suffix}`;
 };
 
-const STEP_UP = /STEP_UP_REQUIRED_(PASSWORD|MFA|FRESH_AUTH)/;
+const STEP_UP = /STEP_UP_REQUIRED(?:_(PASSWORD|MFA|FRESH_AUTH))?/;
 
 /**
  * Which factor a message is asking for, or null. Exported because a step-up
  * error arrives at a UI as plain text once it has crossed a process boundary,
  * and the server's own code is the only trustworthy thing to key off.
+ *
+ * The bare `STEP_UP_REQUIRED` raised by the generated guard means the session
+ * has no recent password verification, so it asks for a password.
  */
 export const stepUpKind = (message: string): StepUpKind | null => {
   const found = STEP_UP.exec(message);
-  return found ? (found[1].toLowerCase() as StepUpKind) : null;
+  if (!found) return null;
+  return (found[1]?.toLowerCase() as StepUpKind) ?? 'password';
 };
 
 const rethrow = (operation: string, endpoint: string, error: unknown): never => {

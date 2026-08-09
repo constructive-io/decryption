@@ -5,12 +5,14 @@ export type StepUpKind = 'password' | 'mfa' | 'fresh_auth';
 
 /**
  * An IPC rejection reaches the renderer as a string, so the only thing left to
- * key off is the server's own `STEP_UP_REQUIRED_*` code, which survives being
- * wrapped by Electron and by our own error types.
+ * key off is the server's own `STEP_UP_REQUIRED*` code, which survives being
+ * wrapped by Electron and by our own error types. The bare form, raised when a
+ * session has no recent password verification, asks for a password.
  */
 export const stepUpKind = (message: string): StepUpKind | null => {
-  const found = /STEP_UP_REQUIRED_(PASSWORD|MFA|FRESH_AUTH)/.exec(message);
-  return found ? (found[1].toLowerCase() as StepUpKind) : null;
+  const found = /STEP_UP_REQUIRED(?:_(PASSWORD|MFA|FRESH_AUTH))?/.exec(message);
+  if (!found) return null;
+  return (found[1]?.toLowerCase() as StepUpKind) ?? 'password';
 };
 
 export const stepUpPrompt = (
