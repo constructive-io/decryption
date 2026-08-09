@@ -23,6 +23,7 @@ const ACCOUNT_FIELDS = {
   userId: 'user_id',
   accessToken: 'access_token',
   expiresAt: 'access_token_expires_at',
+  totpItem: 'totp_item_id',
 } as const;
 
 const KEY_FIELDS = {
@@ -135,6 +136,48 @@ export class AccountManager {
     await this.vault.deleteItemForever(itemId);
   }
 
+  // ─── one-time codes ───────────────────────────────────────────────────────
+
+  /**
+   * Point an account at a code already in the vault, so an MFA step-up can be
+   * answered without reaching for a phone. Only the item id is stored; the seed
+   * stays where it was, concealed, and is never copied.
+   */
+  async linkTotp(accountItemId: string, totpItemId: string): Promise<void> {
+    await this.requireItem(accountItemId, 'account');
+    await this.requireItem(totpItemId, 'totp');
+    const fields = await this.vault.listFields(totpItemId);
+    if (!fields.some((field) => field.purpose === 'totp_seed')) {
+      throw new AuthError('linkTotp', `item ${totpItemId} carries no code seed`);
+    }
+    await this.vault.setField(
+      accountItemId,
+      ACCOUNT_FIELDS.totpItem,
+      'text',
+      totpItemId,
+      false
+    );
+  }
+
+  async unlinkTotp(accountItemId: string): Promise<void> {
+    await this.vault.deleteField(accountItemId, ACCOUNT_FIELDS.totpItem);
+  }
+
+  /**
+   * A current code for the account's linked item, or null when nothing is
+   * linked — the caller then has to ask a human for one.
+   */
+  async stepUpCode(accountItemId: string): Promise<string | null> {
+    const fields = await this.readFields(accountItemId);
+    const totpItemId = fields[ACCOUNT_FIELDS.totpItem];
+    if (!totpItemId) return null;
+    if (!(await this.vault.getItem(totpItemId))) {
+      await this.unlinkTotp(accountItemId);
+      return null;
+    }
+    return this.vault.totpCode(totpItemId);
+  }
+
   // ─── api keys ─────────────────────────────────────────────────────────────
 
   /**
@@ -150,7 +193,7 @@ export class AccountManager {
     const account = await this.readFields(accountItemId);
     const token = await this.requireToken(accountItemId);
     const endpoint = account[ACCOUNT_FIELDS.endpoint];
-    const created = await this.withStepUp(endpoint, token, proof, (client) =>
+    const created = await this.withStepUp(accountItemId, endpoint, token, proof, (client) =>
       client.createApiKey(options)
     );
 
@@ -203,11 +246,8 @@ export class AccountManager {
     const fields = await this.readFields(itemId);
     const accountItemId = fields[KEY_FIELDS.accountId];
     const token = await this.requireToken(accountItemId);
-    await this.withStepUp(
-      fields[KEY_FIELDS.endpoint],
-      token,
-      proof,
-      (client) => client.revokeApiKey(fields[KEY_FIELDS.keyId])
+    await this.withStepUp(accountItemId, fields[KEY_FIELDS.endpoint], token, proof, (client) =>
+      client.revokeApiKey(fields[KEY_FIELDS.keyId])
     );
     await this.vault.deleteItemForever(itemId);
   }
@@ -219,9 +259,11 @@ export class AccountManager {
    * factor, prove it and run *the same* operation once more. The request is
    * held rather than rebuilt, so nothing about it can change between the two
    * attempts. Without a proof the `StepUpRequiredError` propagates, which is
-   * what lets a caller collect one and try again.
+   * what lets a caller collect one and try again — except for a code demand on
+   * an account with a linked code, which the vault answers by itself.
    */
   private async withStepUp<T>(
+    accountItemId: string,
     endpoint: string,
     token: string,
     proof: StepUpProof | undefined,
@@ -233,14 +275,19 @@ export class AccountManager {
     } catch (error) {
       if (!(error instanceof StepUpRequiredError)) throw error;
       if (error.kind === 'mfa') {
-        if (!proof?.totpCode) throw error;
-        await client.verifyTotp(proof.totpCode);
+        const code = proof?.totpCode ?? (await this.stepUpCode(accountItemId));
+        if (!code) throw error;
+        await client.verifyTotp(code);
       } else if (proof?.password) {
         await client.verifyPassword(proof.password);
       } else if (proof?.totpCode) {
         await client.verifyTotp(proof.totpCode);
       } else {
-        throw error;
+        // A password demand needs the password; only fresh auth takes a code.
+        const code =
+          error.kind === 'fresh_auth' ? await this.stepUpCode(accountItemId) : null;
+        if (!code) throw error;
+        await client.verifyTotp(code);
       }
       return run(client);
     }
@@ -286,6 +333,7 @@ export class AccountManager {
       endpoint,
       email,
       userId: session.userId,
+      totpItemId: (await this.readFields(itemId))[ACCOUNT_FIELDS.totpItem] ?? null,
       accessTokenExpiresAt: session.accessTokenExpiresAt,
       signedIn: !hasExpired(session.accessTokenExpiresAt, this.now()),
     };
@@ -334,6 +382,7 @@ export class AccountManager {
       endpoint: fields[ACCOUNT_FIELDS.endpoint] ?? '',
       email: fields[ACCOUNT_FIELDS.email] ?? item.title,
       userId: fields[ACCOUNT_FIELDS.userId] ?? '',
+      totpItemId: fields[ACCOUNT_FIELDS.totpItem] ?? null,
       accessTokenExpiresAt: expiresAt,
       signedIn:
         Boolean(fields[ACCOUNT_FIELDS.accessToken]) &&

@@ -11,6 +11,7 @@ import {
   CreateApiKeyOptions,
   hasExpired,
   StepUpKind,
+  stepUpKind,
   StepUpRequiredError,
 } from '../src';
 
@@ -61,7 +62,7 @@ class FakeServer {
     },
     verifyTotp: async (code: string) => {
       this.calls.push({ operation: 'verifyTotp', token });
-      if (code !== '123456') {
+      if (!/^\d{6}$/.test(code)) {
         throw new AuthError('verifyTotp', 'the code was not accepted');
       }
       this.demandStepUp = null;
@@ -118,6 +119,9 @@ beforeEach(async () => {
     await vault.deleteItemForever(item.id);
   }
   for (const item of await vault.listItems({ kind: 'api_key' })) {
+    await vault.deleteItemForever(item.id);
+  }
+  for (const item of await vault.listItems({ kind: 'totp' })) {
     await vault.deleteItemForever(item.id);
   }
   server = new FakeServer();
@@ -360,6 +364,108 @@ describe('step-up', () => {
 
     await accounts.revokeApiKey(key.itemId, { password: 'hunter22' });
     expect(await accounts.listApiKeys()).toHaveLength(0);
+  });
+});
+
+describe('stepUpKind', () => {
+  it('reads the factor the server named', () => {
+    expect(stepUpKind('STEP_UP_REQUIRED_PASSWORD')).toBe('password');
+    expect(stepUpKind('STEP_UP_REQUIRED_MFA')).toBe('mfa');
+    expect(stepUpKind('STEP_UP_REQUIRED_FRESH_AUTH')).toBe('fresh_auth');
+  });
+
+  it('treats the bare code as a password demand', () => {
+    expect(stepUpKind('GraphQL Error: STEP_UP_REQUIRED')).toBe('password');
+  });
+
+  it('stays out of the way of every other failure', () => {
+    expect(stepUpKind('invalid email or password')).toBeNull();
+  });
+});
+
+describe('linked one-time codes', () => {
+  const signIn = () =>
+    accounts.signIn({
+      endpoint: ENDPOINT,
+      email: 'dev@example.com',
+      password: 'hunter22',
+    });
+
+  /** A vault code item, the same shape the app's importer writes. */
+  const addCode = async (title: string): Promise<string> => {
+    const item = await vault.createItem('totp', title);
+    await vault.setField(item.id, 'seed', 'totp_seed', 'JBSWY3DPEHPK3PXP');
+    return item.id;
+  };
+
+  it('answers an MFA demand from the linked item, unprompted', async () => {
+    const account = await signIn();
+    await accounts.linkTotp(account.itemId, await addCode('Constructive dev'));
+    expect(await accounts.stepUpCode(account.itemId)).toMatch(/^\d{6}$/);
+
+    server.demandStepUp = 'mfa';
+    const key = await accounts.createApiKey(account.itemId, { name: 'ci' });
+
+    expect(key.name).toBe('ci');
+    expect(server.calls.map((call) => call.operation)).toEqual([
+      'signIn',
+      'createApiKey',
+      'verifyTotp',
+      'createApiKey',
+    ]);
+  });
+
+  it('still asks for the password when that is what was demanded', async () => {
+    const account = await signIn();
+    await accounts.linkTotp(account.itemId, await addCode('Constructive dev'));
+    server.demandStepUp = 'password';
+
+    await expect(accounts.createApiKey(account.itemId, { name: 'ci' })).rejects.toThrow(
+      StepUpRequiredError
+    );
+    expect(server.calls.some((call) => call.operation === 'verifyTotp')).toBe(false);
+  });
+
+  it('stores the item id, not a copy of the seed', async () => {
+    const account = await signIn();
+    const totpItemId = await addCode('Constructive dev');
+    await accounts.linkTotp(account.itemId, totpItemId);
+
+    const fields = await vault.listFields(account.itemId);
+    const link = fields.find((field) => field.name === 'totp_item_id');
+    expect(link).toBeDefined();
+    expect(await vault.revealField(account.itemId, 'totp_item_id')).toBe(totpItemId);
+    expect(fields.some((field) => field.purpose === 'totp_seed')).toBe(false);
+    expect((await accounts.getAccount(account.itemId)).totpItemId).toBe(totpItemId);
+  });
+
+  it('refuses an item that carries no seed', async () => {
+    const account = await signIn();
+    const empty = await vault.createItem('totp', 'nothing in here');
+
+    await expect(accounts.linkTotp(account.itemId, empty.id)).rejects.toThrow(
+      'carries no code seed'
+    );
+  });
+
+  it('has no code to offer until something is linked', async () => {
+    const account = await signIn();
+    expect(await accounts.stepUpCode(account.itemId)).toBeNull();
+
+    const totpItemId = await addCode('Constructive dev');
+    await accounts.linkTotp(account.itemId, totpItemId);
+    await accounts.unlinkTotp(account.itemId);
+    expect(await accounts.stepUpCode(account.itemId)).toBeNull();
+  });
+
+  it('forgets a link whose code has left the vault', async () => {
+    const account = await signIn();
+    const totpItemId = await addCode('Constructive dev');
+    await accounts.linkTotp(account.itemId, totpItemId);
+    await vault.deleteItemForever(totpItemId);
+
+    expect(await accounts.stepUpCode(account.itemId)).toBeNull();
+    expect((await accounts.getAccount(account.itemId)).totpItemId).toBeNull();
   });
 });
 
