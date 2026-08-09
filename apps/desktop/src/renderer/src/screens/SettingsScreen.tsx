@@ -21,6 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from '@constructive-io/ui/tabs';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import type { BiometricStatus } from '../../../shared/api';
 import { dcrypt } from '../lib/ipc';
 import { ThemeMode } from '../lib/theme';
 import { useThemeMode } from '../lib/theme-context';
@@ -42,10 +43,47 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
   const [busy, setBusy] = useState(false);
   const [eraseOpen, setEraseOpen] = useState(false);
   const [erasePhrase, setErasePhrase] = useState('');
+  const [unlockKey, setUnlockKey] = useState<BiometricStatus | null>(null);
+  const [remember, setRemember] = useState('');
 
   useEffect(() => {
     void dcrypt.vault.status().then((status) => setFile(status.file));
+    void dcrypt.unlockKey.status().then(setUnlockKey);
   }, []);
+
+  const enrol = async () => {
+    setBusy(true);
+    try {
+      await dcrypt.unlockKey.enrol(remember);
+      setRemember('');
+      setUnlockKey(await dcrypt.unlockKey.status());
+      toast.success('This machine will remember your master password');
+    } catch (err) {
+      // the password is checked by opening the vault, so a wrong one lands here
+      toast.error(
+        err instanceof Error && /passphrase/i.test(err.message)
+          ? 'That is not your master password.'
+          : err instanceof Error
+            ? err.message
+            : String(err)
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const forgetUnlockKey = async () => {
+    setBusy(true);
+    try {
+      await dcrypt.unlockKey.forget();
+      setUnlockKey(await dcrypt.unlockKey.status());
+      toast.success('Forgotten — the master password is needed again');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const folderWord = navigator.userAgent.includes('Mac')
     ? 'Finder'
@@ -196,6 +234,45 @@ export const SettingsScreen = ({ onLocked }: { onLocked: () => void }) => {
           </p>
         </CardContent>
       </Card>
+
+      {unlockKey?.available && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {unlockKey.biometric ? 'Touch ID' : `Unlock with ${unlockKey.store}`}
+            </CardTitle>
+            <CardDescription>
+              {unlockKey.biometric
+                ? `Your master password is kept in ${unlockKey.store} and released by your fingerprint, so you do not have to type it on this Mac.`
+                : `Your master password is kept in ${unlockKey.store}, so you do not have to type it on this machine.`}{' '}
+              The vault file is unchanged: on any other machine, and after “Forget
+              it” here, only the password opens it.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex max-w-md flex-col gap-3">
+            {unlockKey.enrolled ? (
+              <Button variant="outline" onClick={forgetUnlockKey} disabled={busy}>
+                Forget it on this machine
+              </Button>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="remember-pass">Confirm your master password</Label>
+                  <Input
+                    id="remember-pass"
+                    type="password"
+                    value={remember}
+                    onChange={(e) => setRemember(e.target.value)}
+                  />
+                </div>
+                <Button onClick={enrol} disabled={busy || !remember}>
+                  {unlockKey.biometric ? 'Unlock with Touch ID' : 'Remember it'}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

@@ -85,6 +85,15 @@ const api: DcryptApi & {
     restore: () => invoke(CHANNELS.backupRestore),
     revealVault: () => invoke(CHANNELS.backupRevealVault),
   },
+  unlockKey: {
+    status: () => invoke(CHANNELS.unlockKeyStatus),
+    enrol: (passphrase) => invoke(CHANNELS.unlockKeyEnrol, passphrase),
+    forget: () => invoke(CHANNELS.unlockKeyForget),
+    unlock: () => invoke(CHANNELS.unlockKeyUnlock),
+  },
+  clipboard: {
+    copy: (value, seconds) => invoke(CHANNELS.clipboardCopy, value, seconds),
+  },
   icons: {
     lookup: (names) => invoke(CHANNELS.iconsLookup, names),
   },
