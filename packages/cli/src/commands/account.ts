@@ -3,6 +3,8 @@ import {
   AccountRecord,
   ApiKeyRecord,
   KeyLifetime,
+  StepUpProof,
+  StepUpRequiredError,
 } from '@decryption/accounts';
 import { Vault } from '@decryption/vault';
 import { readFileSync } from 'fs';
@@ -244,6 +246,35 @@ const keyList = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> =>
   });
 };
 
+/**
+ * Run something the server may refuse until a factor is re-proved: ask for the
+ * factor it named, then run the identical call once more. Not a blanket retry —
+ * only a `StepUpRequiredError` reaches here, and only one extra attempt is made.
+ */
+const withStepUp = async <T>(
+  prompter: Inquirerer,
+  run: (proof?: StepUpProof) => Promise<T>
+): Promise<T> => {
+  try {
+    return await run();
+  } catch (error) {
+    if (!(error instanceof StepUpRequiredError)) throw error;
+    const mfa = error.kind === 'mfa';
+    const { proof } = await prompter.prompt<{ proof: string }>({} as { proof: string }, [
+      {
+        type: mfa ? 'text' : 'password',
+        name: 'proof',
+        message: mfa
+          ? 'The server wants a fresh one-time code'
+          : 'The server wants your account password again',
+        required: true,
+      },
+    ]);
+    if (!proof) throw error;
+    return run(mfa ? { totpCode: proof } : { password: proof });
+  }
+};
+
 const lifetime = (argv: ParsedArgs): KeyLifetime | undefined => {
   const raw = argv['expires-days'] ?? argv.expiresDays;
   if (raw === undefined) return undefined;
@@ -269,11 +300,14 @@ const keyCreate = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> 
     }
     const account = ref ? await findAccount(accounts, ref) : all[0];
 
-    const key = await accounts.createApiKey(account.itemId, {
+    const request = {
       name: first,
       expiresIn: lifetime(newArgv),
       accessLevel: typeof accessLevel === 'string' ? accessLevel : undefined,
-    });
+    };
+    const key = await withStepUp(prompter, (proof) =>
+      accounts.createApiKey(account.itemId, request, proof)
+    );
     emit(
       newArgv,
       key,
@@ -298,7 +332,7 @@ const keyRevoke = async (argv: ParsedArgs, prompter: Inquirerer): Promise<void> 
   if (!first) throw new CliError('a key name is required');
   await withVault(newArgv, prompter, async (accounts) => {
     const key = await findKey(accounts, first);
-    await accounts.revokeApiKey(key.itemId);
+    await withStepUp(prompter, (proof) => accounts.revokeApiKey(key.itemId, proof));
     emit(newArgv, { keyId: key.keyId }, () => `revoked "${key.name}" (${key.keyId})`);
   });
 };

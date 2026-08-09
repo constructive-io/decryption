@@ -10,6 +10,8 @@ import {
   AuthError,
   CreateApiKeyOptions,
   hasExpired,
+  StepUpKind,
+  StepUpRequiredError,
 } from '../src';
 
 jest.setTimeout(120000);
@@ -24,6 +26,8 @@ class FakeServer {
   readonly calls: Array<{ operation: string; token?: string }> = [];
   private nextKey = 0;
   expiresAt: string | null = null;
+  /** Refuse sensitive calls with this factor until it has been re-proved. */
+  demandStepUp: StepUpKind | null = null;
 
   factory: AuthClientFactory = ({ token }): AuthClient => ({
     signIn: async ({ email, password }) => {
@@ -48,8 +52,23 @@ class FakeServer {
     signOut: async () => {
       this.calls.push({ operation: 'signOut', token });
     },
+    verifyPassword: async (password: string) => {
+      this.calls.push({ operation: 'verifyPassword', token });
+      if (password !== 'hunter22') {
+        throw new AuthError('verifyPassword', 'the password was not accepted');
+      }
+      this.demandStepUp = null;
+    },
+    verifyTotp: async (code: string) => {
+      this.calls.push({ operation: 'verifyTotp', token });
+      if (code !== '123456') {
+        throw new AuthError('verifyTotp', 'the code was not accepted');
+      }
+      this.demandStepUp = null;
+    },
     createApiKey: async (options: CreateApiKeyOptions) => {
       this.calls.push({ operation: 'createApiKey', token });
+      this.refuseWithoutStepUp('createApiKey');
       this.nextKey += 1;
       return {
         apiKey: `cnc_live_sk_${options.name}`,
@@ -59,8 +78,19 @@ class FakeServer {
     },
     revokeApiKey: async (keyId: string) => {
       this.calls.push({ operation: `revokeApiKey:${keyId}`, token });
+      this.refuseWithoutStepUp('revokeApiKey');
     },
   });
+
+  /** Mimics the server's `STEP_UP_REQUIRED_*` exceptions. */
+  private refuseWithoutStepUp(operation: string): void {
+    if (!this.demandStepUp) return;
+    throw new StepUpRequiredError(
+      operation,
+      this.demandStepUp,
+      `STEP_UP_REQUIRED_${this.demandStepUp.toUpperCase()}`
+    );
+  }
 }
 
 let dir: string;
@@ -252,6 +282,84 @@ describe('AccountManager', () => {
     const again = new AccountManager(reopened, { createClient: server.factory });
     expect(await again.accessToken(account.itemId)).toBe('token-dev@example.com');
     await reopened.discard();
+  });
+});
+
+describe('step-up', () => {
+  const signIn = () =>
+    accounts.signIn({
+      endpoint: ENDPOINT,
+      email: 'dev@example.com',
+      password: 'hunter22',
+    });
+
+  it('surfaces the demand rather than guessing, when no proof was given', async () => {
+    const account = await signIn();
+    server.demandStepUp = 'password';
+
+    await expect(accounts.createApiKey(account.itemId, { name: 'ci' })).rejects.toThrow(
+      StepUpRequiredError
+    );
+    expect(await accounts.listApiKeys()).toHaveLength(0);
+  });
+
+  it('proves the password and replays the same request once', async () => {
+    const account = await signIn();
+    server.demandStepUp = 'password';
+
+    const key = await accounts.createApiKey(
+      account.itemId,
+      { name: 'ci' },
+      { password: 'hunter22' }
+    );
+
+    expect(key.name).toBe('ci');
+    expect(await accounts.revealApiKey(key.itemId)).toBe('cnc_live_sk_ci');
+    expect(server.calls.map((call) => call.operation)).toEqual([
+      'signIn',
+      'createApiKey',
+      'verifyPassword',
+      'createApiKey',
+    ]);
+  });
+
+  it('answers an MFA demand with a code, never with the password', async () => {
+    const account = await signIn();
+    server.demandStepUp = 'mfa';
+
+    await expect(
+      accounts.createApiKey(account.itemId, { name: 'ci' }, { password: 'hunter22' })
+    ).rejects.toThrow(StepUpRequiredError);
+
+    const key = await accounts.createApiKey(
+      account.itemId,
+      { name: 'ci' },
+      { totpCode: '123456' }
+    );
+    expect(key.name).toBe('ci');
+    expect(server.calls.some((call) => call.operation === 'verifyPassword')).toBe(false);
+  });
+
+  it('gives up rather than looping when the proof is refused', async () => {
+    const account = await signIn();
+    server.demandStepUp = 'password';
+
+    await expect(
+      accounts.createApiKey(account.itemId, { name: 'ci' }, { password: 'wrong' })
+    ).rejects.toThrow('the password was not accepted');
+    expect(server.calls.filter((call) => call.operation === 'createApiKey')).toHaveLength(1);
+  });
+
+  it('re-proves before revoking, and only then deletes the local copy', async () => {
+    const account = await signIn();
+    const key = await accounts.createApiKey(account.itemId, { name: 'ci' });
+    server.demandStepUp = 'password';
+
+    await expect(accounts.revokeApiKey(key.itemId)).rejects.toThrow(StepUpRequiredError);
+    expect(await accounts.listApiKeys()).toHaveLength(1);
+
+    await accounts.revokeApiKey(key.itemId, { password: 'hunter22' });
+    expect(await accounts.listApiKeys()).toHaveLength(0);
   });
 });
 
