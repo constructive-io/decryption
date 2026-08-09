@@ -17,6 +17,13 @@ import {
 } from '@constructive-io/ui/dialog';
 import { Input } from '@constructive-io/ui/input';
 import { Label } from '@constructive-io/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@constructive-io/ui/select';
 import { Separator } from '@constructive-io/ui/separator';
 import {
   Copy,
@@ -40,7 +47,7 @@ import type {
   StepUpProof,
   TotpEntry,
 } from '../../../shared/api';
-import { principalReach } from '../../../shared/principal';
+import { knownOrgIds, principalReach } from '../../../shared/principal';
 import {
   StepUpKind,
   stepUpKind,
@@ -54,6 +61,14 @@ const message = (error: unknown): string =>
 
 const expiry = (iso: string | null): string =>
   iso ? `expires ${new Date(iso).toLocaleString()}` : 'no expiry';
+
+/**
+ * Personal reaches wherever its owner does; organization narrows it to one org.
+ * A third choice — "another organization" — only picks the id, not the scope.
+ */
+type PrincipalScope = 'personal' | 'organization';
+
+const OTHER_ORG = 'other';
 
 /** A request the server refused until a factor is re-proved, kept to replay. */
 interface HeldRequest {
@@ -83,6 +98,8 @@ export const AccountsScreen = () => {
   const [principals, setPrincipals] = useState<Record<string, PrincipalRecord[]>>({});
   const [principalFor, setPrincipalFor] = useState<AccountRecord | null>(null);
   const [principalName, setPrincipalName] = useState('');
+  const [principalScope, setPrincipalScope] = useState<PrincipalScope>('personal');
+  const [principalOrgChoice, setPrincipalOrgChoice] = useState('');
   const [principalOrg, setPrincipalOrg] = useState('');
   const [principalReadOnly, setPrincipalReadOnly] = useState(true);
   const [principalBypass, setPrincipalBypass] = useState(false);
@@ -199,18 +216,30 @@ export const AccountsScreen = () => {
     });
   };
 
+  const orgOptions = principalFor
+    ? knownOrgIds(
+      principals[principalFor.itemId] ?? [],
+      keys.filter((key) => key.accountItemId === principalFor.itemId)
+    )
+    : [];
+  const chosenOrgId =
+    principalOrgChoice === OTHER_ORG ? principalOrg.trim() : principalOrgChoice;
+
   const createPrincipal = async (): Promise<void> => {
     const account = principalFor;
     if (!account) return;
     const request = {
       name: principalName.trim(),
-      orgId: principalOrg.trim(),
+      // a personal principal carries no org at all, rather than an empty one
+      ...(principalScope === 'organization' ? { orgId: chosenOrgId } : {}),
       isReadOnly: principalReadOnly,
       bypassStepUp: principalBypass,
     };
     await run(async (proof) => {
       await dcrypt.accounts.createPrincipal(account.itemId, request, proof);
       setPrincipalName('');
+      setPrincipalScope('personal');
+      setPrincipalOrgChoice('');
       setPrincipalOrg('');
       setPrincipalFor(null);
       return `Created ${request.name} — mint a key as it to give it credentials`;
@@ -650,18 +679,59 @@ export const AccountsScreen = () => {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="principal-org">Organization</Label>
-              <Input
-                id="principal-org"
-                value={principalOrg}
-                onChange={(e) => setPrincipalOrg(e.target.value)}
-                placeholder="org id"
-                className="font-mono"
-              />
+              <Label htmlFor="principal-scope">Scope</Label>
+              <Select
+                value={principalScope}
+                onValueChange={(value) => setPrincipalScope(value as PrincipalScope)}
+              >
+                <SelectTrigger id="principal-scope">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="personal">Personal</SelectItem>
+                  <SelectItem value="organization">Organization</SelectItem>
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
-                The organization it is scoped to.
+                {principalScope === 'personal'
+                  ? 'Owned by you, reaching wherever you do — the shape an unattended job of your own wants.'
+                  : 'Narrowed to one organization you work in.'}
               </p>
             </div>
+            {principalScope === 'organization' && (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="principal-org">Organization</Label>
+                <Select
+                  value={principalOrgChoice}
+                  onValueChange={setPrincipalOrgChoice}
+                >
+                  <SelectTrigger id="principal-org">
+                    <SelectValue placeholder="Choose an organization" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {orgOptions.map((orgId) => (
+                      <SelectItem key={orgId} value={orgId} className="font-mono">
+                        {orgId}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={OTHER_ORG}>Another organization…</SelectItem>
+                  </SelectContent>
+                </Select>
+                {principalOrgChoice === OTHER_ORG && (
+                  <Input
+                    value={principalOrg}
+                    onChange={(e) => setPrincipalOrg(e.target.value)}
+                    placeholder="org id"
+                    className="font-mono"
+                  />
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {orgOptions.length
+                    ? 'Organizations this account has already scoped a principal or key to.'
+                    : 'Nothing scoped yet from this account, so the id has to be typed once.'}
+                </p>
+              </div>
+            )}
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -690,7 +760,11 @@ export const AccountsScreen = () => {
               Cancel
             </Button>
             <Button
-              disabled={busy || !principalName.trim() || !principalOrg.trim()}
+              disabled={
+                busy ||
+                !principalName.trim() ||
+                (principalScope === 'organization' && !chosenOrgId)
+              }
               onClick={createPrincipal}
             >
               {busy ? 'Creating…' : 'Create principal'}
