@@ -293,6 +293,9 @@ importers:
       '@decryption/wallet':
         specifier: workspace:*
         version: link:../wallet/dist
+      '@decryption/webauthn':
+        specifier: workspace:*
+        version: link:../webauthn/dist
       appstash:
         specifier: ^0.7.0
         version: 0.7.0
@@ -472,6 +475,26 @@ importers:
       '@decryption/hashes':
         specifier: workspace:*
         version: link:../hashes/dist
+    devDependencies:
+      makage:
+        specifier: 0.3.0
+        version: 0.3.0
+    publishDirectory: dist
+
+  packages/webauthn:
+    dependencies:
+      '@decryption/base':
+        specifier: workspace:*
+        version: link:../base/dist
+      '@decryption/curves':
+        specifier: workspace:*
+        version: link:../curves/dist
+      '@decryption/hashes':
+        specifier: workspace:*
+        version: link:../hashes/dist
+      '@decryption/vault':
+        specifier: workspace:*
+        version: link:../vault/dist
     devDependencies:
       makage:
         specifier: 0.3.0

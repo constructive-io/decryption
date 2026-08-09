@@ -1,0 +1,48 @@
+{
+  "name": "@decryption/webauthn",
+  "version": "0.1.0",
+  "description": "A software WebAuthn authenticator: passkeys whose private keys live in the dcrypt vault",
+  "author": "Constructive <developers@constructive.io>",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/constructive-io/decryption",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/constructive-io/decryption"
+  },
+  "bugs": {
+    "url": "https://github.com/constructive-io/decryption/issues"
+  },
+  "scripts": {
+    "copy": "makage assets",
+    "clean": "makage clean",
+    "prepublishOnly": "npm run build",
+    "build": "makage build",
+    "lint": "eslint . --fix",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
+  },
+  "keywords": [
+    "webauthn",
+    "passkey",
+    "authenticator",
+    "fido2",
+    "vault",
+    "local-first"
+  ],
+  "dependencies": {
+    "@decryption/base": "workspace:*",
+    "@decryption/curves": "workspace:*",
+    "@decryption/hashes": "workspace:*",
+    "@decryption/vault": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
+  }
+}
