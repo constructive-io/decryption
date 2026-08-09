@@ -1,11 +1,15 @@
 import { Vault, VaultItem } from '@decryption/vault';
 
 import {
+  AuthClient,
   AuthClientFactory,
   AuthError,
   sdkAuthClient,
   SignInInput,
+  StepUpProof,
+  StepUpRequiredError,
 } from './client';
+import { normalizeEndpoint } from './endpoint';
 import {
   AccountRecord,
   ApiKeyRecord,
@@ -75,16 +79,16 @@ export class AccountManager {
 
   /** Sign in against `endpoint` and store (or refresh) the account. */
   async signIn(options: SignInOptions): Promise<AccountRecord> {
-    const client = this.createClient({ endpoint: options.endpoint });
-    const session = await client.signIn(options);
-    return this.adopt(options.endpoint, options.email, session);
+    const endpoint = normalizeEndpoint(options.endpoint);
+    const session = await this.createClient({ endpoint }).signIn(options);
+    return this.adopt(endpoint, options.email, session);
   }
 
   /** Create an account on `endpoint`, then store the session it returns. */
   async signUp(options: SignInOptions): Promise<AccountRecord> {
-    const client = this.createClient({ endpoint: options.endpoint });
-    const session = await client.signUp(options);
-    return this.adopt(options.endpoint, options.email, session);
+    const endpoint = normalizeEndpoint(options.endpoint);
+    const session = await this.createClient({ endpoint }).signUp(options);
+    return this.adopt(endpoint, options.email, session);
   }
 
   async listAccounts(): Promise<AccountRecord[]> {
@@ -140,13 +144,14 @@ export class AccountManager {
    */
   async createApiKey(
     accountItemId: string,
-    options: CreateApiKeyOptions
+    options: CreateApiKeyOptions,
+    proof?: StepUpProof
   ): Promise<ApiKeyRecord> {
     const account = await this.readFields(accountItemId);
     const token = await this.requireToken(accountItemId);
     const endpoint = account[ACCOUNT_FIELDS.endpoint];
-    const created = await this.createClient({ endpoint, token }).createApiKey(
-      options
+    const created = await this.withStepUp(endpoint, token, proof, (client) =>
+      client.createApiKey(options)
     );
 
     const item = await this.vault.createItem('api_key', options.name);
@@ -194,18 +199,52 @@ export class AccountManager {
   }
 
   /** Revoke server-side, then delete the local copy. */
-  async revokeApiKey(itemId: string): Promise<void> {
+  async revokeApiKey(itemId: string, proof?: StepUpProof): Promise<void> {
     const fields = await this.readFields(itemId);
     const accountItemId = fields[KEY_FIELDS.accountId];
     const token = await this.requireToken(accountItemId);
-    await this.createClient({
-      endpoint: fields[KEY_FIELDS.endpoint],
+    await this.withStepUp(
+      fields[KEY_FIELDS.endpoint],
       token,
-    }).revokeApiKey(fields[KEY_FIELDS.keyId]);
+      proof,
+      (client) => client.revokeApiKey(fields[KEY_FIELDS.keyId])
+    );
     await this.vault.deleteItemForever(itemId);
   }
 
   // ─── internals ────────────────────────────────────────────────────────────
+
+  /**
+   * Run a sensitive operation, and if the server asks for a freshly proved
+   * factor, prove it and run *the same* operation once more. The request is
+   * held rather than rebuilt, so nothing about it can change between the two
+   * attempts. Without a proof the `StepUpRequiredError` propagates, which is
+   * what lets a caller collect one and try again.
+   */
+  private async withStepUp<T>(
+    endpoint: string,
+    token: string,
+    proof: StepUpProof | undefined,
+    run: (client: AuthClient) => Promise<T>
+  ): Promise<T> {
+    const client = this.createClient({ endpoint, token });
+    try {
+      return await run(client);
+    } catch (error) {
+      if (!(error instanceof StepUpRequiredError)) throw error;
+      if (error.kind === 'mfa') {
+        if (!proof?.totpCode) throw error;
+        await client.verifyTotp(proof.totpCode);
+      } else if (proof?.password) {
+        await client.verifyPassword(proof.password);
+      } else if (proof?.totpCode) {
+        await client.verifyTotp(proof.totpCode);
+      } else {
+        throw error;
+      }
+      return run(client);
+    }
+  }
 
   private async adopt(
     endpoint: string,

@@ -22,7 +22,13 @@ import { Copy, KeyRound, LogIn, LogOut, Plus, Trash2, UserPlus } from 'lucide-re
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { AccountRecord, ApiKeyRecord } from '../../../shared/api';
+import type { AccountRecord, ApiKeyRecord, StepUpProof } from '../../../shared/api';
+import {
+  StepUpKind,
+  stepUpKind,
+  stepUpPrompt,
+  stepUpProof,
+} from '../../../shared/step-up';
 import { copyWithTimeout, dcrypt } from '../lib/ipc';
 
 const message = (error: unknown): string =>
@@ -30,6 +36,12 @@ const message = (error: unknown): string =>
 
 const expiry = (iso: string | null): string =>
   iso ? `expires ${new Date(iso).toLocaleString()}` : 'no expiry';
+
+/** A request the server refused until a factor is re-proved, kept to replay. */
+interface HeldRequest {
+  kind: StepUpKind;
+  work: (proof?: StepUpProof) => Promise<string>;
+}
 
 export const AccountsScreen = () => {
   const [accounts, setAccounts] = useState<AccountRecord[]>([]);
@@ -44,6 +56,9 @@ export const AccountsScreen = () => {
   const [keyFor, setKeyFor] = useState<AccountRecord | null>(null);
   const [keyName, setKeyName] = useState('');
   const [keyDays, setKeyDays] = useState('');
+
+  const [held, setHeld] = useState<HeldRequest | null>(null);
+  const [proofValue, setProofValue] = useState('');
 
   const refresh = useCallback(async () => {
     try {
@@ -62,13 +77,30 @@ export const AccountsScreen = () => {
     void refresh();
   }, [refresh]);
 
-  const run = async (work: () => Promise<string>): Promise<void> => {
+  /**
+   * Run an operation and, if the server asks for a fresh factor, keep the very
+   * same closure so the dialog can replay it once a proof has been collected —
+   * the request is held, never rebuilt from state that may have moved on.
+   */
+  const run = async (
+    work: (proof?: StepUpProof) => Promise<string>,
+    proof?: StepUpProof
+  ): Promise<void> => {
     setBusy(true);
     try {
-      toast.success(await work());
+      const result = await work(proof);
+      setHeld(null);
+      setProofValue('');
+      toast.success(result);
       await refresh();
     } catch (error) {
-      toast.error(message(error));
+      const kind = stepUpKind(message(error));
+      if (kind) {
+        setHeld({ kind, work });
+        setProofValue('');
+      } else {
+        toast.error(message(error));
+      }
     } finally {
       setBusy(false);
     }
@@ -99,11 +131,9 @@ export const AccountsScreen = () => {
       toast.error('Expiry must be a whole number of days');
       return;
     }
-    await run(async () => {
-      const key = await dcrypt.accounts.createKey(account.itemId, {
-        name: keyName.trim(),
-        expiresDays: days,
-      });
+    const request = { name: keyName.trim(), expiresDays: days };
+    await run(async (proof) => {
+      const key = await dcrypt.accounts.createKey(account.itemId, request, proof);
       setKeyName('');
       setKeyDays('');
       setKeyFor(null);
@@ -223,8 +253,8 @@ export const AccountsScreen = () => {
                       aria-label={`Revoke ${key.name}`}
                       disabled={busy}
                       onClick={() =>
-                        run(async () => {
-                          await dcrypt.accounts.revokeKey(key.itemId);
+                        run(async (proof) => {
+                          await dcrypt.accounts.revokeKey(key.itemId, proof);
                           return `Revoked "${key.name}"`;
                         })
                       }
@@ -260,6 +290,10 @@ export const AccountsScreen = () => {
                 placeholder="http://auth.localhost:3000/graphql"
                 className="font-mono"
               />
+              <p className="text-xs text-muted-foreground">
+                The auth plane&apos;s GraphQL URL. A bare host gets{' '}
+                <code>/graphql</code> appended.
+              </p>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="account-email">Email</Label>
@@ -332,6 +366,49 @@ export const AccountsScreen = () => {
             </Button>
             <Button disabled={busy || !keyName.trim()} onClick={createKey}>
               {busy ? 'Creating…' : 'Create key'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={held !== null} onOpenChange={(open) => !open && setHeld(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{held ? stepUpPrompt(held.kind).title : ''}</DialogTitle>
+            <DialogDescription>
+              {held ? stepUpPrompt(held.kind).hint : ''} Your request is waiting and
+              will be sent again as soon as this is accepted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogPanel className="flex flex-col gap-1.5">
+            <Label htmlFor="step-up-value">
+              {held ? stepUpPrompt(held.kind).label : ''}
+            </Label>
+            <Input
+              id="step-up-value"
+              type={held?.kind === 'mfa' ? 'text' : 'password'}
+              inputMode={held?.kind === 'mfa' ? 'numeric' : undefined}
+              autoFocus
+              value={proofValue}
+              onChange={(e) => setProofValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && held && proofValue) {
+                  void run(held.work, stepUpProof(held.kind, proofValue));
+                }
+              }}
+            />
+          </DialogPanel>
+          <DialogFooter>
+            <Button variant="outline" disabled={busy} onClick={() => setHeld(null)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={busy || !held || !proofValue}
+              onClick={() =>
+                held && run(held.work, stepUpProof(held.kind, proofValue))
+              }
+            >
+              {busy ? 'Verifying…' : 'Confirm and continue'}
             </Button>
           </DialogFooter>
         </DialogContent>

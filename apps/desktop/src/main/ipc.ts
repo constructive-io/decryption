@@ -13,6 +13,7 @@ import {
   FieldPurpose,
   ItemKind,
   SignInRequest,
+  StepUpProof,
 } from '../shared/api';
 import { parseOtpauthUri } from '../shared/otpauth';
 import { backupVault, restoreVault } from './backup';
@@ -170,6 +171,16 @@ export const registerIpc = (service: VaultService): void => {
     email: assertString(request?.email),
     password: assertString(request?.password),
   });
+  /** A step-up proof only exists on a retry, so every part of it is optional. */
+  const proof = (stepUp?: StepUpProof): StepUpProof | undefined =>
+    stepUp === undefined
+      ? undefined
+      : {
+        password:
+            stepUp.password === undefined ? undefined : assertString(stepUp.password),
+        totpCode:
+            stepUp.totpCode === undefined ? undefined : assertString(stepUp.totpCode),
+      };
 
   handle(CHANNELS.accountsList, () => accounts().listAccounts());
   handle(CHANNELS.accountsSignIn, async (request: SignInRequest) => {
@@ -195,14 +206,18 @@ export const registerIpc = (service: VaultService): void => {
   );
   handle(
     CHANNELS.accountsCreateKey,
-    async (accountItemId: string, request: CreateKeyRequest) => {
+    async (accountItemId: string, request: CreateKeyRequest, stepUp?: StepUpProof) => {
       const days = request?.expiresDays;
-      const key = await accounts().createApiKey(assertString(accountItemId), {
-        name: assertString(request?.name),
-        expiresIn: days === undefined ? undefined : { days: assertInt(days, 1, 3650) },
-        accessLevel:
-          request?.accessLevel === undefined ? undefined : assertString(request.accessLevel),
-      });
+      const key = await accounts().createApiKey(
+        assertString(accountItemId),
+        {
+          name: assertString(request?.name),
+          expiresIn: days === undefined ? undefined : { days: assertInt(days, 1, 3650) },
+          accessLevel:
+            request?.accessLevel === undefined ? undefined : assertString(request.accessLevel),
+        },
+        proof(stepUp)
+      );
       service.scheduleSave();
       return key;
     }
@@ -210,8 +225,8 @@ export const registerIpc = (service: VaultService): void => {
   handle(CHANNELS.accountsRevealKey, (itemId: string) =>
     accounts().revealApiKey(assertString(itemId))
   );
-  handle(CHANNELS.accountsRevokeKey, async (itemId: string) => {
-    await accounts().revokeApiKey(assertString(itemId));
+  handle(CHANNELS.accountsRevokeKey, async (itemId: string, stepUp?: StepUpProof) => {
+    await accounts().revokeApiKey(assertString(itemId), proof(stepUp));
     service.scheduleSave();
   });
 
