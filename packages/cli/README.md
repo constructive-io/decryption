@@ -8,6 +8,9 @@
   <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
     <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
   </a>
+  <a href="https://github.com/constructive-io/decryption/blob/main/LICENSE">
+    <img height="20" alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue.svg" />
+  </a>
   <a href="https://www.npmjs.com/package/@decryption/cli"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fcli%2Fpackage.json"/></a>
 </p>
 
@@ -98,8 +101,8 @@ dcrypt shamir split --in mnemonic.txt --shares 5 --threshold 3
   replaced or added on the way to a file or a pipe. Only on a terminal is a `dcrypt.v1` value that
   does not end its last line followed by a newline.
 - Binary data is never written to a terminal: not ciphertext, and not decrypted output that holds a
-  NUL byte or is not UTF-8. Text is shown up to the first such byte, and the command then fails. Use
-  `--out` or redirect.
+  NUL byte or is not UTF-8. No such byte is written and the command fails, though text that came
+  before it may already have been shown. Use `--out` or redirect.
 - `--aad` belongs to the `dcrypt.v1` envelope only.
 
 What "audited" does and does not cover for these formats is spelled out in the
@@ -297,3 +300,13 @@ Add `--json` for machine-readable output, and check exit codes:
 
 Managed with [appstash](https://www.npmjs.com/package/appstash), and shared byte-for-byte with the
 desktop app, so both tools see the same vaults.
+
+## Credits
+
+**🛠 Built by the [Constructive](https://constructive.io) team — creators of modular Postgres tooling for secure, composable backends. If you like our work, contribute on [GitHub](https://github.com/constructive-io).**
+
+## Disclaimer
+
+AS DESCRIBED IN THE LICENSES, THE SOFTWARE IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND.
+
+No developer or entity involved in creating this software will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of the code, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.

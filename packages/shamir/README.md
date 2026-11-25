@@ -8,6 +8,9 @@
   <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
     <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
   </a>
+  <a href="https://github.com/constructive-io/decryption/blob/main/LICENSE">
+    <img height="20" alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue.svg" />
+  </a>
   <a href="https://www.npmjs.com/package/@decryption/shamir"><img height="20" src="https://img.shields.io/github/package-json/v/constructive-io/decryption?filename=packages%2Fshamir%2Fpackage.json"/></a>
 </p>
 
@@ -78,3 +81,13 @@ be added or removed without a new ceremony.
 GF(256) multiplication uses log/exp tables, which are not constant time. Splitting and combining
 run locally on data the caller already holds, never as a remote oracle, so this is not a
 practical exposure.
+
+## Credits
+
+**🛠 Built by the [Constructive](https://constructive.io) team — creators of modular Postgres tooling for secure, composable backends. If you like our work, contribute on [GitHub](https://github.com/constructive-io).**
+
+## Disclaimer
+
+AS DESCRIBED IN THE LICENSES, THE SOFTWARE IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND.
+
+No developer or entity involved in creating this software will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of the code, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.
