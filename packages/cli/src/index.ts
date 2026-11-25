@@ -30,9 +30,11 @@ export const options: Partial<CLIOptions> = {
       'kdf',
       'recipient',
       'recipients-file',
+      'workspace',
     ],
-    // declared so that `dcrypt encrypt --binary "some text"` keeps the text as the input
-    boolean: ['binary'],
+    // declared so that a flag never takes the positional after it as its value:
+    // `dcrypt encrypt --binary "some text"`, `dcrypt decrypt-workspace --force finance`
+    boolean: ['binary', 'force', 'json', 'staged', 'all'],
   },
 };
 

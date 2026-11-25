@@ -1,7 +1,6 @@
 import {
   armor,
   armorFile,
-  CorruptEnvelopeError,
   createFileDecryptor,
   createFileEncryptor,
   dearmorFile,
@@ -18,7 +17,6 @@ import {
   KdfParams,
   KdfProfile,
   MAGIC,
-  tryParseFileHeader,
   unwrapWithPassphrase,
   wrapWithPassphrase,
 } from '@decryption/core';
@@ -45,6 +43,7 @@ import {
 } from '../utils/bytes';
 import { takeFirst, wantsHelp } from '../utils/dispatch';
 import { CliError } from '../utils/errors';
+import { readFileHeader } from '../utils/header';
 import { writeOutput } from '../utils/io';
 import { resolvePassphrase } from '../utils/passphrase';
 import { collectRecipients } from '../utils/recipients';
@@ -237,20 +236,6 @@ export const decryptCommand = async (argv: ParsedArgs, prompter: Inquirerer): Pr
     writeOutput(newArgv, decryptFromString(text, passphrase, { aad: aadOf(newArgv) }));
   } finally {
     input.close();
-  }
-};
-
-/** Reads exactly the header off the front of `reader`; the payload stays in the stream. */
-const readFileHeader = async (reader: ByteReader): Promise<FileHeader> => {
-  for (;;) {
-    const header = tryParseFileHeader(reader.buffered);
-    if (header) {
-      reader.skip(header.length);
-      return header;
-    }
-    if (!(await reader.more())) {
-      throw new CorruptEnvelopeError('envelope is truncated: the header is incomplete');
-    }
   }
 };
 

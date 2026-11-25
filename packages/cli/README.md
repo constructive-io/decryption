@@ -27,6 +27,9 @@ dcrypt --help
 | Command | What it does |
 |---------|--------------|
 | `dcrypt encrypt` / `decrypt` | Encrypt with a passphrase or to X25519 recipients; files of any size with `--binary` |
+| `dcrypt encrypt-section` / `decrypt-workspace` | Keep folders of a git repository encrypted: one bundle per folder, one passphrase prompt |
+| `dcrypt status` / `doctor` | Where each section stands; whether this machine and workspace are set up safely |
+| `dcrypt guard` | Keep plaintext out of git: a pre-commit check, its hook, and files to paste |
 | `dcrypt wallet create\|address\|validate` | BIP39 mnemonics and offline address derivation |
 | `dcrypt keys generate\|show\|verify` | Your X25519 identity, stored encrypted |
 | `dcrypt secrets …` | Team secrets files, `.env` generation, recipient management |
@@ -48,6 +51,10 @@ dcrypt keys show                         # prints your dcrypt1… recipient
 dcrypt encrypt --binary --recipient dcrypt1… --recipient dcrypt1… \
   --in backup.tar --out backup.tar.dcrypt
 dcrypt decrypt --in backup.tar.dcrypt --out backup.tar
+
+# a private folder in a git repository, encrypted to everyone in recipients.txt
+dcrypt encrypt-section finance           # finance/ → finance.tar.dcrypt
+dcrypt decrypt-workspace                 # every bundle → its folder, one passphrase prompt
 
 # team secrets
 dcrypt keys generate
@@ -93,6 +100,128 @@ dcrypt shamir split --in mnemonic.txt --shares 5 --threshold 3
 What "audited" does and does not cover for these formats is spelled out in the
 [repository README](../../README.md#audit-status): the `@noble` / `@scure` primitives are, the
 envelope is not.
+
+## Encrypted workspaces
+
+A workspace is a folder, usually a git repository, in which some folders are private. Each private
+folder is a **section**: it is committed as one encrypted bundle, and its plaintext stays on your
+machine.
+
+```text
+<workspace>/
+  recipients.txt        who can decrypt: one dcrypt1… public key per line (committed)
+  finance.tar.dcrypt    a section, encrypted (committed, ideally with Git LFS)
+  finance/              the same section, decrypted (never committed)
+  clients/
+    northwind.tar.dcrypt
+    northwind/
+  .dcrypt/state.json    what this machine last encrypted or decrypted (never committed)
+```
+
+### Setting one up
+
+```bash
+dcrypt keys generate                             # once per machine
+dcrypt guard snippet recipients > recipients.txt # then add each machine's "dcrypt keys show" line
+dcrypt guard snippet gitignore > .gitignore      # allow-list: everything is private unless named
+dcrypt guard snippet gitattributes > .gitattributes   # bundles go to Git LFS ("git lfs install")
+dcrypt guard install                             # pre-commit hook
+dcrypt doctor                                    # checks all of the above
+```
+
+Give every machine its own key, and add one **recovery** key that lives on no working machine, with
+the word "recovery" in its label. `dcrypt doctor` and `dcrypt encrypt-section` warn until there is
+one: without it, losing every machine key loses every section.
+
+### Day to day
+
+```bash
+git pull
+dcrypt decrypt-workspace          # one passphrase prompt; none when nothing changed
+# … edit files under finance/ …
+dcrypt status                     # finance  plaintext changed — run `dcrypt encrypt-section` …
+dcrypt encrypt-section finance    # no passphrase: encrypting uses public keys only
+git add finance.tar.dcrypt && git commit
+```
+
+- **Encrypting is opt-in, one section at a time.** Nothing is encrypted, and no bundle is rewritten,
+  unless you name the section.
+- **Nothing changes when nothing changed.** A section whose files are the same as its bundle is not
+  re-encrypted, so git sees no difference. Running it again after `recipients.txt` changed does
+  re-encrypt, to the new set of recipients.
+- **One passphrase prompt.** `decrypt-workspace` unlocks your identity once and uses it for every
+  section, and does not ask at all when every section is in sync. The passphrase comes from the
+  prompt, `--passphrase-file`, `--passphrase-stdin` or `DCRYPT_PASSPHRASE`, never from argv.
+- **A wrong passphrase never touches plaintext.** Each bundle is decrypted into a new folder beside
+  the section and checked, file by file, against the manifest inside it. Only when all of it is
+  there and correct does it replace the old folder. A wrong passphrase, a damaged or truncated
+  bundle, a full disk or Ctrl-C leaves the section exactly as it was; the other sections are still
+  decrypted, and the exit code says something failed.
+- **Edits are not overwritten.** Plaintext with changes that are not encrypted yet is kept, and a
+  bundle that is newer than your plaintext is not replaced, unless you pass `--force`. When both
+  sides changed, both commands stop and say so.
+- **Interrupt-safe.** Bundles and folders are written under a temporary name and renamed into
+  place. A run that was killed is tidied up by the next one, which puts back a folder that was
+  mid-swap.
+- **File names are hidden.** A bundle is one encrypted file. The names, sizes and number of the
+  files inside are not visible; the bundle's total size, and the fingerprints of its recipients,
+  are.
+- Decrypted files are created owner-only (`0600`, folders `0700`); the executable bit is kept.
+
+`dcrypt status` shows one of these for each section:
+
+| State | Meaning |
+|-------|---------|
+| `in sync` | the plaintext is what the bundle holds |
+| `plaintext changed` | you edited files; `encrypt-section` when ready |
+| `bundle changed` | the bundle is newer (a pull); `decrypt-workspace` updates the plaintext |
+| `conflict` | both changed since they last agreed |
+| `not decrypted` / `not encrypted` | only the bundle, or only the folder, exists |
+| `unknown` | this machine has no record of the section; `decrypt-workspace` compares, and never overwrites a folder that differs |
+| `not downloaded` | the bundle is still a Git LFS pointer; `git lfs pull` |
+
+### Keeping plaintext out of git
+
+`dcrypt guard` reads what a commit would record and refuses three things: a file inside a section's
+plaintext folder, a `*.dcrypt` file whose content is not encrypted, and a file `.gitignore` covers
+that was added by force.
+
+```bash
+dcrypt guard                # what is staged; this is what the pre-commit hook runs
+dcrypt guard --all          # everything tracked; for CI
+dcrypt guard install        # write the hook (leaves a hook it did not write alone without --force)
+dcrypt guard snippet        # gitignore, gitattributes, hook, ci, recipients
+```
+
+The `.gitignore` snippet is an allow-list: it ignores everything and then names what may be
+committed, so a new file is private until a line says otherwise. The hook fails closed: if `dcrypt`
+is not on the `PATH`, the commit is refused, not waved through.
+
+`dcrypt doctor` checks Node.js, your identity, `recipients.txt` (including the recovery recipient),
+every section, the hook, the ignore rules, Git LFS and whether anything tracked is plaintext. It
+reads only, asks for no passphrase, and exits non-zero only when a check fails; warnings do not.
+
+### What a bundle is, and is not
+
+A bundle is a tar archive encrypted to the recipients in the [file format](#encrypting-files) above.
+The archive is deterministic (sorted names, no owners, no timestamps), and its first entry is a
+manifest listing every file's path, size and SHA-256. The manifest is what makes "unchanged" cheap
+to establish and what an extraction is verified against.
+
+- **It is an ordinary tar inside.** Without the workspace commands,
+  `dcrypt decrypt --in finance.tar.dcrypt --out finance.tar && tar -xf finance.tar` gets the files
+  back, along with the manifest as `.dcrypt-manifest.json`.
+- **A bundle does not say who made it.** Recipient keys are public, so anyone who can write to the
+  repository can produce a bundle that decrypts. `decrypt-workspace` refuses a bundle that tries to
+  write outside its folder or whose content does not match its manifest, but it cannot tell you who
+  wrote that content. That comes from git: review, branch protection, signed commits.
+- **Removing a recipient is not retroactive.** A key taken out of `recipients.txt` stops being used
+  the next time each section is encrypted (`status` shows which still need it). Bundles already in
+  git history stay readable with the old key, so rotate anything in them that matters.
+- **Regular files only.** Links and special files are refused, empty folders are not kept,
+  `.DS_Store` is skipped, and ownership and timestamps are not recorded. A single file must be smaller
+  than 8 GiB. File names are stored NFC-normalized; a name containing a backslash is refused.
+- None of this is audited: see [audit status](../../README.md#audit-status).
 
 ## Handling secrets
 
@@ -143,8 +272,8 @@ Add `--json` for machine-readable output, and check exit codes:
 |------|---------|
 | 1 | Usage error |
 | 2 | Wrong passphrase, or the ciphertext was tampered with |
-| 3 | Corrupt or unsupported input |
-| 4 | Not found — including no identity on this machine |
+| 3 | Corrupt or unsupported input, including a bundle that does not match its manifest |
+| 4 | Not found — including no identity on this machine, and a bundle that is still a Git LFS pointer |
 | 5 | Your identity is not a recipient of this file |
 
 ## Storage layout
