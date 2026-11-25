@@ -75,10 +75,15 @@ export const indexedHead = async (root: string, path: string, length: number): P
     cwd: root,
     stdio: ['ignore', 'pipe', 'ignore'],
   });
-  // A git that cannot start ends the stream empty, and an empty head is not an envelope.
-  child.on('error', () => undefined);
+  const exited = new Promise<number | null>((resolve) => {
+    child.on('error', () => resolve(null));
+    child.on('close', resolve);
+  });
   try {
-    return Buffer.from((await new ByteReader(child.stdout).fill(length)).subarray(0, length));
+    const head = Buffer.from((await new ByteReader(child.stdout).fill(length)).subarray(0, length));
+    // Nothing read is an empty file only if git says so: a git that failed must not pass for one.
+    if (!head.length && (await exited) !== 0) throw new CliError(`cannot read ${path} from the git index`);
+    return head;
   } finally {
     child.stdout.destroy();
     child.kill();

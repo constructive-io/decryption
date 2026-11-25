@@ -262,6 +262,21 @@ describe('doctor', () => {
     );
   });
 
+  it('fails for a section it cannot read, and still checks the rest', async () => {
+    await healthy();
+    write('ledger/2031.csv', 'month,total\njanuary,12\n');
+    await dcrypt('encrypt-section ledger');
+    git('add', '-A');
+    write('garden.tar.dcrypt', 'not a bundle\n');
+
+    const report = await doctor();
+    // With Git LFS set up the guard also follows the indexed pointer to this file, and objects.
+    expect(report.findings).toContain('fail section garden');
+    expect(report.messageOf('section garden', 'fail')).toMatch(/^bundle unreadable: .+; restore the bundle from git/);
+    expect(report.checks.find((check) => check.name === 'section ledger')?.level).toBe('ok');
+    expect(report.code).toBe(EXIT.usage);
+  });
+
   it('warns outside git, where nothing checks what is committed', async () => {
     recipients(`${mine}  ada (laptop)`, `${someoneElse()}  recovery (offline)`);
     const report = await doctor();

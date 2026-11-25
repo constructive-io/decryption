@@ -94,7 +94,12 @@ dcrypt shamir split --in mnemonic.txt --shares 5 --threshold 3
   destination exactly as it was.
 - **On stdout there is nothing to rename.** Decrypted chunks are written as they authenticate, so a
   file that turns out to be truncated has already produced output: check the exit code before using it.
-- Binary ciphertext is never written to a terminal; use `--out` or redirect.
+- **Decrypting gives back the bytes that were encrypted**, in every format: nothing is decoded,
+  replaced or added on the way to a file or a pipe. Only on a terminal is a `dcrypt.v1` value that
+  does not end its last line followed by a newline.
+- Binary data is never written to a terminal: not ciphertext, and not decrypted output that holds a
+  NUL byte or is not UTF-8. Text is shown up to the first such byte, and the command then fails. Use
+  `--out` or redirect.
 - `--aad` belongs to the `dcrypt.v1` envelope only.
 
 What "audited" does and does not cover for these formats is spelled out in the
@@ -179,6 +184,11 @@ git add finance.tar.dcrypt && git commit
 | `not decrypted` / `not encrypted` | only the bundle, or only the folder, exists |
 | `unknown` | this machine has no record of the section; `decrypt-workspace` compares, and never overwrites a folder that differs |
 | `not downloaded` | the bundle is still a Git LFS pointer; `git lfs pull` |
+| `bundle unreadable` | the bundle is not a file `dcrypt` can read; restore it from git, or `encrypt-section --force` to make it again from the plaintext |
+| `plaintext unreadable` | the folder holds a link, or a name a bundle cannot store |
+
+A section that cannot be read is reported as such, and never stops the others from being reported or
+decrypted.
 
 ### Keeping plaintext out of git
 

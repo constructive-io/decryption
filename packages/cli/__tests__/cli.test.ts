@@ -372,6 +372,119 @@ describe('encrypt --binary / --recipient (the file format)', () => {
     expect(errors.join('')).toContain('refusing to write binary ciphertext to a terminal');
   });
 
+  it('refuses to print binary plaintext to a terminal, and prints text', async () => {
+    const seal = async (name: string, contents: string | Uint8Array): Promise<string> => {
+      const plain = file(name);
+      writeFileSync(plain, contents);
+      expect(
+        await run(
+          `encrypt --binary --in ${plain} --out ${plain}.dcrypt --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+        )
+      ).toBe(0);
+      return `${plain}.dcrypt`;
+    };
+    const reveal = (sealed: string): Promise<number> =>
+      run(`decrypt --in ${sealed} --passphrase-file ${passphrase()}`);
+
+    // What is not text, and the text before it: the most a terminal may be shown.
+    const euro = Buffer.from('\u20ac');
+    const binary: [sealed: string, shown: string][] = [
+      [await seal('any.bin', pattern(1000)), ''],
+      [await seal('not-utf8.bin', Uint8Array.of(0xff, 0xfe, 0x41)), ''],
+      [await seal('zero.bin', Buffer.from('caf\0')), ''],
+      [await seal('cut-short.bin', Buffer.concat([Buffer.from('caf'), euro.subarray(0, 2)])), 'caf'],
+      // The unfinished character begins in one chunk and goes on into the next.
+      [await seal('straddling.bin', Buffer.concat([Buffer.alloc(65_535, 'a'), euro.subarray(0, 2)])), 'a'.repeat(65_535)],
+    ];
+    const text = await seal('plain.txt', 'attack at dawn \u2014 caf\u00e9\n');
+    // Text longer than a chunk, of two-byte and of four-byte characters, begun at every offset:
+    // whichever character meets the end of the first chunk is split there at each possible place.
+    const long = [await seal('accents.txt', `a${'\u00e9'.repeat(40_000)}\n`)];
+    for (const lead of ['', 'a', 'aa', 'aaa']) {
+      long.push(await seal(`faces-${lead.length}.txt`, `${lead}${'\u{1f600}'.repeat(20_000)}\n`));
+    }
+
+    const original = process.stdout.isTTY;
+    process.stdout.isTTY = true;
+    try {
+      for (const [sealed, shown] of binary) {
+        out.length = 0;
+        errors.length = 0;
+        expect(await reveal(sealed)).toBe(EXIT.usage);
+        expect(errors.join('')).toContain('refusing to write binary data to a terminal');
+        expect(out.join('')).toBe(shown);
+      }
+      out.length = 0;
+
+      expect(await reveal(text)).toBe(0);
+      expect(stdout()).toBe('attack at dawn \u2014 caf\u00e9');
+      for (const sealed of long) expect(await reveal(sealed)).toBe(0);
+    } finally {
+      process.stdout.isTTY = original;
+    }
+  });
+
+  it('gives back the armored envelope byte for byte, and ends the line only on a terminal', async () => {
+    const sealed = join(work, 'sealed.dcrypt');
+    const restored = join(work, 'restored');
+    const seal = async (contents: Uint8Array): Promise<void> => {
+      const plain = file('plain');
+      writeFileSync(plain, contents);
+      expect(
+        await run(`encrypt --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`)
+      ).toBe(0);
+    };
+    const reveal = (to = ''): Promise<number> => run(`decrypt --in ${sealed} ${to} --passphrase-file ${passphrase()}`);
+
+    // Not text, and no newline at its end: nothing is replaced, and nothing is added.
+    const binary = pattern(300);
+    await seal(binary);
+    expect(await reveal(`--out ${restored}`)).toBe(0);
+    expect(readFileSync(restored).equals(binary)).toBe(true);
+
+    const text = Buffer.from('attack at dawn');
+    await seal(text);
+    out.length = 0;
+    expect(await reveal()).toBe(0);
+    expect(out.join('')).toBe('attack at dawn');
+
+    const original = process.stdout.isTTY;
+    process.stdout.isTTY = true;
+    try {
+      out.length = 0;
+      expect(await reveal()).toBe(0);
+      expect(out.join('')).toBe('attack at dawn\n');
+
+      await seal(binary);
+      out.length = 0;
+      expect(await reveal()).toBe(EXIT.usage);
+      expect(errors.join('')).toContain('refusing to write binary data to a terminal');
+      expect(out).toEqual([]);
+    } finally {
+      process.stdout.isTTY = original;
+    }
+  });
+
+  it('replaces --out by rename for the armored forms too', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const sealed = file('sealed.dcrypt', 'something that was here before');
+    const restored = file('restored.txt', 'something that was here before');
+    const inodes = { sealed: statSync(sealed).ino, restored: statSync(restored).ino };
+
+    expect(
+      await run(`encrypt --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`)
+    ).toBe(0);
+    expect(readFileSync(sealed, 'utf8')).toMatch(/^dcrypt\.v1\..+\n$/);
+    expect(await run(`decrypt --in ${sealed} --out ${restored} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(readFileSync(restored, 'utf8')).toBe('attack at dawn');
+
+    // A new file took each one's place: neither was truncated and written into.
+    expect(statSync(sealed).ino).not.toBe(inodes.sealed);
+    expect(statSync(restored).ino).not.toBe(inodes.restored);
+    expect(statSync(restored).mode & 0o777).toBe(0o600);
+    expect(leftovers()).toEqual([]);
+  });
+
   it('rejects --aad, which the file format does not carry', async () => {
     const plain = file('plain.txt', 'attack at dawn');
     const sealed = join(work, 'sealed.dcrypt');

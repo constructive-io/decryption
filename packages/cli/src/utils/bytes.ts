@@ -265,6 +265,48 @@ export const assertNotTerminal = (argv: ParsedArgs, options: OutputOptions): voi
   }
 };
 
+/** How many bytes at the end of `bytes` begin a UTF-8 character without finishing it. */
+const unfinished = (bytes: Uint8Array): number => {
+  for (let back = 1; back <= Math.min(3, bytes.length); back++) {
+    const byte = bytes[bytes.length - back];
+    if ((byte & 0xc0) === 0x80) continue; // a continuation byte: its lead byte is further back
+    const length = byte >= 0xf0 ? 4 : byte >= 0xe0 ? 3 : byte >= 0xc0 ? 2 : 1;
+    return length > back ? back : 0;
+  }
+  return 0;
+};
+
+const isText = (bytes: Uint8Array): boolean => {
+  if (bytes.includes(0)) return false;
+  try {
+    new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Passes text through, and stops at what a terminal should not be sent: a NUL byte, or bytes that
+ * are not UTF-8. Only whole characters are passed on: the start of one that is split between two
+ * pieces waits for the rest of it, and is never written if the rest does not come.
+ */
+async function* textOnly(bytes: ByteStream): AsyncGenerator<Uint8Array> {
+  const refusal = (): CliError =>
+    new CliError('refusing to write binary data to a terminal; use --out <file> or redirect stdout');
+
+  let pending: Uint8Array = new Uint8Array(0);
+  for await (const piece of bytes) {
+    const joined = pending.length ? Buffer.concat([pending, piece]) : piece;
+    const end = joined.length - unfinished(joined);
+    const whole = joined.subarray(0, end);
+    if (!isText(whole)) throw refusal();
+    pending = joined.slice(end);
+    if (whole.length) yield whole;
+  }
+  if (pending.length) throw refusal();
+}
+
 /** Writes `bytes` to `--out <file>` when given (atomically), otherwise to stdout. */
 export const writeBytes = async (
   argv: ParsedArgs,
@@ -278,5 +320,20 @@ export const writeBytes = async (
   }
   assertNotTerminal(argv, options);
   // stdout belongs to the process: it is written to, never ended.
-  await pipeline(asBuffers(bytes), process.stdout, { end: false });
+  await pipeline(asBuffers(process.stdout.isTTY ? textOnly(bytes) : bytes), process.stdout, { end: false });
 };
+
+const NEWLINE = Buffer.from('\n');
+
+/**
+ * Writes decrypted bytes exactly as they were encrypted. Only on a terminal is text that does not
+ * end its last line given a newline, so that the prompt does not follow it on the same line.
+ */
+export const writePlaintext = (argv: ParsedArgs, plaintext: Uint8Array): Promise<void> => {
+  const shown = outputFile(argv) === undefined && process.stdout.isTTY;
+  return writeBytes(argv, shown && plaintext.at(-1) !== NEWLINE[0] ? [plaintext, NEWLINE] : [plaintext]);
+};
+
+/** Writes text the way {@link writeBytes} writes bytes, ending it with a newline. */
+export const writeText = (argv: ParsedArgs, text: string): Promise<void> =>
+  writeBytes(argv, [Buffer.from(text.endsWith('\n') ? text : `${text}\n`, 'utf8')]);

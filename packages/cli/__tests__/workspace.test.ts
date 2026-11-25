@@ -402,6 +402,69 @@ describe('decrypt-workspace', () => {
     expect(leftovers()).toEqual([]);
   });
 
+  /** Encrypts `clients/northwind` and removes its folder: a section that is there to decrypt. */
+  const plantNorthwind = async (): Promise<void> => {
+    write('clients/northwind/order.txt', 'forty widgets\n');
+    await dcrypt('encrypt-section clients/northwind');
+    rmSync(join(root, 'clients/northwind'), { recursive: true });
+  };
+
+  const resultsOf = (stdout: string): Record<string, string> =>
+    Object.fromEntries(
+      JSON.parse(stdout).sections.map((entry: { section: string; result: string }) => [entry.section, entry.result])
+    );
+
+  it('fails one section, not the run, when a bundle cannot even be read', async () => {
+    plantGarden();
+    await dcrypt('encrypt-section garden');
+    const garden = readFileSync(join(root, 'garden.tar.dcrypt'));
+    garden[0] ^= 1; // no longer a dcrypt file of any kind
+    writeFileSync(join(root, 'garden.tar.dcrypt'), garden);
+
+    write('ledger/2031.csv', 'month,total\njanuary,12\n');
+    await dcrypt('encrypt-section ledger');
+    // Cut off inside the header, before the payload begins.
+    writeFileSync(join(root, 'ledger.tar.dcrypt'), readFileSync(join(root, 'ledger.tar.dcrypt')).subarray(0, 12));
+    await plantNorthwind();
+
+    const result = await dcrypt(`decrypt-workspace --json ${unlock}`);
+    expect(result.code).toBe(EXIT.corrupt);
+    expect(result.stderr).toContain('2 sections could not be decrypted');
+    expect(resultsOf(result.stdout)).toEqual({ 'clients/northwind': 'decrypted', garden: 'failed', ledger: 'failed' });
+    expect(read('clients/northwind/order.txt')).toBe('forty widgets\n');
+    expect(tree('garden')).toEqual(GARDEN);
+
+    // status describes every section, the unreadable ones included.
+    expect((await dcrypt('status')).code).toBe(0);
+    expect((await stateOf('garden')).state).toBe('bundle unreadable');
+    expect((await stateOf('ledger')).advice).toContain('restore the bundle from git');
+    expect((await stateOf('clients/northwind')).state).toBe('in sync');
+
+    // The plaintext is still here, so the bundle can be made again: but only when asked to.
+    const refused = await dcrypt('encrypt-section garden');
+    expect(refused.code).toBe(EXIT.usage);
+    expect(refused.stderr).toContain('its bundle cannot be read');
+    expect(readFileSync(join(root, 'garden.tar.dcrypt')).equals(garden)).toBe(true);
+    expect((await dcrypt('encrypt-section garden --force')).code).toBe(0);
+    expect((await stateOf('garden')).state).toBe('in sync');
+  });
+
+  it('fails one section, not the run, when a folder holds what a bundle cannot', async () => {
+    plantGarden();
+    await dcrypt('encrypt-section garden');
+    symlinkSync(join(home, 'passphrase'), join(root, 'garden/shortcut'));
+    await plantNorthwind();
+
+    const result = await dcrypt(`decrypt-workspace --json ${unlock}`);
+    expect(result.code).toBe(EXIT.usage);
+    expect(resultsOf(result.stdout)).toEqual({ 'clients/northwind': 'decrypted', garden: 'failed' });
+    expect(await stateOf('garden')).toMatchObject({
+      state: 'plaintext unreadable',
+      advice: expect.stringContaining('is a link or a special file'),
+    });
+    expect((await stateOf('clients/northwind')).state).toBe('in sync');
+  });
+
   it('takes a newer bundle, and keeps edits that are not encrypted yet', async () => {
     const { pulled } = await pullOlderBundle();
     expect(await stateOf('garden')).toMatchObject({ state: 'bundle changed' });
@@ -509,6 +572,25 @@ describe('decrypt-workspace', () => {
  * Recipient keys are public, so anyone can make a bundle that decrypts. These build bundles the
  * commands would never write and check that extraction takes nothing in them on trust.
  */
+describe('status', () => {
+  it('still reports the sections when recipients.txt cannot be used', async () => {
+    plantGarden();
+    await dcrypt('encrypt-section garden');
+
+    for (const [content, complaint] of [
+      ['not-a-key  grace (laptop)\n', 'recipients.txt:1:'],
+      ['# nobody yet\n', 'lists no recipients'],
+    ]) {
+      writeFileSync(join(root, 'recipients.txt'), content);
+      const status = await dcrypt('status');
+      expect(status.code).toBe(0);
+      expect(status.stdout).toMatch(/^garden {2}in sync$/m);
+      expect(status.stderr).toContain(`warning: `);
+      expect(status.stderr).toContain(complaint);
+    }
+  });
+});
+
 describe('a bundle made by someone else', () => {
   const identity = generateIdentity();
   let section: Section;
