@@ -25,11 +25,15 @@ export const MAGIC = utf8ToBytes('DCRYPT');
 export const VERSION = 1;
 
 /**
- * Algorithm suite identifier. Only one suite exists today; the byte is present so that a future
- * suite (say, AES-256-GCM for FIPS environments) can be added without a format break.
+ * Algorithm suite identifier. The byte is present so that a future suite (say, AES-256-GCM for
+ * FIPS environments) can be added without a format break.
+ *
+ * - `Argon2idXChaCha20Poly1305` is the single-shot version 1 envelope in this file.
+ * - `HkdfSha256ChaCha20Poly1305Stream` is the chunked version 2 file format in `file.ts`.
  */
 export enum Suite {
   Argon2idXChaCha20Poly1305 = 1,
+  HkdfSha256ChaCha20Poly1305Stream = 2,
 }
 
 export const NONCE_LENGTH = 24;

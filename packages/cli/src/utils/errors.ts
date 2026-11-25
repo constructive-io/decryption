@@ -4,6 +4,7 @@ import {
   UnsupportedEnvelopeError,
   WrongPassphraseError,
 } from '@decryption/core';
+import { NotRecipientError } from '@decryption/keys';
 
 /**
  * Exit codes, so scripts can tell failure modes apart without parsing messages.
@@ -41,6 +42,7 @@ export const exitCodeFor = (error: unknown): number => {
   if (error instanceof CorruptEnvelopeError || error instanceof UnsupportedEnvelopeError) {
     return EXIT.corrupt;
   }
+  if (error instanceof NotRecipientError) return EXIT.permission;
   if (error instanceof InvalidParametersError) return EXIT.usage;
   return EXIT.usage;
 };

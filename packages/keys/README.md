@@ -54,6 +54,24 @@ const identity = identityFromSeed(mnemonicToSeed(mnemonic), 0);
 Deterministic, so the same BIP39 words always give the same identity — no separate key backup.
 Use `index` for distinct identities (laptop, CI, break-glass) from one seed.
 
+### Files, of any size
+
+`sealTo` produces JSON for small values. For files, the same recipient wrapping goes into the binary,
+chunked [version 2 format](../core#file-format-version-2):
+
+```typescript
+import { sealFileTo, openFileAs, createRecipientFileEncryptor } from '@decryption/keys';
+
+const file = sealFileTo(bytes, [aliceRecipient, bobRecipient]); // Uint8Array
+openFileAs(file, alice);
+
+// streamed: write the header, then the stream's output
+const { header, stream } = createRecipientFileEncryptor([aliceRecipient, bobRecipient]);
+```
+
+`fileRecipients(header)` lists the fingerprints a file is encrypted to without any key, and
+`unwrapWithIdentity` throws `NotRecipientError` when yours is not among them.
+
 ## Format
 
 ```typescript
@@ -69,6 +87,16 @@ interface SealedPayload {
   `HKDF-SHA256(X25519(ephemeral, recipient), salt = ephemeral ‖ recipient, info = "dcrypt-recipient-v1")`.
 - `ciphertext` is XChaCha20-Poly1305 via [`@decryption/core`](../core), optionally bound to
   associated data.
+
+In a version 2 file each recipient is one 112-byte stanza carrying the same three fields in binary:
+
+```text
+| fingerprint 8 B | ephemeral public key 32 B | wrapped file key 72 B |
+```
+
+None of this — the wrapping, the identity encoding or the keyring — has been audited by a third
+party; only the underlying `@noble` primitives have. See
+[Audit status](../../README.md#audit-status).
 
 Removing a recipient means dropping their stanza and re-sealing under a fresh file key — see
 [`@decryption/secrets`](../secrets), which does the rekeying for you.

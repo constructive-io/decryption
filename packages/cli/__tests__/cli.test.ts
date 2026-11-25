@@ -1,10 +1,14 @@
 import { decryptFromString } from '@decryption/core';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { Inquirerer, parseArgv } from 'inquirerer';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { dispatch, EXIT } from '../src';
+import { dispatch, EXIT, options } from '../src';
+
+// Argon2id in pure JavaScript is slow under jest even at the minimum cost, and several tests
+// derive a handful of keys each.
+jest.setTimeout(120000);
 
 /** Armored envelopes are prefixed rather than PEM-wrapped. */
 const ARMOR_PREFIX = 'dcrypt.v1.';
@@ -25,10 +29,8 @@ const prompter = () =>
   new Inquirerer({ noTty: true, useDefaults: true });
 
 const run = async (line: string): Promise<number> => {
-  const argv = parseArgv(['node', 'dcrypt', ...line.split(' ').filter(Boolean)], {
-    '--': true,
-    string: ['in', 'out', 'passphrase-file', 'salt-file', 'aad', 'vault', 'file', 'format', 'kdf'],
-  });
+  // the same argv parsing options the `dcrypt` bin uses
+  const argv = parseArgv(['node', 'dcrypt', ...line.split(' ').filter(Boolean)], options.minimistOpts);
   const p = prompter();
   try {
     return await dispatch(argv, p);
@@ -167,6 +169,244 @@ describe('encrypt / decrypt', () => {
     expect(await run(`encrypt --in ${plain} --kdf lightning --passphrase-file ${passphrase()}`)).toBe(
       EXIT.usage
     );
+  });
+});
+
+describe('encrypt --binary / --recipient (the file format)', () => {
+  const passphrase = () => file('pass.txt', 'correct horse battery staple');
+  const identityPassphrase = () => file('identity-pass.txt', 'identity-passphrase');
+
+  /** Deterministic filler: no real data, and not valid UTF-8, so a text path would corrupt it. */
+  const pattern = (length: number): Buffer =>
+    Buffer.from(Uint8Array.from({ length }, (_, i) => (i * 131 + (i >> 8) * 17 + 255) % 256));
+
+  /** Creates an identity in a home directory of its own and returns its public recipient. */
+  const newIdentity = async (): Promise<{ home: string; recipient: string }> => {
+    const dir = mkdtempSync(join(tmpdir(), 'dcrypt-home-'));
+    process.env.APPSTASH_BASE_DIR = dir;
+    out = [];
+    expect(
+      await run(`keys generate --kdf ${FAST_KDF} --json --passphrase-file ${identityPassphrase()}`)
+    ).toBe(0);
+    const { recipient } = JSON.parse(stdout()) as { recipient: string };
+    out = [];
+    return { home: dir, recipient };
+  };
+
+  const leftovers = (): string[] => readdirSync(work).filter((name) => name.includes('dcrypt-tmp'));
+
+  it('writes a binary envelope with a passphrase and restores the exact bytes', async () => {
+    const data = pattern(1000);
+    const plain = file('plain.bin');
+    writeFileSync(plain, data);
+    const sealed = join(work, 'plain.bin.dcrypt');
+    expect(
+      await run(
+        `encrypt --binary --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+      )
+    ).toBe(0);
+
+    const envelope = readFileSync(sealed);
+    expect(envelope.subarray(0, 6).toString('latin1')).toBe('DCRYPT');
+    expect(envelope[6]).toBe(2);
+    expect(envelope.includes(data.subarray(0, 32))).toBe(false);
+
+    const restored = join(work, 'restored.bin');
+    expect(await run(`decrypt --in ${sealed} --out ${restored} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(readFileSync(restored).equals(data)).toBe(true);
+    expect(statSync(restored).mode & 0o777).toBe(0o600);
+    expect(leftovers()).toEqual([]);
+  });
+
+  it('streams a file of several chunks to a recipient without asking for a passphrase', async () => {
+    const { recipient } = await newIdentity();
+    const data = pattern(3 * 65536 + 4321);
+    const plain = file('large.bin');
+    writeFileSync(plain, data);
+    const sealed = join(work, 'large.bin.dcrypt');
+
+    // No passphrase source at all: encrypting to a public key must not need one.
+    expect(await run(`encrypt --binary --recipient ${recipient} --in ${plain} --out ${sealed}`)).toBe(0);
+    // header: 10 bytes, one 115-byte stanza, 32-byte MAC, 16-byte nonce; then four chunks.
+    expect(statSync(sealed).size).toBe(10 + 115 + 32 + 16 + data.length + 4 * 16);
+
+    const restored = join(work, 'large.restored');
+    expect(
+      await run(`decrypt --in ${sealed} --out ${restored} --passphrase-file ${identityPassphrase()}`)
+    ).toBe(0);
+    expect(readFileSync(restored).equals(data)).toBe(true);
+  });
+
+  it('writes the text form with --recipient alone', async () => {
+    const { recipient } = await newIdentity();
+    const sealed = join(work, 'note.dcrypt');
+    expect(await run(`encrypt hello-team --recipient ${recipient} --out ${sealed}`)).toBe(0);
+    expect(readFileSync(sealed, 'utf8')).toMatch(/^dcrypt\.v2\.[A-Za-z0-9+/=]+\n$/);
+
+    expect(await run(`decrypt --in ${sealed} --passphrase-file ${identityPassphrase()}`)).toBe(0);
+    expect(stdout()).toBe('hello-team');
+  });
+
+  it('keeps inline text as the input when --binary comes first', async () => {
+    const sealed = join(work, 'inline.dcrypt');
+    expect(
+      await run(`encrypt --binary hello-team --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`)
+    ).toBe(0);
+    expect(await run(`decrypt --in ${sealed} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(stdout()).toBe('hello-team');
+  });
+
+  it('encrypts to every key in a recipients file, and to nobody else', async () => {
+    const ada = await newIdentity();
+    const grace = await newIdentity();
+    const outsider = await newIdentity();
+    const recipients = file(
+      'recipients.txt',
+      [`# who can open the bundle`, `${ada.recipient}  ada (laptop)`, '', `${grace.recipient} recovery`, ''].join('\n')
+    );
+    const plain = file('plain.txt', 'the tuesday meeting moved to wednesday');
+    const sealed = join(work, 'plain.dcrypt');
+    expect(await run(`encrypt --binary --recipients-file ${recipients} --in ${plain} --out ${sealed}`)).toBe(0);
+
+    for (const member of [ada, grace]) {
+      process.env.APPSTASH_BASE_DIR = member.home;
+      out = [];
+      expect(await run(`decrypt --in ${sealed} --passphrase-file ${identityPassphrase()}`)).toBe(0);
+      expect(stdout()).toBe('the tuesday meeting moved to wednesday');
+    }
+
+    process.env.APPSTASH_BASE_DIR = outsider.home;
+    const target = join(work, 'outsider.txt');
+    // Exit 5 without even reading a passphrase: the recipient list in the header is public.
+    expect(await run(`decrypt --in ${sealed} --out ${target}`)).toBe(EXIT.permission);
+    expect(errors.join('')).toContain('is not a recipient');
+    expect(existsSync(target)).toBe(false);
+  });
+
+  it('exits 4 when a recipient file is opened on a machine with no identity', async () => {
+    const { recipient } = await newIdentity();
+    const sealed = join(work, 'note.dcrypt');
+    await run(`encrypt hello --binary --recipient ${recipient} --out ${sealed}`);
+    process.env.APPSTASH_BASE_DIR = home;
+    expect(await run(`decrypt --in ${sealed} --passphrase-file ${identityPassphrase()}`)).toBe(EXIT.notFound);
+  });
+
+  it('rejects a malformed recipient', async () => {
+    expect(await run(`encrypt hello --recipient dcrypt1notakey`)).toBe(EXIT.usage);
+    const recipients = file('recipients.txt', '# team\nnot-a-key ada\n');
+    expect(await run(`encrypt hello --recipients-file ${recipients}`)).toBe(EXIT.usage);
+    expect(errors.join('')).toContain('recipients.txt:2');
+  });
+
+  it('never replaces the output on a wrong passphrase', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const sealed = join(work, 'sealed.dcrypt');
+    await run(
+      `encrypt --binary --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+    );
+    const wrong = file('wrong.txt', 'hunter2');
+
+    const fresh = join(work, 'fresh.txt');
+    expect(await run(`decrypt --in ${sealed} --out ${fresh} --passphrase-file ${wrong}`)).toBe(EXIT.auth);
+    expect(existsSync(fresh)).toBe(false);
+
+    const existing = file('existing.txt', 'work in progress, do not lose');
+    expect(await run(`decrypt --in ${sealed} --out ${existing} --passphrase-file ${wrong}`)).toBe(EXIT.auth);
+    expect(readFileSync(existing, 'utf8')).toBe('work in progress, do not lose');
+    expect(leftovers()).toEqual([]);
+  });
+
+  it('exits 2 on a wrong identity passphrase', async () => {
+    const { recipient } = await newIdentity();
+    const sealed = join(work, 'note.dcrypt');
+    await run(`encrypt hello --binary --recipient ${recipient} --out ${sealed}`);
+    const wrong = file('wrong.txt', 'hunter2');
+    expect(await run(`decrypt --in ${sealed} --passphrase-file ${wrong}`)).toBe(EXIT.auth);
+  });
+
+  it('never leaves a partial file when the envelope is truncated or modified', async () => {
+    const data = pattern(2 * 65536 + 100);
+    const plain = file('plain.bin');
+    writeFileSync(plain, data);
+    const sealed = join(work, 'sealed.dcrypt');
+    await run(
+      `encrypt --binary --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+    );
+    const envelope = readFileSync(sealed);
+    const existing = file('existing.bin', 'work in progress, do not lose');
+
+    const damaged: Record<string, Buffer> = {
+      // the last chunk is missing: the first two authenticate, the file as a whole must not
+      'cut-at-chunk-boundary': envelope.subarray(0, envelope.length - 116),
+      'cut-in-header': envelope.subarray(0, 40),
+      'flipped-in-first-chunk': Buffer.from(envelope).fill(envelope[300] ^ 0x01, 300, 301),
+      // the stanza count: caught by the header MAC or by the parser, never accepted
+      'flipped-in-header': Buffer.from(envelope).fill(envelope[9] ^ 0x02, 9, 10),
+      appended: Buffer.concat([envelope, Buffer.from('extra')]),
+    };
+    for (const [name, bytes] of Object.entries(damaged)) {
+      const path = join(work, `${name}.dcrypt`);
+      writeFileSync(path, bytes);
+      const code = await run(`decrypt --in ${path} --out ${existing} --passphrase-file ${passphrase()}`);
+      expect([name, code]).toEqual([name, EXIT.corrupt]);
+      expect(readFileSync(existing, 'utf8')).toBe('work in progress, do not lose');
+    }
+    expect(leftovers()).toEqual([]);
+
+    // The undamaged file still replaces it, in one step.
+    expect(await run(`decrypt --in ${sealed} --out ${existing} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(readFileSync(existing).equals(data)).toBe(true);
+  });
+
+  it('refuses to print binary ciphertext to a terminal', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const original = process.stdout.isTTY;
+    process.stdout.isTTY = true;
+    try {
+      expect(
+        await run(`encrypt --binary --in ${plain} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`)
+      ).toBe(EXIT.usage);
+    } finally {
+      process.stdout.isTTY = original;
+    }
+    expect(errors.join('')).toContain('refusing to write binary ciphertext to a terminal');
+  });
+
+  it('rejects --aad, which the file format does not carry', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const sealed = join(work, 'sealed.dcrypt');
+    expect(
+      await run(
+        `encrypt --binary --aad invoice --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+      )
+    ).toBe(EXIT.usage);
+    expect(existsSync(sealed)).toBe(false);
+
+    await run(
+      `encrypt --binary --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+    );
+    expect(
+      await run(`decrypt --aad invoice --in ${sealed} --passphrase-file ${passphrase()}`)
+    ).toBe(EXIT.usage);
+  });
+
+  it('still opens the armored envelope with associated data', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const sealed = join(work, 'sealed.dcrypt');
+    await run(
+      `encrypt --aad invoice --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+    );
+    expect(await run(`decrypt --aad invoice --in ${sealed} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(stdout()).toBe('attack at dawn');
+    expect(await run(`decrypt --aad receipt --in ${sealed} --passphrase-file ${passphrase()}`)).toBe(EXIT.auth);
+  });
+
+  it('prints help instead of waiting for input', async () => {
+    expect(await run('encrypt --help')).toBe(0);
+    expect(stdout()).toContain('--recipient <key>');
+    out = [];
+    expect(await run('decrypt --help')).toBe(0);
+    expect(stdout()).toContain('renamed into');
   });
 });
 

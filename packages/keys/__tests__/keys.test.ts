@@ -1,7 +1,19 @@
-import { WrongPassphraseError } from '@decryption/core';
-import { bytesToHex, randomBytes, utf8ToBytes } from '@decryption/hashes/utils';
+import {
+  CorruptEnvelopeError,
+  encodeFileHeader,
+  encryptFile,
+  isPassphraseFile,
+  parseFileHeader,
+  StanzaType,
+  STREAM_CHUNK_SIZE,
+  WrongPassphraseError,
+} from '@decryption/core';
+import { bytesToHex, concatBytes, randomBytes, utf8ToBytes } from '@decryption/hashes/utils';
 
 import {
+  createIdentityFileDecryptor,
+  createRecipientFileEncryptor,
+  fileRecipients,
   fingerprint,
   generateFileKey,
   generateIdentity,
@@ -11,11 +23,15 @@ import {
   KeyError,
   normalizeRecipients,
   openAs,
+  openFileAs,
   payloadRecipients,
   recipientFromString,
+  recipientStanza,
   recipientToString,
+  sealFileTo,
   sealTo,
   unwrapFileKey,
+  unwrapWithIdentity,
   wrapFileKey,
 } from '../src';
 
@@ -128,5 +144,78 @@ describe('sealTo/openAs', () => {
   it('never stores the plaintext', () => {
     const sealed = sealTo(utf8ToBytes('the launch codes'), recipients);
     expect(JSON.stringify(sealed)).not.toContain(bytesToHex(utf8ToBytes('the launch codes')));
+  });
+});
+
+describe('recipient files', () => {
+  const text = (bytes: Uint8Array): string => new TextDecoder().decode(bytes);
+
+  it('is readable by every recipient and nobody else', () => {
+    const file = sealFileTo('minutes of the tuesday meeting', [alice.publicKey, recipientToString(bob.publicKey)]);
+    expect(text(openFileAs(file, alice))).toBe('minutes of the tuesday meeting');
+    expect(text(openFileAs(file, bob))).toBe('minutes of the tuesday meeting');
+    expect(() => openFileAs(file, mallory)).toThrow(KeyError);
+  });
+
+  it('lists recipient fingerprints from the header without any key', () => {
+    const header = parseFileHeader(sealFileTo('x', [alice.publicKey, bob.publicKey]));
+    expect(isPassphraseFile(header)).toBe(false);
+    expect(header.stanzas.every((stanza) => stanza.type === StanzaType.X25519)).toBe(true);
+    expect(fileRecipients(header)).toEqual([fingerprint(alice.publicKey), fingerprint(bob.publicKey)]);
+  });
+
+  it('writes one stanza per distinct recipient', () => {
+    const header = parseFileHeader(
+      sealFileTo('x', [alice.publicKey, recipientToString(alice.publicKey), bob.publicKey])
+    );
+    expect(header.stanzas).toHaveLength(2);
+  });
+
+  it('requires at least one recipient', () => {
+    expect(() => sealFileTo('x', [])).toThrow(KeyError);
+    expect(() => createRecipientFileEncryptor([])).toThrow(KeyError);
+  });
+
+  it('streams a payload larger than one chunk', () => {
+    const plaintext = new Uint8Array(3 * STREAM_CHUNK_SIZE + 11).map((_, i) => (i * 7) % 256);
+    const { header, stream } = createRecipientFileEncryptor([alice.publicKey]);
+    const parts = [header];
+    for (let offset = 0; offset < plaintext.length; offset += 100_000) {
+      parts.push(stream.update(plaintext.subarray(offset, offset + 100_000)));
+    }
+    parts.push(stream.finish());
+    const file = concatBytes(...parts);
+
+    const parsed = parseFileHeader(file);
+    const decryptor = createIdentityFileDecryptor(parsed, alice);
+    const opened = concatBytes(decryptor.update(file.subarray(parsed.length)), decryptor.finish());
+    expect(Buffer.from(opened).equals(Buffer.from(plaintext))).toBe(true);
+  });
+
+  it('detects a stanza swapped in from another file', () => {
+    // Bob is a recipient of `theirs` only. Moving his stanza into `ours` must not let him in:
+    // it wraps a different file key, so the header MAC of `ours` no longer verifies.
+    const ours = sealFileTo('ours', [alice.publicKey]);
+    const theirs = sealFileTo('theirs', [bob.publicKey]);
+    const stanzaStart = 10;
+    const stanzaLength = 3 + 112;
+    const forged = Uint8Array.from(ours);
+    forged.set(theirs.subarray(stanzaStart, stanzaStart + stanzaLength), stanzaStart);
+    expect(() => openFileAs(forged, bob)).toThrow(CorruptEnvelopeError);
+    expect(() => openFileAs(forged, alice)).toThrow(KeyError);
+  });
+
+  it('refuses a passphrase file', () => {
+    const file = encryptFile('x', 'correct horse battery staple', { kdf: { t: 1, m: 8192, p: 1 } });
+    expect(() => unwrapWithIdentity(parseFileHeader(file), alice)).toThrow(KeyError);
+  });
+
+  it('rejects a recipient stanza of the wrong length', () => {
+    const fileKey = generateFileKey();
+    const stanza = recipientStanza(fileKey, alice.publicKey);
+    const header = parseFileHeader(
+      encodeFileHeader(fileKey, [{ type: stanza.type, body: stanza.body.subarray(0, 100) }])
+    );
+    expect(() => unwrapWithIdentity(header, alice)).toThrow(CorruptEnvelopeError);
   });
 });
