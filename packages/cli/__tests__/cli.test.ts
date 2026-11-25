@@ -386,10 +386,15 @@ describe('encrypt --binary / --recipient (the file format)', () => {
     const reveal = (sealed: string): Promise<number> =>
       run(`decrypt --in ${sealed} --passphrase-file ${passphrase()}`);
 
-    const binary = [
-      await seal('zeros.bin', pattern(1000)),
-      await seal('not-utf8.bin', Uint8Array.of(0xff, 0xfe, 0x41)),
-      await seal('cut-short.bin', Buffer.from('caf\u00e9').subarray(0, 4)),
+    // What is not text, and the text before it: the most a terminal may be shown.
+    const euro = Buffer.from('\u20ac');
+    const binary: [sealed: string, shown: string][] = [
+      [await seal('any.bin', pattern(1000)), ''],
+      [await seal('not-utf8.bin', Uint8Array.of(0xff, 0xfe, 0x41)), ''],
+      [await seal('zero.bin', Buffer.from('caf\0')), ''],
+      [await seal('cut-short.bin', Buffer.concat([Buffer.from('caf'), euro.subarray(0, 2)])), 'caf'],
+      // The unfinished character begins in one chunk and goes on into the next.
+      [await seal('straddling.bin', Buffer.concat([Buffer.alloc(65_535, 'a'), euro.subarray(0, 2)])), 'a'.repeat(65_535)],
     ];
     const text = await seal('plain.txt', 'attack at dawn \u2014 caf\u00e9\n');
     // Two-byte characters, the first of them at an odd offset: one is split between two chunks.
@@ -398,12 +403,14 @@ describe('encrypt --binary / --recipient (the file format)', () => {
     const original = process.stdout.isTTY;
     process.stdout.isTTY = true;
     try {
-      for (const sealed of binary) {
+      for (const [sealed, shown] of binary) {
+        out.length = 0;
         errors.length = 0;
         expect(await reveal(sealed)).toBe(EXIT.usage);
         expect(errors.join('')).toContain('refusing to write binary data to a terminal');
-        expect(out).toEqual([]);
+        expect(out.join('')).toBe(shown);
       }
+      out.length = 0;
 
       expect(await reveal(text)).toBe(0);
       expect(stdout()).toBe('attack at dawn \u2014 caf\u00e9');
