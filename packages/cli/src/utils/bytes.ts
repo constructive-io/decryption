@@ -323,6 +323,17 @@ export const writeBytes = async (
   await pipeline(asBuffers(process.stdout.isTTY ? textOnly(bytes) : bytes), process.stdout, { end: false });
 };
 
+const NEWLINE = Buffer.from('\n');
+
+/**
+ * Writes decrypted bytes exactly as they were encrypted. Only on a terminal is text that does not
+ * end its last line given a newline, so that the prompt does not follow it on the same line.
+ */
+export const writePlaintext = (argv: ParsedArgs, plaintext: Uint8Array): Promise<void> => {
+  const shown = outputFile(argv) === undefined && process.stdout.isTTY;
+  return writeBytes(argv, shown && plaintext.at(-1) !== NEWLINE[0] ? [plaintext, NEWLINE] : [plaintext]);
+};
+
 /** Writes text the way {@link writeBytes} writes bytes, ending it with a newline. */
 export const writeText = (argv: ParsedArgs, text: string): Promise<void> =>
   writeBytes(argv, [Buffer.from(text.endsWith('\n') ? text : `${text}\n`, 'utf8')]);

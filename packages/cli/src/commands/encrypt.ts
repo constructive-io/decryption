@@ -3,9 +3,9 @@ import {
   armorFile,
   createFileDecryptor,
   createFileEncryptor,
+  dearmor,
   dearmorFile,
   decrypt,
-  decryptFromString,
   encrypt,
   FILE_ARMOR_PREFIX,
   FILE_VERSION,
@@ -40,6 +40,7 @@ import {
   openInput,
   transformBytes,
   writeBytes,
+  writePlaintext,
   writeText,
 } from '../utils/bytes';
 import { takeFirst, wantsHelp } from '../utils/dispatch';
@@ -223,7 +224,7 @@ export const decryptCommand = async (argv: ParsedArgs, prompter: Inquirerer): Pr
       // A version 1 envelope that was never armored. Small by construction: read it whole.
       const envelope = await reader.all();
       const passphrase = await resolvePassphrase(newArgv, prompter);
-      await writeBytes(newArgv, [decrypt(envelope, passphrase, { aad: aadOf(newArgv) })]);
+      await writePlaintext(newArgv, decrypt(envelope, passphrase, { aad: aadOf(newArgv) }));
       return;
     }
 
@@ -233,7 +234,7 @@ export const decryptCommand = async (argv: ParsedArgs, prompter: Inquirerer): Pr
       return;
     }
     const passphrase = await resolvePassphrase(newArgv, prompter);
-    await writeText(newArgv, decryptFromString(text, passphrase, { aad: aadOf(newArgv) }));
+    await writePlaintext(newArgv, decrypt(dearmor(text), passphrase, { aad: aadOf(newArgv) }));
   } finally {
     input.close();
   }
