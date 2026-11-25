@@ -94,7 +94,8 @@ dcrypt shamir split --in mnemonic.txt --shares 5 --threshold 3
   destination exactly as it was.
 - **On stdout there is nothing to rename.** Decrypted chunks are written as they authenticate, so a
   file that turns out to be truncated has already produced output: check the exit code before using it.
-- Binary data is never written to a terminal, ciphertext or decrypted; use `--out` or redirect.
+- Binary data is never written to a terminal: not ciphertext, and not decrypted output that holds a
+  NUL byte or is not UTF-8. Use `--out` or redirect.
 - `--aad` belongs to the `dcrypt.v1` envelope only.
 
 What "audited" does and does not cover for these formats is spelled out in the

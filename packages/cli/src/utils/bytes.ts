@@ -265,14 +265,32 @@ export const assertNotTerminal = (argv: ParsedArgs, options: OutputOptions): voi
   }
 };
 
-/** Passes text through, and stops at a NUL byte: the sign of data a terminal should not be sent. */
+/**
+ * Passes text through, and stops at what a terminal should not be sent: a NUL byte, or bytes that
+ * are not UTF-8. A character may be split between two pieces; it is judged once it is whole.
+ */
 async function* textOnly(bytes: ByteStream): AsyncGenerator<Uint8Array> {
-  for await (const piece of bytes) {
-    if (piece.includes(0)) {
-      throw new CliError('refusing to write binary data to a terminal; use --out <file> or redirect stdout');
+  const decoder = new TextDecoder('utf-8', { fatal: true });
+  const isText = (piece?: Uint8Array): boolean => {
+    try {
+      decoder.decode(piece, { stream: piece !== undefined });
+      return !piece?.includes(0);
+    } catch {
+      return false;
     }
-    yield piece;
+  };
+  const refusal = (): CliError =>
+    new CliError('refusing to write binary data to a terminal; use --out <file> or redirect stdout');
+
+  // One piece is held back, so that the last is written only if the text ends on a whole character.
+  let held: Uint8Array | undefined;
+  for await (const piece of bytes) {
+    if (!isText(piece)) throw refusal();
+    if (held) yield held;
+    held = piece;
   }
+  if (!isText()) throw refusal();
+  if (held) yield held;
 }
 
 /** Writes `bytes` to `--out <file>` when given (atomically), otherwise to stdout. */

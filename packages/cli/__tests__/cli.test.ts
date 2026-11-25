@@ -373,24 +373,41 @@ describe('encrypt --binary / --recipient (the file format)', () => {
   });
 
   it('refuses to print binary plaintext to a terminal, and prints text', async () => {
-    const sealedBinary = join(work, 'plain.bin.dcrypt');
-    const sealedText = join(work, 'plain.txt.dcrypt');
-    const binary = file('plain.bin');
-    writeFileSync(binary, pattern(1000));
-    const seal = (from: string, to: string): Promise<number> =>
-      run(`encrypt --binary --in ${from} --out ${to} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`);
-    expect(await seal(binary, sealedBinary)).toBe(0);
-    expect(await seal(file('plain.txt', 'attack at dawn\n'), sealedText)).toBe(0);
+    const seal = async (name: string, contents: string | Uint8Array): Promise<string> => {
+      const plain = file(name);
+      writeFileSync(plain, contents);
+      expect(
+        await run(
+          `encrypt --binary --in ${plain} --out ${plain}.dcrypt --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`
+        )
+      ).toBe(0);
+      return `${plain}.dcrypt`;
+    };
+    const reveal = (sealed: string): Promise<number> =>
+      run(`decrypt --in ${sealed} --passphrase-file ${passphrase()}`);
+
+    const binary = [
+      await seal('zeros.bin', pattern(1000)),
+      await seal('not-utf8.bin', Uint8Array.of(0xff, 0xfe, 0x41)),
+      await seal('cut-short.bin', Buffer.from('caf\u00e9').subarray(0, 4)),
+    ];
+    const text = await seal('plain.txt', 'attack at dawn \u2014 caf\u00e9\n');
+    // Two-byte characters, the first of them at an odd offset: one is split between two chunks.
+    const long = await seal('long.txt', `a${'\u00e9'.repeat(40_000)}\n`);
 
     const original = process.stdout.isTTY;
     process.stdout.isTTY = true;
     try {
-      expect(await run(`decrypt --in ${sealedBinary} --passphrase-file ${passphrase()}`)).toBe(EXIT.usage);
-      expect(errors.join('')).toContain('refusing to write binary data to a terminal');
-      expect(out).toEqual([]);
+      for (const sealed of binary) {
+        errors.length = 0;
+        expect(await reveal(sealed)).toBe(EXIT.usage);
+        expect(errors.join('')).toContain('refusing to write binary data to a terminal');
+        expect(out).toEqual([]);
+      }
 
-      expect(await run(`decrypt --in ${sealedText} --passphrase-file ${passphrase()}`)).toBe(0);
-      expect(stdout()).toBe('attack at dawn');
+      expect(await reveal(text)).toBe(0);
+      expect(stdout()).toBe('attack at dawn \u2014 caf\u00e9');
+      expect(await reveal(long)).toBe(0);
     } finally {
       process.stdout.isTTY = original;
     }
