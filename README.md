@@ -58,6 +58,9 @@ dcrypt wallet create --words 24         # generate a BIP39 mnemonic
 dcrypt encrypt --in secret.txt          # Argon2id + XChaCha20-Poly1305 envelope
 dcrypt encrypt --binary --recipient dcrypt1… --in backup.tar --out backup.tar.dcrypt
                                         # any size, streamed, to X25519 recipients
+dcrypt encrypt-section finance          # a folder of a git repository → finance.tar.dcrypt
+dcrypt decrypt-workspace                # every bundle → its folder, one passphrase prompt
+dcrypt doctor                           # is this machine and workspace set up safely?
 dcrypt shamir split --shares 5 --threshold 3
 dcrypt secrets init && dcrypt secrets set DATABASE_URL
 dcrypt secrets run -- pnpm dev          # inject secrets without writing a .env
@@ -75,6 +78,11 @@ dcrypt account key create ci --expires-days 30   # secret lands in the vault, no
   64 KiB ChaCha20-Poly1305 chunks whose nonce carries a counter and a last-chunk flag, so reordered,
   dropped or truncated chunks fail authentication. It is implemented as specified and checked against
   age's own test vectors — not a new construction.
+- Encrypted workspaces ([how](./packages/cli#encrypted-workspaces)) keep a folder in git as one bundle
+  in that file format: a deterministic tar whose first entry is a SHA-256 manifest, so file names are
+  hidden and an unchanged folder is never re-encrypted. A bundle is decrypted beside the plaintext
+  and verified against its manifest before it replaces anything, so a wrong passphrase or a damaged
+  bundle changes nothing. A bundle does not authenticate its author; that is git's job.
 - Team secrets use X25519 per-recipient wrapping (age/sops-shaped), so adding or removing a teammate never
   requires resharing a passphrase. Shamir is reserved for break-glass recovery.
 - Private keys are never written to disk unencrypted. `dcrypt account` is the one command that uses the
@@ -117,6 +125,8 @@ Three things follow from that table:
   test vectors, but the code is ours;
 - X25519 recipient wrapping, identities and the keyring (`@decryption/keys`), team secrets files
   (`@decryption/secrets`), Shamir sharing, the vault, accounts and the WebAuthn authenticator;
+- encrypted workspaces: the tar writer and reader, the hash manifest, the extraction checks and the
+  pre-commit guard;
 - the `dcrypt` CLI and the desktop app.
 
 These are covered by this repository's tests and by review, which is not the same thing as an audit. If

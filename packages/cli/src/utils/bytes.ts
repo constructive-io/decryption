@@ -193,15 +193,22 @@ const statOrUndefined = (path: string): Stats | undefined => {
   }
 };
 
-/** Best effort: makes the rename itself durable. Not every platform can fsync a directory. */
-const syncDirectory = async (path: string): Promise<void> => {
+const sync = async (path: string, flags: string): Promise<void> => {
+  const handle = await open(path, flags);
   try {
-    const handle = await open(path, 'r');
-    try {
-      await handle.sync();
-    } finally {
-      await handle.close();
-    }
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+};
+
+/** Forces a file that has already been written to disk. */
+export const syncFile = (path: string): Promise<void> => sync(path, 'r+');
+
+/** Best effort: makes a rename durable. Not every platform can fsync a directory. */
+export const syncDirectory = async (path: string): Promise<void> => {
+  try {
+    await sync(path, 'r');
   } catch {
     // ignored on purpose
   }

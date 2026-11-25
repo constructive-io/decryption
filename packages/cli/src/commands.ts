@@ -3,7 +3,9 @@ import { ParsedArgs } from 'minimist';
 
 import { accountCommand } from './commands/account';
 import { cosmologyCommand } from './commands/cosmology';
+import { doctorCommand } from './commands/doctor';
 import { decryptCommand, encryptCommand } from './commands/encrypt';
+import { guardCommand } from './commands/guard';
 import { keychainCommand } from './commands/keychain';
 import { keysCommand } from './commands/keys';
 import { passkeyCommand } from './commands/passkey';
@@ -12,6 +14,7 @@ import { secretsCommand } from './commands/secrets';
 import { shamirCommand } from './commands/shamir';
 import { vaultCommand } from './commands/vault';
 import { walletCommand } from './commands/wallet';
+import { decryptWorkspaceCommand, encryptSectionCommand, statusCommand } from './commands/workspace';
 import { Handler, takeFirst } from './utils/dispatch';
 import { envUsage } from './utils/env';
 import { exitCodeFor, messageFor } from './utils/errors';
@@ -25,6 +28,11 @@ Usage:
 Commands:
   encrypt                 Encrypt data with a passphrase, or to X25519 recipients
   decrypt                 Decrypt data with a passphrase, or with your identity
+  encrypt-section         Encrypt one folder of a workspace into a single bundle
+  decrypt-workspace       Decrypt a workspace's bundles, with one passphrase prompt
+  status                  Show which sections are in sync, changed or not decrypted
+  doctor                  Check this machine and workspace; warn on a missing recovery key
+  guard                   Keep plaintext out of git: pre-commit check, hook and snippets
   wallet                  Create BIP39 wallets and derive addresses (offline)
   keys                    Manage your X25519 identity
   secrets                 Team secrets files (.env generation, recipients, rekeying)
@@ -54,6 +62,11 @@ Exit codes:
 export const createCommandMap = (): Record<string, Handler> => ({
   encrypt: encryptCommand,
   decrypt: decryptCommand,
+  'encrypt-section': encryptSectionCommand,
+  'decrypt-workspace': decryptWorkspaceCommand,
+  status: statusCommand,
+  doctor: doctorCommand,
+  guard: guardCommand,
   wallet: walletCommand,
   keys: keysCommand,
   secrets: secretsCommand,
