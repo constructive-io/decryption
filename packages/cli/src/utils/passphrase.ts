@@ -48,6 +48,12 @@ export const resolvePassphrase = async (
     return readStdin().replace(/\r?\n$/, '');
   }
 
+  if (!process.stdin.isTTY) {
+    throw new CliError(
+      'no passphrase: stdin is not a terminal, so there is nothing to prompt on; use --passphrase-file <path>, DCRYPT_PASSPHRASE or --passphrase-stdin'
+    );
+  }
+
   const message = options.message ?? 'Passphrase';
   const { passphrase } = await prompter.prompt<{ passphrase: string }>({} as { passphrase: string }, [
     { type: 'password', name: 'passphrase', message, required: true },
