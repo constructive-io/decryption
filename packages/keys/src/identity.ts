@@ -19,6 +19,9 @@ export class KeyError extends Error {
   }
 }
 
+/** The identity is valid, but nothing was encrypted to it. Distinct so callers can report it. */
+export class NotRecipientError extends KeyError {}
+
 /** An X25519 key pair. The private key is only ever held in memory. */
 export interface Identity {
   privateKey: Uint8Array;

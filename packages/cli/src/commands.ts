@@ -23,8 +23,8 @@ Usage:
   dcrypt <command> [subcommand] [OPTIONS]
 
 Commands:
-  encrypt                 Encrypt data with a passphrase
-  decrypt                 Decrypt data with a passphrase
+  encrypt                 Encrypt data with a passphrase, or to X25519 recipients
+  decrypt                 Decrypt data with a passphrase, or with your identity
   wallet                  Create BIP39 wallets and derive addresses (offline)
   keys                    Manage your X25519 identity
   secrets                 Team secrets files (.env generation, recipients, rekeying)

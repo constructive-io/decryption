@@ -1,12 +1,22 @@
-import { openWithKey, sealWithKey, WrongPassphraseError } from '@decryption/core';
+import { generateFileKey, openWithKey, sealWithKey, WrongPassphraseError } from '@decryption/core';
 import { x25519 } from '@decryption/curves/ed25519';
 import { hkdf } from '@decryption/hashes/hkdf';
 import { sha256 } from '@decryption/hashes/sha2';
 import { bytesToHex, concatBytes, hexToBytes, randomBytes, utf8ToBytes } from '@decryption/hashes/utils';
 
-import { fingerprint, Identity, KeyError, recipientFromString, recipientToString } from './identity';
+import {
+  fingerprint,
+  Identity,
+  KeyError,
+  NotRecipientError,
+  recipientFromString,
+  recipientToString,
+} from './identity';
 
 const FILE_KEY_LENGTH = 32;
+
+// The file key generator lives in @decryption/core; it is re-exported so this package's API is unchanged.
+export { generateFileKey };
 
 /** One recipient's copy of the file key — the age-style "stanza". */
 export interface Stanza {
@@ -25,8 +35,6 @@ export interface SealedPayload {
   ciphertext: string;
 }
 
-/** Generates a random file key — the symmetric key a payload is actually encrypted under. */
-export const generateFileKey = (): Uint8Array => randomBytes(FILE_KEY_LENGTH);
 
 /**
  * Wraps `fileKey` for one recipient using an ephemeral X25519 exchange, exactly the shape age
@@ -58,7 +66,7 @@ export const unwrapFileKey = (stanzas: Stanza[], identity: Identity): Uint8Array
   const mine = fingerprint(identity.publicKey);
   const candidates = stanzas.filter((stanza) => stanza.recipient === mine);
   if (candidates.length === 0) {
-    throw new KeyError(
+    throw new NotRecipientError(
       `this identity (${mine}) is not a recipient; recipients are ${stanzas.map((s) => s.recipient).join(', ') || 'none'}`
     );
   }
