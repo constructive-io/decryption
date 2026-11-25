@@ -101,8 +101,8 @@ dcrypt shamir split --in mnemonic.txt --shares 5 --threshold 3
   replaced or added on the way to a file or a pipe. Only on a terminal is a `dcrypt.v1` value that
   does not end its last line followed by a newline.
 - Binary data is never written to a terminal: not ciphertext, and not decrypted output that holds a
-  NUL byte or is not UTF-8. Text is shown up to the first such byte, and the command then fails. Use
-  `--out` or redirect.
+  NUL byte or is not UTF-8. No such byte is written and the command fails, though text that came
+  before it may already have been shown. Use `--out` or redirect.
 - `--aad` belongs to the `dcrypt.v1` envelope only.
 
 What "audited" does and does not cover for these formats is spelled out in the
