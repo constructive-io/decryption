@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/constructive-io/decryption/compare/@decryption/cli@0.5.0...@decryption/cli@0.5.1) (2026-11-25)
+
+### Bug Fixes
+
+- **cli:** decrypting a dcrypt.v1 envelope gives back its bytes exactly ([b6379f6](https://github.com/constructive-io/decryption/commit/b6379f6d80f9d772a401f7631fc02355cf4b271c))
+- **cli:** one unreadable section never stops the others, and review follow-ups ([37530cc](https://github.com/constructive-io/decryption/commit/37530cc852df782a6a3090233edbc06bb7f37130))
+- **cli:** only whole UTF-8 characters reach a terminal ([8d25297](https://github.com/constructive-io/decryption/commit/8d25297a25248b9ff1869e8089c0b4f554b3b338))
+- **cli:** text sent to a terminal must be UTF-8, not merely free of NUL bytes ([9a2efad](https://github.com/constructive-io/decryption/commit/9a2efad7f8330c4769ce660ebd8b73dfe361a935))
+
 # [0.5.0](https://github.com/constructive-io/decryption/compare/@decryption/cli@0.4.0...@decryption/cli@0.5.0) (2026-11-25)
 
 ### Bug Fixes

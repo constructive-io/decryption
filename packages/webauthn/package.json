@@ -1,6 +1,6 @@
 {
   "name": "@decryption/webauthn",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A software WebAuthn authenticator: passkeys whose private keys live in the dcrypt vault",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
