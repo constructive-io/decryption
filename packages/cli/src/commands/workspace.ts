@@ -93,6 +93,7 @@ const STALE_BUNDLE: Partial<Record<SectionReport['state'], string>> = {
   conflict: 'its bundle has changed since this machine last decrypted it',
   unknown: 'this machine has never decrypted its bundle, so it may hold changes you do not have',
   'not downloaded': 'its bundle is a Git LFS pointer (run `git lfs pull` first)',
+  'bundle unreadable': 'its bundle cannot be read (restore it from git first)',
 };
 
 export const encryptSectionCommand = async (argv: ParsedArgs): Promise<void> => {
@@ -112,6 +113,7 @@ export const encryptSectionCommand = async (argv: ParsedArgs): Promise<void> => 
     recipients.map((entry) => fingerprintOf(entry.recipient))
   );
   const { snapshot } = report;
+  if (report.state === 'plaintext unreadable') throw new CliError(adviceFor(report));
   if (!snapshot) throw new CliError(`there is no folder ${section.directory} to encrypt`, EXIT.notFound);
   if (!snapshot.files.length) throw new CliError(`${section.directory} has no files to encrypt`);
 
@@ -197,6 +199,10 @@ const settle = (report: SectionReport, force: boolean, outcomes: Outcomes): Pend
       return force
         ? replace
         : void outcomes.fail(section, `the plaintext and the bundle have both changed; ${FORCE_HINT}`);
+    case 'bundle unreadable':
+      return void outcomes.fail(section, adviceFor(report), EXIT.corrupt);
+    case 'plaintext unreadable':
+      return void outcomes.fail(section, adviceFor(report));
     default:
       return void outcomes.fail(section, adviceFor(report), EXIT.notFound);
   }
@@ -326,12 +332,15 @@ export const statusCommand = async (argv: ParsedArgs): Promise<void> => {
   );
 };
 
-/** Fingerprints from recipients.txt, or undefined when the workspace does not have one yet. */
+/**
+ * Fingerprints from recipients.txt, or undefined when there is none to compare against. One that
+ * is there and cannot be used is worth a warning, and no reason to say nothing about the sections.
+ */
 const readRecipientFingerprints = (workspace: Workspace): string[] | undefined => {
   try {
     return readWorkspaceRecipients(workspace).map((entry) => fingerprintOf(entry.recipient));
   } catch (error) {
-    if (exitCodeFor(error) === EXIT.notFound) return undefined;
-    throw error;
+    if (exitCodeFor(error) !== EXIT.notFound) warn(messageFor(error));
+    return undefined;
   }
 };

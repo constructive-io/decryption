@@ -372,6 +372,50 @@ describe('encrypt --binary / --recipient (the file format)', () => {
     expect(errors.join('')).toContain('refusing to write binary ciphertext to a terminal');
   });
 
+  it('refuses to print binary plaintext to a terminal, and prints text', async () => {
+    const sealedBinary = join(work, 'plain.bin.dcrypt');
+    const sealedText = join(work, 'plain.txt.dcrypt');
+    const binary = file('plain.bin');
+    writeFileSync(binary, pattern(1000));
+    const seal = (from: string, to: string): Promise<number> =>
+      run(`encrypt --binary --in ${from} --out ${to} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`);
+    expect(await seal(binary, sealedBinary)).toBe(0);
+    expect(await seal(file('plain.txt', 'attack at dawn\n'), sealedText)).toBe(0);
+
+    const original = process.stdout.isTTY;
+    process.stdout.isTTY = true;
+    try {
+      expect(await run(`decrypt --in ${sealedBinary} --passphrase-file ${passphrase()}`)).toBe(EXIT.usage);
+      expect(errors.join('')).toContain('refusing to write binary data to a terminal');
+      expect(out).toEqual([]);
+
+      expect(await run(`decrypt --in ${sealedText} --passphrase-file ${passphrase()}`)).toBe(0);
+      expect(stdout()).toBe('attack at dawn');
+    } finally {
+      process.stdout.isTTY = original;
+    }
+  });
+
+  it('replaces --out by rename for the armored forms too', async () => {
+    const plain = file('plain.txt', 'attack at dawn');
+    const sealed = file('sealed.dcrypt', 'something that was here before');
+    const restored = file('restored.txt', 'something that was here before');
+    const inodes = { sealed: statSync(sealed).ino, restored: statSync(restored).ino };
+
+    expect(
+      await run(`encrypt --in ${plain} --out ${sealed} --kdf ${FAST_KDF} --passphrase-file ${passphrase()}`)
+    ).toBe(0);
+    expect(readFileSync(sealed, 'utf8')).toMatch(/^dcrypt\.v1\..+\n$/);
+    expect(await run(`decrypt --in ${sealed} --out ${restored} --passphrase-file ${passphrase()}`)).toBe(0);
+    expect(readFileSync(restored, 'utf8')).toBe('attack at dawn\n');
+
+    // A new file took each one's place: neither was truncated and written into.
+    expect(statSync(sealed).ino).not.toBe(inodes.sealed);
+    expect(statSync(restored).ino).not.toBe(inodes.restored);
+    expect(statSync(restored).mode & 0o777).toBe(0o600);
+    expect(leftovers()).toEqual([]);
+  });
+
   it('rejects --aad, which the file format does not carry', async () => {
     const plain = file('plain.txt', 'attack at dawn');
     const sealed = join(work, 'sealed.dcrypt');

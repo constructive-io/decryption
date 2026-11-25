@@ -6,6 +6,7 @@ import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 
 import { dispatch, EXIT, options } from '../src';
+import { checkPaths } from '../src/workspace/guard';
 import { HOOK_MARKER, SNIPPETS } from '../src/workspace/snippets';
 
 jest.setTimeout(60000);
@@ -246,6 +247,20 @@ describe('guard', () => {
     const result = await dcrypt('guard');
     expect(result.code).toBe(EXIT.usage);
     expect(result.stdout).toContain('garden.tar.dcrypt: named .dcrypt but its content is not a dcrypt envelope');
+  });
+
+  it('does not take a git that failed for an empty file', async () => {
+    await plant();
+    // Not in the index, so git has nothing to show for it: that is an error, not a verdict.
+    const workspace = { root, recipientsFile: join(root, 'recipients.txt') };
+    await expect(checkPaths(workspace, ['absent.dcrypt'])).rejects.toThrow(
+      'cannot read absent.dcrypt from the git index'
+    );
+
+    // An empty file that is in the index is still what it is: not an envelope.
+    write('empty.dcrypt', '');
+    gitOk('add', 'empty.dcrypt');
+    expect(await checkPaths(workspace, ['empty.dcrypt'])).toMatchObject([{ rule: 'not encrypted' }]);
   });
 
   it('checks everything tracked with --all, long after it was committed', async () => {

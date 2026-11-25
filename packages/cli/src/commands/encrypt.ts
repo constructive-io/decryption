@@ -40,11 +40,11 @@ import {
   openInput,
   transformBytes,
   writeBytes,
+  writeText,
 } from '../utils/bytes';
 import { takeFirst, wantsHelp } from '../utils/dispatch';
 import { CliError } from '../utils/errors';
 import { readFileHeader } from '../utils/header';
-import { writeOutput } from '../utils/io';
 import { resolvePassphrase } from '../utils/passphrase';
 import { collectRecipients } from '../utils/recipients';
 import { loadIdentity, readStoredIdentity } from '../utils/stash';
@@ -150,7 +150,7 @@ export const encryptCommand = async (argv: ParsedArgs, prompter: Inquirerer): Pr
     kdf: resolveKdf(newArgv.kdf),
     aad: aadOf(newArgv),
   });
-  writeOutput(newArgv, armor(envelope));
+  await writeText(newArgv, armor(envelope));
 };
 
 const encryptFileFormat = async (
@@ -172,7 +172,7 @@ const encryptFileFormat = async (
     if (!binary) {
       // Text form of the same file, for small values: buffered, because base64 is not streamed.
       const plaintext = await new ByteReader(input.stream).all();
-      writeOutput(argv, armorFile(sealFileTo(plaintext, recipients)));
+      await writeText(argv, armorFile(sealFileTo(plaintext, recipients)));
       return;
     }
     if (!recipients.length) assertStdinFree(argv, input);
@@ -233,7 +233,7 @@ export const decryptCommand = async (argv: ParsedArgs, prompter: Inquirerer): Pr
       return;
     }
     const passphrase = await resolvePassphrase(newArgv, prompter);
-    writeOutput(newArgv, decryptFromString(text, passphrase, { aad: aadOf(newArgv) }));
+    await writeText(newArgv, decryptFromString(text, passphrase, { aad: aadOf(newArgv) }));
   } finally {
     input.close();
   }

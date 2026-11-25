@@ -79,9 +79,8 @@ const sectionChecks = async (
   for (const section of sections) {
     const report = await inspectSection(section, state[section.name], recipients);
     const advice = adviceFor(report);
-    checks.push(
-      check(`section ${section.name}`, advice ? 'warn' : 'ok', advice ? `${report.state}: ${advice}` : report.state)
-    );
+    const level = report.problem ? 'fail' : advice ? 'warn' : 'ok';
+    checks.push(check(`section ${section.name}`, level, advice ? `${report.state}: ${advice}` : report.state));
   }
   return checks;
 };

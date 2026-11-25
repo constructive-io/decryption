@@ -265,6 +265,16 @@ export const assertNotTerminal = (argv: ParsedArgs, options: OutputOptions): voi
   }
 };
 
+/** Passes text through, and stops at a NUL byte: the sign of data a terminal should not be sent. */
+async function* textOnly(bytes: ByteStream): AsyncGenerator<Uint8Array> {
+  for await (const piece of bytes) {
+    if (piece.includes(0)) {
+      throw new CliError('refusing to write binary data to a terminal; use --out <file> or redirect stdout');
+    }
+    yield piece;
+  }
+}
+
 /** Writes `bytes` to `--out <file>` when given (atomically), otherwise to stdout. */
 export const writeBytes = async (
   argv: ParsedArgs,
@@ -278,5 +288,9 @@ export const writeBytes = async (
   }
   assertNotTerminal(argv, options);
   // stdout belongs to the process: it is written to, never ended.
-  await pipeline(asBuffers(bytes), process.stdout, { end: false });
+  await pipeline(asBuffers(process.stdout.isTTY ? textOnly(bytes) : bytes), process.stdout, { end: false });
 };
+
+/** Writes text the way {@link writeBytes} writes bytes, ending it with a newline. */
+export const writeText = (argv: ParsedArgs, text: string): Promise<void> =>
+  writeBytes(argv, [Buffer.from(text.endsWith('\n') ? text : `${text}\n`, 'utf8')]);
