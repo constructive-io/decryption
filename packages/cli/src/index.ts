@@ -38,7 +38,11 @@ export const options: Partial<CLIOptions> = {
   },
 };
 
-if (require.main === module) {
+/**
+ * Runs `dcrypt` with this process's arguments. The `decryption` package's `dcrypt` command calls
+ * this, so `npm install -g decryption` and `npm install -g @decryption/cli` behave the same.
+ */
+export async function main(): Promise<void> {
   const app = new CLI(commands, {
     ...options,
     // The prompter attaches a line reader to stdin as soon as it is constructed. When stdin is a
@@ -47,8 +51,14 @@ if (require.main === module) {
     noTty: !process.stdin.isTTY,
     version: `dcrypt@${getPackageJson(__dirname).version}`,
   });
-  app.run().catch((error: unknown) => {
+  try {
+    await app.run();
+  } catch (error: unknown) {
     process.stderr.write(`Unexpected error: ${String(error)}\n`);
     process.exit(1);
-  });
+  }
+}
+
+if (require.main === module) {
+  void main();
 }

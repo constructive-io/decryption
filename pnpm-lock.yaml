@@ -367,6 +367,12 @@ importers:
         version: 0.3.0
     publishDirectory: dist
 
+  packages/decryption:
+    dependencies:
+      "@decryption/cli":
+        specifier: workspace:*
+        version: link:../cli/dist
+
   packages/hashes:
     devDependencies:
       makage:

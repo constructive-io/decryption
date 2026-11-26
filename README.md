@@ -34,6 +34,7 @@ The primitives have been audited upstream; the formats and tools built on them h
 | **@decryption/accounts** | [![npm](https://img.shields.io/npm/v/@decryption/accounts.svg)](https://www.npmjs.com/package/@decryption/accounts) | [GitHub](./packages/accounts) | Constructive accounts and API keys, held in the local vault |
 | **@decryption/webauthn** | [![npm](https://img.shields.io/npm/v/@decryption/webauthn.svg)](https://www.npmjs.com/package/@decryption/webauthn) | [GitHub](./packages/webauthn) | A software WebAuthn authenticator: passkeys kept in the vault |
 | **@decryption/cli** | [![npm](https://img.shields.io/npm/v/@decryption/cli.svg)](https://www.npmjs.com/package/@decryption/cli) | [GitHub](./packages/cli) | The `dcrypt` command-line interface |
+| **decryption** | [![npm](https://img.shields.io/npm/v/decryption.svg)](https://www.npmjs.com/package/decryption) | [GitHub](./packages/decryption) | Short install name for the CLI: `npm install -g decryption` |
 
 ### Vendored primitives
 
@@ -52,7 +53,7 @@ forks vendor the unmodified sources and publish dual CJS+ESM builds.
 ## Quick start
 
 ```bash
-npm install -g @decryption/cli
+npm install -g decryption              # or @decryption/cli; same dcrypt
 
 dcrypt wallet create --words 24         # generate a BIP39 mnemonic
 dcrypt encrypt --in secret.txt          # Argon2id + XChaCha20-Poly1305 envelope
