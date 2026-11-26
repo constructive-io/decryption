@@ -12,6 +12,7 @@ describe('main', () => {
 
   it('is what the decryption package runs', () => {
     const wrapper = readFileSync(join(__dirname, '../../decryption/index.js'), 'utf8');
-    expect(wrapper).toContain("require('@decryption/cli').main()");
+    expect(wrapper).toContain("require('@decryption/cli')");
+    expect(wrapper).toContain('cli.main()');
   });
 });
