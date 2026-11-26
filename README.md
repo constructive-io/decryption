@@ -11,6 +11,9 @@
   <a href="https://github.com/constructive-io/decryption/blob/main/LICENSE">
     <img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
+  <a href="https://www.npmjs.com/package/decryption">
+    <img height="20" src="https://img.shields.io/npm/v/decryption.svg" alt="decryption on npm">
+  </a>
 </p>
 
 Dependency-light building blocks for mnemonics, envelope encryption, Shamir secret sharing and team
@@ -20,6 +23,16 @@ Constructive endpoint you name.
 
 The primitives have been audited upstream; the formats and tools built on them here have not. See
 [Audit status](#audit-status) for exactly where that line is.
+
+## Install
+
+```bash
+npm install -g decryption
+dcrypt --help
+```
+
+That installs the `dcrypt` command. To try it without installing, run `npx decryption --help`. For the
+libraries, install the scoped packages below, e.g. `npm install @decryption/core`.
 
 ## Packages
 
