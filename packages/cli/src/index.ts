@@ -43,15 +43,15 @@ export const options: Partial<CLIOptions> = {
  * this, so `npm install -g decryption` and `npm install -g @decryption/cli` behave the same.
  */
 export async function main(): Promise<void> {
-  const app = new CLI(commands, {
-    ...options,
-    // The prompter attaches a line reader to stdin as soon as it is constructed. When stdin is a
-    // pipe or a file it is data (or nothing), never a keyboard: a reader there would take bytes
-    // away from `--in -`, and a prompt would read the data as its answer.
-    noTty: !process.stdin.isTTY,
-    version: `dcrypt@${getPackageJson(__dirname).version}`,
-  });
   try {
+    const app = new CLI(commands, {
+      ...options,
+      // The prompter attaches a line reader to stdin as soon as it is constructed. When stdin is a
+      // pipe or a file it is data (or nothing), never a keyboard: a reader there would take bytes
+      // away from `--in -`, and a prompt would read the data as its answer.
+      noTty: !process.stdin.isTTY,
+      version: `dcrypt@${getPackageJson(__dirname).version}`,
+    });
     await app.run();
   } catch (error: unknown) {
     process.stderr.write(`Unexpected error: ${String(error)}\n`);
