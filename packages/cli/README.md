@@ -21,9 +21,11 @@
 ## Installation
 
 ```bash
-npm install -g @decryption/cli
+npm install -g decryption      # short name; installs this package
 dcrypt --help
 ```
+
+`npm install -g @decryption/cli` installs the same command.
 
 ## Commands
 
