@@ -1,15 +1,15 @@
 # decryption
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" height="250">
+  <img alt="Constructive" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" height="250">
   <br />
   Local-first cryptography for humans and teams
   <br />
   <a href="https://github.com/constructive-io/decryption/actions/workflows/ci.yml">
-    <img height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
+    <img alt="CI status" height="20" src="https://github.com/constructive-io/decryption/actions/workflows/ci.yml/badge.svg" />
   </a>
   <a href="https://github.com/constructive-io/decryption/blob/main/LICENSE">
-    <img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg">
+    <img alt="MIT license" height="20" src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
   <a href="https://www.npmjs.com/package/decryption">
     <img height="20" src="https://img.shields.io/npm/v/decryption.svg" alt="decryption on npm">

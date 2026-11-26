@@ -1,14 +1,14 @@
 # decryption
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" height="250">
+  <img alt="Constructive" src="https://raw.githubusercontent.com/constructive-io/constructive/refs/heads/main/assets/outline-logo.svg" height="250">
   <br />
   Local-first cryptography for humans and teams
   <br />
   <a href="https://github.com/constructive-io/decryption/blob/main/LICENSE">
-    <img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg">
+    <img alt="MIT license" height="20" src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
-  <a href="https://www.npmjs.com/package/decryption"><img height="20" src="https://img.shields.io/npm/v/decryption.svg"/></a>
+  <a href="https://www.npmjs.com/package/decryption"><img alt="decryption on npm" height="20" src="https://img.shields.io/npm/v/decryption.svg"/></a>
 </p>
 
 The `dcrypt` command line: encryption, BIP39 wallets and team secrets, all local-first.
