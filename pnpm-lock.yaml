@@ -6382,7 +6382,10 @@ packages:
       }
 
   find-and-require-package-json@0.9.3:
-    resolution: {integrity: sha512-KPYJL0iWu6ERDRDVZERWMt02WdCZzgSAS9+3hvIhl8ckWRn9AznVWigUjP56nOHTxd426C+9ALv9cHIISY6RlQ==}
+    resolution:
+      {
+        integrity: sha512-KPYJL0iWu6ERDRDVZERWMt02WdCZzgSAS9+3hvIhl8ckWRn9AznVWigUjP56nOHTxd426C+9ALv9cHIISY6RlQ==,
+      }
 
   find-up@2.1.0:
     resolution:
@@ -7445,7 +7448,10 @@ packages:
       }
 
   inquirerer@4.9.7:
-    resolution: {integrity: sha512-3PgTWhyKjt42C45JlVKlDhM9NRgHEciZM40fqZUGIK5aAFKu3gR/4JnJN7n5nnOK3Cs/Xu0Y8nOWdEDGxy53rA==}
+    resolution:
+      {
+        integrity: sha512-3PgTWhyKjt42C45JlVKlDhM9NRgHEciZM40fqZUGIK5aAFKu3gR/4JnJN7n5nnOK3Cs/Xu0Y8nOWdEDGxy53rA==,
+      }
 
   interpret@3.1.1:
     resolution:
@@ -11651,7 +11657,10 @@ packages:
       }
 
   yanse@0.2.4:
-    resolution: {integrity: sha512-ZXb6OpKfgRqemmFcw6iSOEFubFOhIr3VCq0awSq5/DkxKQuqT8QIRzmrcGjWfu+mJPy+nNHQhH5xiKsRRC0cYw==}
+    resolution:
+      {
+        integrity: sha512-ZXb6OpKfgRqemmFcw6iSOEFubFOhIr3VCq0awSq5/DkxKQuqT8QIRzmrcGjWfu+mJPy+nNHQhH5xiKsRRC0cYw==,
+      }
 
   yargs-parser@20.2.9:
     resolution:

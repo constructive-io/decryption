@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/constructive-io/decryption/compare/@decryption/webauthn@0.2.3...@decryption/webauthn@0.2.4) (2026-11-27)
+
+**Note:** Version bump only for package @decryption/webauthn
+
 ## [0.2.3](https://github.com/constructive-io/decryption/compare/@decryption/webauthn@0.2.2...@decryption/webauthn@0.2.3) (2026-11-27)
 
 **Note:** Version bump only for package @decryption/webauthn

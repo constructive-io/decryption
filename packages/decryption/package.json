@@ -1,6 +1,6 @@
 {
   "name": "decryption",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "dcrypt — local-first CLI for encryption, BIP39 wallets and team secrets",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",

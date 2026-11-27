@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/constructive-io/decryption/compare/@decryption/cli@0.6.3...@decryption/cli@0.6.4) (2026-11-27)
+
+### Bug Fixes
+
+- **deps:** bump inquirerer to 4.9.7 ([#38](https://github.com/constructive-io/decryption/issues/38)) ([736f8ef](https://github.com/constructive-io/decryption/commit/736f8ef04718bdb0b821e61634f6e555b007ebd6))
+
 ## [0.6.3](https://github.com/constructive-io/decryption/compare/@decryption/cli@0.6.2...@decryption/cli@0.6.3) (2026-11-27)
 
 **Note:** Version bump only for package @decryption/cli
