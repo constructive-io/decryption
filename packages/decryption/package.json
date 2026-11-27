@@ -7,7 +7,8 @@
   "homepage": "https://github.com/constructive-io/decryption",
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,10 @@
   "files": [
     "index.js"
   ],
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "makage assets && makage copy index.js dist --flat"
+  },
   "keywords": [
     "cli",
     "dcrypt",
@@ -31,6 +36,9 @@
   ],
   "dependencies": {
     "@decryption/cli": "workspace:*"
+  },
+  "devDependencies": {
+    "makage": "0.3.0"
   },
   "bin": {
     "dcrypt": "index.js"
