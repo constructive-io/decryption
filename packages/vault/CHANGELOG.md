@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/constructive-io/decryption/compare/@decryption/vault@0.4.2...@decryption/vault@0.4.3) (2026-11-27)
+
+**Note:** Version bump only for package @decryption/vault
+
 ## [0.4.2](https://github.com/constructive-io/decryption/compare/@decryption/vault@0.4.1...@decryption/vault@0.4.2) (2026-11-26)
 
 **Note:** Version bump only for package @decryption/vault

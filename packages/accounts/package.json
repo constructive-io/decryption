@@ -1,6 +1,6 @@
 {
   "name": "@decryption/accounts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Constructive accounts and API keys, held in the local dcrypt vault",
   "author": "Constructive <developers@constructive.io>",
   "main": "index.js",
