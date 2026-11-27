@@ -50,7 +50,7 @@
     "@decryption/wallet": "workspace:*",
     "@decryption/webauthn": "workspace:*",
     "appstash": "^0.7.0",
-    "inquirerer": "^4.9.1",
+    "inquirerer": "^4.9.7",
     "yanse": "^0.2.1"
   },
   "devDependencies": {
