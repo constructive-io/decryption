@@ -299,8 +299,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       inquirerer:
-        specifier: ^4.9.1
-        version: 4.9.1
+        specifier: ^4.9.7
+        version: 4.9.7
       yanse:
         specifier: ^0.2.1
         version: 0.2.1
@@ -6376,6 +6376,9 @@ packages:
         integrity: sha512-jFpCL0XgjipSk109viUtfp+NyR/oW6a4Xus4tV3UYkmCbsjisEeZD1x5QnD1NDDK/hXas1WFs4yO13L4TPXWlQ==,
       }
 
+  find-and-require-package-json@0.9.3:
+    resolution: {integrity: sha512-KPYJL0iWu6ERDRDVZERWMt02WdCZzgSAS9+3hvIhl8ckWRn9AznVWigUjP56nOHTxd426C+9ALv9cHIISY6RlQ==}
+
   find-up@2.1.0:
     resolution:
       {
@@ -7435,6 +7438,9 @@ packages:
       {
         integrity: sha512-RXgbivwNs9luseSHnjIcJ05A8VRGcdCQuLjyWWBmI1zwyorkSzCw4KyK8634a5KrbbXehSJHBE3rIrtgJJiBEQ==,
       }
+
+  inquirerer@4.9.7:
+    resolution: {integrity: sha512-3PgTWhyKjt42C45JlVKlDhM9NRgHEciZM40fqZUGIK5aAFKu3gR/4JnJN7n5nnOK3Cs/Xu0Y8nOWdEDGxy53rA==}
 
   interpret@3.1.1:
     resolution:
@@ -11639,6 +11645,9 @@ packages:
         integrity: sha512-T+4OAK9/idBEgH0M6WwFT5k55OOcNLBbheVgJ5qqBchzUA+DN7SfHBDi47zsQeXcBg6Mf5z9FFASTxPwAGbO2A==,
       }
 
+  yanse@0.2.4:
+    resolution: {integrity: sha512-ZXb6OpKfgRqemmFcw6iSOEFubFOhIr3VCq0awSq5/DkxKQuqT8QIRzmrcGjWfu+mJPy+nNHQhH5xiKsRRC0cYw==}
+
   yargs-parser@20.2.9:
     resolution:
       {
@@ -15659,6 +15668,8 @@ snapshots:
 
   find-and-require-package-json@0.9.1: {}
 
+  find-and-require-package-json@0.9.3: {}
+
   find-up@2.1.0:
     dependencies:
       locate-path: 2.0.0
@@ -16553,6 +16564,13 @@ snapshots:
       find-and-require-package-json: 0.9.1
       minimist: 1.2.8
       yanse: 0.2.1
+
+  inquirerer@4.9.7:
+    dependencies:
+      deepmerge: 4.3.1
+      find-and-require-package-json: 0.9.3
+      minimist: 1.2.8
+      yanse: 0.2.4
 
   interpret@3.1.1: {}
 
@@ -19327,6 +19345,8 @@ snapshots:
   yanse@0.2.1: {}
 
   yanse@0.2.2: {}
+
+  yanse@0.2.4: {}
 
   yargs-parser@20.2.9: {}
 
